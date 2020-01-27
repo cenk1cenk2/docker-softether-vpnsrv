@@ -1,0 +1,25 @@
+version: '3'
+services:
+  softether-vpnsrv:
+    image: softether-vpnsrv
+    build:
+      context: ./build/.
+    env_file: .env
+    ports:
+      - 1443:1443/tcp
+      - 992:992/tcp
+      - 5555:5555/tcp
+      - 1194:1194/udp
+      - 500:500/udp
+      - 4500:4500/udp
+      - 1701:1701/tcp
+    volumes:
+      # Configuration Files
+      - ./cfg/vpn_server.config:/cfg/vpn_server.config
+      - ./cfg/dnsmasq.conf:/cfg/dnsmasq.conf
+      # Log files
+      - ./logs/packet_log:/vpnserver/packet_log
+      - ./logs/security_log:/vpnserver/security_log
+      - ./logs/server_log:/vpnserver/server_log
+    network_mode: "bridge"
+    privileged: true

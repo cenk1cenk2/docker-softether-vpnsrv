@@ -1,0 +1,43 @@
+FROM alpine:latest
+
+RUN apk --no-cache --no-progress update && \
+  apk --no-cache --no-progress upgrade && \
+  # Install s6 supervisor
+  apk --no-cache --no-progress add s6 bash && \
+  mkdir /s6 && mkdir /s6-bin && mkdir /s6/.s6-svscan && \
+  # Install build dependencies
+  apk --no-cache --no-progress --virtual .build-deps add git libgcc libstdc++ gcc musl-dev libc-dev g++ ncurses-dev \
+  readline-dev openssl-dev cmake make zlib-dev && \
+  # Grab and build Softether from GitHub
+  git clone https://github.com/SoftEtherVPN/SoftEtherVPN.git /tmp/softether && \
+  cd /tmp/softether && git submodule init && git submodule update && export USE_MUSL=YES && \
+  ./configure && make --silent -C tmp && make --silent -C tmp install &&  \
+  cp /tmp/softether/build/libcedar.so /tmp/softether/build/libmayaqua.so /usr/lib && \
+  # Removing build extensions
+  apk del .build-deps && apk del --no-cache --purge && \
+  rm -rf /tmp/softether && rm -rf /var/cache/apk/*  && \
+  # Deleting unncessary extensions
+  rm -rf /usr/local/bin/vpnbridge \
+  /usr/local/libexec/softether/vpnbridge && \
+  # Reintroduce necassary libraries
+  apk add --no-cache --virtual .run-deps \
+  libcap libcrypto1.1 libssl1.1 ncurses-libs readline su-exec zlib-dev dhclient && \
+  # Link Libraries to Binary
+  mkdir /s6-bin/softether-vpnsrv && \
+  ln -s /usr/local/bin/vpnserver /s6-bin/softether-vpnsrv/vpnserver && \
+  ln -s /usr/local/bin/vpncmd /s6-bin/softether-vpnsrv/vpncmd && \
+  ln -s /usr/local/libexec/softether/vpnserver/ / && \
+  # Install dnsmasq and create the tun network adapter.
+  apk add --no-cache dnsmasq iptables && \
+  echo "tun" >> /etc/modules && \
+  echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf && \
+  mkdir -p /dev/net && \
+  mknod /dev/net/tun c 10 200
+
+# Open necassary ports
+EXPOSE 1443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp 1701/udp
+
+# Move s6 supervisor files inside the container
+ADD ./s6 /s6
+
+ENTRYPOINT [ "/bin/s6-svscan", "/s6" ]
