@@ -16,8 +16,8 @@ steps:
     image: alpine/git:latest
     commands:
       - apk add curl --no-cache --no-progress
-      - "export BASE_RELEASE=curl --silent ${BASE_REPO} | grep -Po '\"tag_name\": \"\K.*?(?=\")'"
-      - "export BASE_RELEASE=curl --silent ${TRACK_REPO} | grep -Po '\"tag_name\": \"\K.*?(?=\")'"
+      - "export BASE_RELEASE=curl --silent ${BASE_REPO} \| grep -Po '\"tag_name\": \"\K.*?(?=\")'"
+      # - "export BASE_RELEASE=curl --silent ${TRACK_REPO} \| grep -Po '\"tag_name\": \"\K.*?(?=\")'"
       # - if ["${BASE_RELEASE}" -ne "v${TRACK_RELEASE}"]; then git tag v${TRACK_RELEASE} && git push origin v${TRACK_RELEASE}; fi
     when:
       event:
