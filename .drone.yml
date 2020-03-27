@@ -1,0 +1,38 @@
+kind: pipeline
+trigger:
+  event:
+    - cron
+    - push
+    - tag
+  branch:
+    - master
+
+environment:
+  - BASE_REPO=https://api.github.com/repos/cenk1cenk2/softether-vpnsrv/releases/latest
+  - TRACK_REPO=https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/releases/latest
+
+name: publish
+steps:
+  - name: check-version
+    image: alpine/git:latest
+    commands:
+      - apk add curl --no-cache --no-progress
+      - export BASE_RELEASE=curl --silent ${BASE_REPO} | grep -Po '"tag_name": "\K.*?(?=")'
+      - export TRACK_RELEASE=curl --silent ${TRACK_REPO} | grep -Po '"tag_name": "\K.*?(?=")'
+      - if ["${BASE_RELEASE}" -ne "v${TRACK_RELEASE}"]; then git tag v${TRACK_RELEASE} && git push origin v${TRACK_RELEASE}; fi
+
+  - name: publish
+    image: plugins/docker
+    working_dir: /build
+    settings:
+      repo: cenk1cenk2/softether-vpnsrv
+      username:
+        from_secret: docker_hub_username
+      password:
+        from_secret: docker_hub_password
+      tag:
+        - latest
+        - ${DRONE_TAG}
+    trigger:
+      event:
+        - tag

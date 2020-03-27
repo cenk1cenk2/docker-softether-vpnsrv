@@ -1,16 +1,23 @@
 FROM alpine:latest
 
+ENV SOFTETHER_REPO https://github.com/SoftEtherVPN/SoftEtherVPN.git
+ENV SOFTETHER_REPO_API https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/releases/latest
+
 RUN apk --no-cache --no-progress update && \
   apk --no-cache --no-progress upgrade && \
   # Install s6 supervisor
   apk --no-cache --no-progress add s6 bash && \
-  mkdir /s6 && mkdir /s6-bin && mkdir /s6/.s6-svscan && \
+  mkdir -p /etc/services.d && mkdir /s6-bin && \
   # Install build dependencies
   apk --no-cache --no-progress --virtual .build-deps add git libgcc libstdc++ gcc musl-dev libc-dev g++ ncurses-dev \
   readline-dev openssl-dev cmake make zlib-dev && \
   # Grab and build Softether from GitHub
-  git clone https://github.com/SoftEtherVPN/SoftEtherVPN.git /tmp/softether && \
-  cd /tmp/softether && git submodule init && git submodule update && export USE_MUSL=YES && \
+  git clone ${SOFTETHER_REPO} /tmp/softether && \
+  # Get latest Tag
+  cd /tmp/softether && export TRACK_LATEST=curl --silent ${SOFTETHER_REPO_API} | grep -Po '"tag_name": "\K.*?(?=")' && \
+  # Checkout Latest Tag
+  git checkout ${TRACK_LATEST} && git submodule init && git submodule update && export USE_MUSL=YES && \
+  # Build
   ./configure && make --silent -C tmp && make --silent -C tmp install &&  \
   cp /tmp/softether/build/libcedar.so /tmp/softether/build/libmayaqua.so /usr/lib && \
   # Removing build extensions
@@ -26,7 +33,7 @@ RUN apk --no-cache --no-progress update && \
   mkdir /s6-bin/softether-vpnsrv && \
   ln -s /usr/local/bin/vpnserver /s6-bin/softether-vpnsrv/vpnserver && \
   ln -s /usr/local/bin/vpncmd /s6-bin/softether-vpnsrv/vpncmd && \
-  ln -s /usr/local/libexec/softether/vpnserver/ / && \
+  ln -s /usr/local/libexec/softether/vpnserver/ /etc && \
   # Install dnsmasq and create the tun network adapter.
   apk add --no-cache dnsmasq iptables && \
   echo "tun" >> /etc/modules && \
@@ -38,6 +45,6 @@ RUN apk --no-cache --no-progress update && \
 EXPOSE 1443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp 1701/udp
 
 # Move s6 supervisor files inside the container
-ADD ./s6 /s6
+ADD ./s6 /etc/services.d
 
 ENTRYPOINT [ "/bin/s6-svscan", "/s6" ]

@@ -2,7 +2,7 @@
 
 # SOFTETHER START
 echo "Starting Softether Server..."
-echo "--------------------------------------------------------------------------"
+echo "-------------------------------"
 /s6-bin/softether-vpnsrv/vpnserver start
 
 # Create IP tables rules
@@ -10,8 +10,17 @@ echo "Creating postrouting rules."
 iptables -t nat -A POSTROUTING -s ${SRVIPSUBNET:-10.0.0}.0/24 -j MASQUERADE
 
 # Create DHCP configuration
-echo "Creating DHCP server configuration..."
-sed "s/\$SRVIPSUBNET/${SRVIPSUBNET:-10.0.0}/g" /cfg/dnsmasq.conf >/etc/dnsmasq.conf
+if [ -f /cfg/dnsmasq.conf ]; then
+  echo "Creating DHCP server configuration..."
+  sed "s/\$SRVIPSUBNET/${SRVIPSUBNET:-10.0.0}/g" /cfg/dnsmasq.conf >/etc/dnsmasq.conf
+fi
+
+# Link config files
+if [ -f /cfg/vpn_server.config ]; then
+  echo "Linking configuration file."
+  rm /etc/vpnserver/vpn_server.config
+  ln -s /cfg/vpn_server.config /etc/vpnserver
+fi
 
 # Start DHCP Server
 echo "Starting DHCP server."
@@ -25,7 +34,7 @@ echo "Binded IP address to the server with ${SRVIPSUBNET:-10.0.0}.1"
 
 # Check health
 while ping -c 1 -W 10 "${SRVIPSUBNET:-10.0.0}.1" >&/dev/null && pgrep dnsmasq >&/dev/null; do
-  echo "-----------------------------------------------------------------"
+  echo "-------------------------------"
   echo "Self test success. VPN Server alive and can access ${SRVIPSUBNET:-10.0.0}.1."
   if [[ -z "${KEEP_SERVER_LOG}" ]]; then
     echo "Clearing up server log files."

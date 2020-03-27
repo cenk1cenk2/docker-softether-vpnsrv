@@ -1,16 +1,16 @@
 #!/bin/bash
 
-echo "--------------------------------------------------------------------------"
+echo "-------------------------------"
 echo "Terminating softether-vpnsrv."
-echo "--------------------------------------------------------------------------"
+echo "-------------------------------"
 echo "Shutting down the daemon"
-/s6-bin/softether-vpnsrv/vpnserver stop >& /dev/null
+/s6-bin/softether-vpnsrv/vpnserver stop >&/dev/null
 echo "Stoping tap adapter."
-ifconfig tap_soft down >& /dev/null
+ifconfig tap_soft down >&/dev/null
 echo "Deleting Virtual Network Adapter"
-ip link delete tap_soft >& /dev/null
+ip link delete tap_soft >&/dev/null
 echo "Shutting down DHCP server."
-pkill /usr/sbin/dnsmasq >& /dev/null
-echo "--------------------------------------------------------------------------"
+pkill /usr/sbin/dnsmasq >&/dev/null
+echo "-------------------------------"
 echo "Terminated softether-vpnsrv."
-echo "--------------------------------------------------------------------------"
+echo "-------------------------------"
