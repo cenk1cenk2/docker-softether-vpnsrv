@@ -13,10 +13,6 @@ iptables -t nat -A POSTROUTING -s ${SRVIPSUBNET:-10.0.0}.0/24 -j MASQUERADE
 echo "Creating DHCP server configuration..."
 sed "s/\$SRVIPSUBNET/${SRVIPSUBNET:-10.0.0}/g" /cfg/dnsmasq.conf >/etc/dnsmasq.conf
 
-# Create VPN Server configuration
-echo "Creating Softether VPN Server configuration..."
-cp /cfg/vpn_server.config /vpnserver/vpn_server.config
-
 # Start DHCP Server
 echo "Starting DHCP server."
 /usr/sbin/dnsmasq
@@ -28,7 +24,7 @@ echo "Binded IP address to the server with ${SRVIPSUBNET:-10.0.0}.1"
 /sbin/ifconfig tap_soft ${SRVIPSUBNET:-10.0.0}.1
 
 # Check health
-while ping -c 1 -W 10 "${SRVIPSUBNET:-10.0.0}.1" >& /dev/null && pgrep dnsmasq >& /dev/null; do
+while ping -c 1 -W 10 "${SRVIPSUBNET:-10.0.0}.1" >&/dev/null && pgrep dnsmasq >&/dev/null; do
   echo "-----------------------------------------------------------------"
   echo "Self test success. VPN Server alive and can access ${SRVIPSUBNET:-10.0.0}.1."
   if [[ -z "${KEEP_SERVER_LOG}" ]]; then
