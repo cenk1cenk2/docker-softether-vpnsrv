@@ -30,6 +30,7 @@ echo "Starting DHCP server."
 echo "Waiting 3 seconds."
 sleep 3
 echo "Binded IP address to the server with ${SRVIPSUBNET:-10.0.0}.1"
+ip tuntap add dev tap_soft mode tap
 /sbin/ifconfig tap_soft ${SRVIPSUBNET:-10.0.0}.1
 
 # Check health
