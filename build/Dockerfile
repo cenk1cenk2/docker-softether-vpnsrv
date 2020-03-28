@@ -2,11 +2,16 @@ FROM alpine:latest
 
 ENV SOFTETHER_REPO https://github.com/SoftEtherVPN/SoftEtherVPN.git
 ENV SOFTETHER_REPO_API https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/releases/latest
+ENV S6_VERSION 1.21.8.0
+
+# Install s6 overlay
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_VERSION}/s6-overlay-amd64.tar.gz /tmp/
+RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C /
 
 RUN apk --no-cache --no-progress update && \
   apk --no-cache --no-progress upgrade && \
   # Install s6 supervisor
-  apk --no-cache --no-progress add s6 bash && \
+  apk --no-cache --no-progress add bash && \
   mkdir -p /etc/services.d && mkdir /s6-bin && \
   # Install build dependencies
   apk --no-cache --no-progress --virtual .build-deps add git libgcc libstdc++ gcc musl-dev libc-dev g++ ncurses-dev \
@@ -47,4 +52,4 @@ EXPOSE 1443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp 1701/udp
 # Move s6 supervisor files inside the container
 ADD ./s6 /etc/services.d
 
-ENTRYPOINT [ "/bin/s6-svscan", "/s6" ]
+ENTRYPOINT ["/init"]

@@ -2,8 +2,6 @@ version: '3'
 services:
   softether-vpnsrv:
     image: cenk1cenk2/softether-vpnsrv
-    build:
-      context: build/.
     env_file: .env
     ports:
       - 1443:1443/tcp
