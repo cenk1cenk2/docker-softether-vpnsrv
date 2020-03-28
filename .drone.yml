@@ -22,7 +22,7 @@ steps:
       - 'echo "Repository last tag: $BASE_RELEASE"'
       - 'echo "Tracking last tag: v$TRACK_RELEASE"'
       - git config --global --add url."https://$GITHUB_USERNAME:$GITHUB_DEPLOY_TOKEN@github.com/".insteadOf "https://github.com/"
-      - 'if [ "$BASE_RELEASE" != "v$TRACK_RELEASE" ]; then sed -ri "s/(version:.*\| v)(.*), .*/\$TRACK_RELEASE, $(date ''+%Y%m%d'') \| Autoupdated/" README.md && git add . && git commit -m "Autoupdated to version v$TRACK_RELEASE@$(date ''+%Y%m%d'')." && git push && git tag v$TRACK_RELEASE && git push origin v$TRACK_RELEASE || echo "No new version has been found."; fi'
+      - 'if [ "$BASE_RELEASE" != "v$TRACK_RELEASE" ]; then sed -ri "s/(version:.*\| v)(.*), .*/\$TRACK_RELEASE, $(date ''+%Y%m%d'') \| Autoupdated/" README.md && git add . && git commit -m "Autoupdated to version v$TRACK_RELEASE@$(date ''+%Y%m%d'')." && git push -u origin master && git tag v$TRACK_RELEASE && git push origin v$TRACK_RELEASE || echo "No new version has been found."; fi'
     environment:
       GITHUB_USERNAME:
         from_secret: github_username
