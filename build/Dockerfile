@@ -49,8 +49,11 @@ RUN apk --no-cache --no-progress update && \
 # Open necassary ports
 EXPOSE 1443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp 1701/udp
 
+# Move dnsmasq default configuration
+COPY ./dnsmasq.conf /etc/
+
 # Move s6 supervisor files inside the container
-ADD ./s6 /etc/services.d
+COPY ./s6 /etc/services.d
 
 # s6 behaviour, https://github.com/just-containers/s6-overlay
 ENV S6_KEEP_ENV 1

@@ -1,7 +1,15 @@
+# softether-vpnsrv
+
+[![Build Status](https://cd.ev.kilic.dev/api/badges/cenk1cenk2/softether-vpnsrv/status.svg)](https://cd.ev.kilic.dev/cenk1cenk2/softether-vpnsrv)
+![Docker Pulls](https://img.shields.io/docker/pulls/cenk1cenk2/softether-vpnsrv)
+![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/cenk1cenk2/softether-vpnsrv)
+![Docker Image Version (latest by date)](https://img.shields.io/docker/v/cenk1cenk2/softether-vpnsrv)
+![GitHub last commit](https://img.shields.io/github/last-commit/cenk1cenk2/softether-vpnsrv)
+
 ```
 name:         | softether-vpnsrv
 compiler:     | docker-compose + dockerfile
-version:      | v2.2, 20200327
+version:      | v3.0.0, 20200328
 ```
 
 ## Description:
@@ -13,7 +21,7 @@ A Docker Container that creates a Softether VPN Server instance with "dnsmasq" a
 * "dnsmasq" as DHCP server.
 * Can handle `dnsmasq.conf` with variables.
 * Always builds the latest version from the official GitHub repository of SoftEther.
-* ~50MB image size, ~15-20MB RAM Usage while standalone.
+* ~30MB image size, ~15-20MB RAM Usage while standalone.
 
 ## Setup:
 
