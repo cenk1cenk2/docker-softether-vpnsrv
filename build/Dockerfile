@@ -59,7 +59,6 @@ COPY ./vpn_server.config /etc/vpnserver/vpn_server.config.default
 # Move s6 supervisor files inside the container
 COPY ./services.d /etc/services.d
 COPY ./cont-init.d /etc/cont-init.d
-COPY ./cont-finish.d /etc/cont-finish.d
 
 # s6 behaviour, https://github.com/just-containers/s6-overlay
 ENV S6_KEEP_ENV 1
