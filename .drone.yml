@@ -20,7 +20,7 @@ steps:
       - export TRACK_RELEASE=$(curl --silent $TRACK_REPO_API | grep "tag_name" | sed -r 's/.*(".*").*"(.*)".*/\2/g')
       - 'echo "Repository last tag: $BASE_RELEASE"'
       - 'echo "Tracking last tag: v$TRACK_RELEASE"'
-      - 'if [ "$BASE_RELEASE" == "v$TRACK_RELEASE" ]; then git tag v$TRACK_RELEASE && git push origin v$TRACK_RELEASE; fi'
+      - 'if [ "$BASE_RELEASE" != "v$TRACK_RELEASE" ]; then git tag v$TRACK_RELEASE && git push origin v$TRACK_RELEASE; fi'
 
     when:
       event:
