@@ -33,7 +33,7 @@ steps:
         - push
       branch:
         - master
-#
+
   - name: publish
     image: plugins/docker
     working_dir: /build
