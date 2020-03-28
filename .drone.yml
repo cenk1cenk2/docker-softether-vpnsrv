@@ -12,6 +12,7 @@ steps:
     image: alpine/git:latest
     commands:
       - apk add curl --no-cache --no-progress
+      - echo $BASE_REPO_API
       - >
         export BASE_RELEASE=$(curl --silent $BASE_REPO_API | grep -o '"tag_name": "\K.*?(?=")')
       # - |
