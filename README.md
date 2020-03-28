@@ -50,13 +50,25 @@ If you dont have Dnsmasq and SoftEther configuration and containerizing existing
 
 Remember since it creates a veth in the network workspace it has to run in Docker ```--privileged``` mode since it seems that NET_ADMIN capabilities are not enough.
 
-### Dnsmasq Start with Defaults
-The default configuration is as follows:
+### Dnsmasq Setup
+Configuration has defaults as follows. If you mount an empty folder to `/cfg` it will copy these settings over to host file-system.
+
+Default settings:
 * Server distrubutes IP addresses from 10.0.0.0/24 subnet.
 * IP range is between 10-255.
 * Trafic will be tunneled through.
 
-### SoftEther Start with Defaults
+### SoftEther Setup
+Configuration has defaults. If you mount an empty folder to `/cfg` it will copy these settings over to host file-system.
+
+* Default port at startup if there is no config file is specified will be 1443.
+* Default bridge device is set through the default config file.
+* Please check out the normal process for [SoftEther Setup](https://www.softether.org/4-docs/2-howto/9.L2TPIPsec_Setup_Guide_for_SoftEther_VPN_Server/1.Setup_L2TP%2F%2F%2F%2FIPsec_VPN_Server_on_SoftEther_VPN_Server). This can be configured through using the GUI or the CLI.
+
+**Please remember that at initial startup there is no user defined and no admin password for managing server, it is very crucial to set them both ASAP.**
+
+### Command Line Interface
+Command line interface can be accessed through `/s6-bin/softether-vpnsrv/vpncmd`.
 
 ## Setup:
 
@@ -64,6 +76,8 @@ Clone the GitHub repository to get an environmental variable initiation script a
 
 **Fast Deploy**
 ```
+# Clone repo
+git clone git@github.com:cenk1cenk2/softether-vpnsrv.git
 # Initiate environment variables for convience
 chmod +x init-env.sh
 ./init-env.sh
