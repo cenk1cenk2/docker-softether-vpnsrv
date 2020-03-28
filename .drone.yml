@@ -7,8 +7,8 @@ trigger:
     - master
 
 environment:
-  BASE_REPO_API=https://api.github.com/repos/cenk1cenk2/softether-vpnsrv/releases/latest
-  TRACK_REPO_API=https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/releases/latest
+  BASE_REPO_API: https://api.github.com/repos/cenk1cenk2/softether-vpnsrv/releases/latest
+  TRACK_REPO_API: https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/releases/latest
 
 name: publish
 steps:
