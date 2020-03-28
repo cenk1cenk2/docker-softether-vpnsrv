@@ -37,7 +37,7 @@ steps:
 
   - name: publish
     image: plugins/docker
-    working_dir: build/
+    working_dir: /drone/src/build
     settings:
       repo: cenk1cenk2/softether-vpnsrv
       username:
