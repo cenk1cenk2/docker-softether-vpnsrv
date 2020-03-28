@@ -6,6 +6,7 @@ echo "-------------------------------"
 echo "Shutting down the daemon"
 /s6-bin/softether-vpnsrv/vpnserver stop >&/dev/null
 echo "Stoping tap adapter."
+ip tuntap del dev tap_soft mode tap
 ifconfig tap_soft down >&/dev/null
 echo "Deleting Virtual Network Adapter"
 ip link delete tap_soft >&/dev/null
