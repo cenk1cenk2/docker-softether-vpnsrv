@@ -16,7 +16,7 @@ steps:
     image: alpine/git:latest
     commands:
       - apk add curl --no-cache --no-progress
-      - 'export BASE_RELEASE=$(curl --silent $BASE_REPO_API | grep -o ''"tag_name": "\K.*?(?=")'')'
+      - export BASE_RELEASE=$(curl --silent $BASE_REPO_API | grep "tag_name" | sed -r 's/.*(".*").*"(.*)".*/\2/g')
       - echo $BASE_RELEASE
       # - |
       #   export TRACK_RELEASE=$(curl --silent ${TRACK_REPO_API} | grep -Po '"tag_name": "\K.*?(?=")')
