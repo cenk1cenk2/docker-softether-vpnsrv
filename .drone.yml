@@ -6,10 +6,6 @@ trigger:
   branch:
     - master
 
-environment:
-  - BASE_REPO_API: https://api.github.com/repos/cenk1cenk2/softether-vpnsrv/releases/latest
-  - TRACK_REPO_API: https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/releases/latest
-
 name: publish
 steps:
   - name: check-version
@@ -24,6 +20,9 @@ steps:
       #   if ["${BASE_RELEASE}" -ne "v${TRACK_RELEASE}"]; then
       #     git tag v${TRACK_RELEASE} && git push origin v${TRACK_RELEASE};
       #   fi
+    environment:
+      BASE_REPO_API: https://api.github.com/repos/cenk1cenk2/softether-vpnsrv/releases/latest
+      TRACK_REPO_API: https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/releases/latest
     when:
       event:
         - cron
