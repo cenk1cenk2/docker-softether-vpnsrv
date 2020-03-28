@@ -12,7 +12,8 @@ RUN apk --no-cache --no-progress update && \
   apk --no-cache --no-progress upgrade && \
   # Install s6 supervisor
   apk --no-cache --no-progress add bash && \
-  mkdir -p /etc/services.d && mkdir /s6-bin && \
+  mkdir -p /etc/services.d && mkdir -p /etc/cont-init.d && mkdir -p /s6-bin && \
+  mkdir -p /cfg && \
   # Install build dependencies
   apk --no-cache --no-progress --virtual .build-deps add git libgcc libstdc++ gcc musl-dev libc-dev g++ ncurses-dev \
   readline-dev openssl-dev cmake make zlib-dev curl && \
@@ -50,13 +51,19 @@ RUN apk --no-cache --no-progress update && \
 EXPOSE 1443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp 1701/udp
 
 # Move dnsmasq default configuration
-COPY ./dnsmasq.conf /etc/
+COPY ./dnsmasq.conf /etc/dnsmasq.conf.default
+
+# Move Softether default configuration
+COPY ./vpn_server.config /etc/vpnserver/vpn_server.config.default
 
 # Move s6 supervisor files inside the container
-COPY ./s6 /etc/services.d
+COPY ./services.d /etc/services.d
+COPY ./cont-init.d /etc/cont-init.d
+COPY ./cont-finish.d /etc/cont-finish.d
 
 # s6 behaviour, https://github.com/just-containers/s6-overlay
 ENV S6_KEEP_ENV 1
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS 2
+ENV S6_FIX_ATTRS_HIDDEN 1
 
 ENTRYPOINT ["/init"]

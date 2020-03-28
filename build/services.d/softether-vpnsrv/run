@@ -5,23 +5,6 @@ echo "Starting Softether Server..."
 echo "-------------------------------"
 /s6-bin/softether-vpnsrv/vpnserver start
 
-# Create IP tables rules
-echo "Creating postrouting rules."
-iptables -t nat -A POSTROUTING -s ${SRVIPSUBNET:-10.0.0}.0/24 -j MASQUERADE
-
-# Create DHCP configuration
-if [ -f /cfg/dnsmasq.conf ]; then
-  echo "Creating DHCP server configuration..."
-  sed "s/\$SRVIPSUBNET/${SRVIPSUBNET:-10.0.0}/g" /cfg/dnsmasq.conf >/etc/dnsmasq.conf
-fi
-
-# Link config files
-if [ -f /cfg/vpn_server.config ]; then
-  echo "Linking configuration file."
-  rm /etc/vpnserver/vpn_server.config 2>/dev/null
-  ln -s /cfg/vpn_server.config /etc/vpnserver
-fi
-
 # Start DHCP Server
 echo "Starting DHCP server."
 /usr/sbin/dnsmasq
@@ -50,5 +33,5 @@ while ping -c 1 -W 10 "${SRVIPSUBNET:-10.0.0}.1" >&/dev/null && pgrep dnsmasq >&
     rm /usr/local/libexec/softether/vpnserver/packet_log/*.log -f
   fi
   echo "Sleeping ${SLEEPTIME:-600} seconds."
-  sleep ${SLEEPTIME:-600}
+  s6-pause ${SLEEPTIME:-600}
 done

@@ -15,8 +15,8 @@ services:
       # Configuration Files
       - ./cfg:/cfg
       # Log files
-      - ./logs/packet_log:/vpnserver/packet_log
-      - ./logs/security_log:/vpnserver/security_log
-      - ./logs/server_log:/vpnserver/server_log
+      - ./logs/packet_log:/etc/vpnserver/packet_log
+      - ./logs/security_log:/etc/vpnserver/security_log
+      - ./logs/server_log:/etc/vpnserver/server_log
     network_mode: "bridge"
     privileged: true

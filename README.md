@@ -9,28 +9,70 @@
 ```
 name:         | softether-vpnsrv
 compiler:     | docker-compose + dockerfile
-version:      | v3.0.0, 20200328
+version:      | v5.01.9672, 20200328 | Autoupdated
 ```
 
 ## Description:
 
-A Docker Container that creates a Softether VPN Server instance with "dnsmasq" as DHCP server.
+SoftEther VPN is free open-source, cross-platform, multi-protocol VPN client and VPN server software, developed as part of Daiyuu Nobori's master's thesis research at the University of Tsukuba. VPN protocols such as SSL VPN, L2TP/IPsec, OpenVPN, and Microsoft Secure Socket Tunneling Protocol are provided in a single VPN server.
+
+This container runs a SoftEther VPN Server bundled together with a DnsMasq DHCP server to distrubute the IPs. With this way it utilizes a Linux virtual ethernet tap device to distrubute the network traffic through.
 
 ### Features
-* S6-Overlay implemented with health checking the server.
-* "dnsmasq" as DHCP server.
-* Can handle `dnsmasq.conf` with variables.
-* Always builds the latest version from the official GitHub repository of SoftEther.
-* ~30MB image size, ~15-20MB RAM Usage while standalone.
+#### Always Alive
+s6-overlay implemented. SLEEPTIME (default: 3600s) variable can be set through environment variables to check the server, dnsmasq.
+
+#### Graceful shutdown.
+Cleans up all the created veth interfaces and undoes all the system changes.
+
+#### Configurable
+Can handle `dnsmasq.conf` with variables. SRVIPSUBNET (default: 10.0.0) can be set through environment variables to configure the server at startup.
+
+```bash
+### Example and default configuration
+port=0
+interface=tap_soft
+dhcp-option=3
+dhcp-option=6
+dhcp-range=tap_soft,$SRVIPSUBNET.129,$SRVIPSUBNET.199,255.255.255.0,12h
+```
+
+#### Up-to-Date
+Dockerfile always pulls the latest tag from the official repository and builds it from scratch.
+
+It will automatically check for updates and tag them matching with the offical repository once every month.
+
+#### Resource-Efficient
+Build on top of Alpine linux as base, ~30MB image size, ~15-20MB RAM Usage while standalone.
+
+## Initial Setup
+If you dont have Dnsmasq and SoftEther configuration and containerizing existing application. You can use the defaults.
+
+Remember since it creates a veth in the network workspace it has to run in Docker ```--privileged``` mode since it seems that NET_ADMIN capabilities are not enough.
+
+### Dnsmasq Start with Defaults
+The default configuration is as follows:
+* Server distrubutes IP addresses from 10.0.0.0/24 subnet.
+* IP range is between 10-255.
+* Trafic will be tunneled through.
+
+### SoftEther Start with Defaults
 
 ## Setup:
 
 Clone the GitHub repository to get an environmental variable initiation script and preconfigured docker-compose file if you wish to get a head start. Advised way to run the setup is with docker-compose but it can be run with a long command with docker run.
 
 **Fast Deploy**
-* `chmod +x init-env.sh && ./init-env.sh && nano .env` for variables.
-* `cp dnsmasq.conf ./cfg/dnsmasq.conf` for "dnsmasq" configuration.
-* `cp vpn_server.config ./cfg/vpn_server.config` for vpn server configuration.
+```
+# Initiate environment variables for convience
+chmod +x init-env.sh
+./init-env.sh
+nano .env | vi .env
+
+# Create your own configuration or copy existing
+cp dnsmasq.conf ./cfg/dnsmasq.conf # Has a default
+cp vpn_server.config ./cfg/vpn_server.config # Has a default
+```
 
 `dnsmasq.conf` must include `tap_soft` as tap device both for interface and range, as in the example below.
 ```
@@ -38,7 +80,25 @@ interface=tap_soft
 dhcp-range=tap_soft,$SRVIPSUBNET.129,$SRVIPSUBNET.199,255.255.255.0,12h
 ```
 
-As in the example if $SRVIPSUBNET can be used inside the `dnsmasq.conf` since these instances will be replaced with sed therefore it can be used for various purposes easily changing the configuration.
+### Deploy via Docker
+```
+docker create \
+  --name=softether-vpnsrv \
+  -e TZ=Europe/Vienna \
+  -e SRVIPSUBNET=10.0.0.0 \
+  -p 1443:1443/tcp \
+  -p 992:992/tcp \
+  -p 5555:5555/tcp \
+  -p 1194:1194/udp \
+  -p 500:500/udp \
+  -p 4500:4500/udp \
+  -p 1701:1701/tcp \
+  -v /cfg/vpn_server.config:/cfg/vpn_server.config \
+  -v /cfg/dnsmasq.conf:/cfg/dnsmasq.conf \
+  --restart unless-stopped \
+  --privileged
+  cenk1cenk2/softether-vpnsrv:latest
+```
 
 ### Enviroment File
 ```
