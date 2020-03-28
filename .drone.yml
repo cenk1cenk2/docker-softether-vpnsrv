@@ -35,6 +35,7 @@ steps:
       branch:
         - master
 
+name: push-on-tag
   - name: publish
     image: plugins/docker
     working_dir: /drone/src/build
