@@ -3,6 +3,7 @@ trigger:
   event:
     - cron
     - push
+    - tag
   branch:
     - master
 
