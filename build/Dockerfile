@@ -15,7 +15,7 @@ RUN apk --no-cache --no-progress update && \
   mkdir -p /etc/services.d && mkdir /s6-bin && \
   # Install build dependencies
   apk --no-cache --no-progress --virtual .build-deps add git libgcc libstdc++ gcc musl-dev libc-dev g++ ncurses-dev \
-  readline-dev openssl-dev cmake make zlib-dev && \
+  readline-dev openssl-dev cmake make zlib-dev curl && \
   # Grab and build Softether from GitHub
   git clone ${SOFTETHER_REPO} /tmp/softether && \
   # Get latest Tag
