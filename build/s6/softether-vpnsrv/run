@@ -18,7 +18,7 @@ fi
 # Link config files
 if [ -f /cfg/vpn_server.config ]; then
   echo "Linking configuration file."
-  rm /etc/vpnserver/vpn_server.config
+  rm /etc/vpnserver/vpn_server.config 2>/dev/null
   ln -s /cfg/vpn_server.config /etc/vpnserver
 fi
 
