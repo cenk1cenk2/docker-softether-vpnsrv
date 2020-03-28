@@ -19,7 +19,7 @@ RUN apk --no-cache --no-progress update && \
   # Grab and build Softether from GitHub
   git clone ${SOFTETHER_REPO} /tmp/softether && \
   # Get latest Tag
-  cd /tmp/softether && export TRACK_LATEST=$(curl --silent ${SOFTETHER_REPO_API} | grep -Po '"tag_name": "\K.*?(?=")') && \
+  cd /tmp/softether && export TRACK_LATEST=$(curl --silent ${SOFTETHER_REPO_API} | grep "tag_name" | sed -r 's/.*(".*").*"(.*)".*/\2/g') && \
   # Checkout Latest Tag
   git checkout ${TRACK_LATEST} && git submodule init && git submodule update && export USE_MUSL=YES && \
   # Build
