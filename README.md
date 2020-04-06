@@ -110,7 +110,7 @@ docker create \
   -v /cfg/vpn_server.config:/cfg/vpn_server.config \
   -v /cfg/dnsmasq.conf:/cfg/dnsmasq.conf \
   --restart unless-stopped \
-  --privileged
+  --privileged \
   cenk1cenk2/softether-vpnsrv:latest
 ```
 
