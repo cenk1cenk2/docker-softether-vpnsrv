@@ -9,7 +9,7 @@
 ```
 name:         | softether-vpnsrv
 compiler:     | docker-compose + dockerfile
-version:      | v5.01.9672, 20200402 | Autoupdated
+version:      | v5.01.9672, 20200406 | Autoupdated
 ```
 
 ## Description:
@@ -99,7 +99,7 @@ dhcp-range=tap_soft,$SRVIPSUBNET.129,$SRVIPSUBNET.199,255.255.255.0,12h
 docker create \
   --name=softether-vpnsrv \
   -e TZ=Europe/Vienna \
-  -e SRVIPSUBNET=10.0.0.0 \
+  -e SRVIPSUBNET=10.0.0 \
   -p 1443:1443/tcp \
   -p 992:992/tcp \
   -p 5555:5555/tcp \
