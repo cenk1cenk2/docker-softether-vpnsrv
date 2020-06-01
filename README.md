@@ -9,7 +9,7 @@
 ```
 name:         | softether-vpnsrv
 compiler:     | docker-compose + dockerfile
-version:      | v5.01.9674, 20200501 | Autoupdated
+version:      | v5.01.9674, 20200601 | Autoupdated
 ```
 
 ## Description:
