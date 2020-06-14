@@ -19,12 +19,12 @@ steps:
       git_user_email:
         from_secret: github_username
       github_token:
-        from_secret: github_deploy_token
+        from_secret: github_token
       update_docker_readme: true
       docker_username:
-        from_secret: docker_hub_username
+        from_secret: docker_username
       docker_password:
-        from_secret: docker_hub_password
+        from_secret: docker_password
       docker_repo: cenk1cenk2/softether-vpnsrv
     when:
       event:
@@ -41,7 +41,7 @@ steps:
       git_username:
         from_secret: github_username
       git_token:
-        from_secret: github_deploy_token
+        from_secret: github_token
       do_tag: true
       do_release: true
     when:
@@ -57,9 +57,9 @@ steps:
     settings:
       repo: cenk1cenk2/softether-vpnsrv
       username:
-        from_secret: docker_hub_username
+        from_secret: docker_username
       password:
-        from_secret: docker_hub_password
+        from_secret: docker_password
       tag:
         - latest
         - ${DRONE_TAG}
