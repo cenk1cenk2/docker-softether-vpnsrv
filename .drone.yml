@@ -1,3 +1,4 @@
+---
 kind: pipeline
 trigger:
   event:
@@ -7,27 +8,42 @@ trigger:
   branch:
     - master
 
-environment:
-  BASE_REPO_API: https://api.github.com/repos/cenk1cenk2/softether-vpnsrv/releases/latest
-  TRACK_REPO_API: https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/releases/latest
-
-name: auto-deploy
 steps:
-  - name: check-version
-    image: alpine/git:latest
-    commands:
-      - apk add curl --no-cache --no-progress
-      - export BASE_RELEASE=$(curl --silent $BASE_REPO_API | grep "tag_name" | sed -r 's/.*(".*").*"(.*)".*/\2/g')
-      - export TRACK_RELEASE=$(curl --silent $TRACK_REPO_API | grep "tag_name" | sed -r 's/.*(".*").*"(.*)".*/\2/g')
-      - 'echo "Repository last tag: $BASE_RELEASE"'
-      - 'echo "Tracking last tag: v$TRACK_RELEASE"'
-      - git config --global --add url."https://$GITHUB_USERNAME:$GITHUB_DEPLOY_TOKEN@github.com/".insteadOf "https://github.com/"
-      - 'if [ "$BASE_RELEASE" != "v$TRACK_RELEASE" ]; then sed -ri "s/.*(version:.*\| v)(.*),.*/\1$TRACK_RELEASE, $(date ''+%Y%m%d'') \| Autoupdated/" README.md && git add . && git commit -m "Autoupdated to version v$TRACK_RELEASE@$(date ''+%Y%m%d'')." && git push -u origin master && git tag v$TRACK_RELEASE && git push origin v$TRACK_RELEASE || echo "No new version has been found."; fi'
-    environment:
-      GITHUB_USERNAME:
+  - name: semantic-release
+    image: cenk1cenk2/drone-semantic-release
+    settings:
+      semantic_release: false
+      update_readme_toc: true
+      readme_location: README.md
+      git_method: gh
+      git_user_email:
         from_secret: github_username
-      GITHUB_DEPLOY_TOKEN:
+      github_token:
         from_secret: github_deploy_token
+      update_docker_readme: true
+      docker_username:
+        from_secret: docker_hub_username
+      docker_password:
+        from_secret: docker_hub_password
+      docker_repo: cenk1cenk2/softether-vpnsrv
+    when:
+      event:
+        - cron
+        - push
+      branch:
+        - master
+
+  - name: track-repository
+    image: cenk1cenk2/drone-track-repository
+    settings:
+      this_repo: cenk1cenk2/softether-vpnsrv
+      track_repo: SoftEtherVPN/SoftEtherVPN
+      git_username:
+        from_secret: github_username
+      git_token:
+        from_secret: github_deploy_token
+      do_tag: true
+      do_release: true
     when:
       event:
         - cron
