@@ -68,3 +68,6 @@ steps:
         - tag
       branch:
         - master
+
+image_pull_secrets:
+  - dockerconfigjson
