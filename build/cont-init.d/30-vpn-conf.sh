@@ -16,3 +16,5 @@ fi
 
 # Link files
 ln -s /cfg/vpn_server.config /etc/vpnserver
+
+log_finish "Generated SoftEther server configuration."

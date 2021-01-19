@@ -75,7 +75,7 @@ dhcp-option=tap_soft,3,$SRVIPSUBNET.1
 dhcp-option=tap_soft,6,8.8.8.8,8.8.4.4
 ```
 
-## Initial Setup
+## Setup
 
 If you do not have any default configuration for your the defaults will be applied, and the configuration will recide in `/config` folder.
 
@@ -101,6 +101,8 @@ Configuration has defaults as follows.
 - Default bridge device is set through the default config file.
 - Please check out the normal process for [SoftEther Setup](https://www.softether.org/4-docs/2-howto/9.L2TPIPsec_Setup_Guide_for_SoftEther_VPN_Server/1.Setup_L2TP%2F%2F%2F%2FIPsec_VPN_Server_on_SoftEther_VPN_Server). This can be configured through using the GUI or the CLI.
 
+**For further customization ensure that you have a `vpn_server.config` file mounted in `/config` folder.**
+
 **Please remember that at initial startup there is no user defined and no admin password for managing server, it is very crucial to set them both ASAP.**
 
 ### Command Line Interface
@@ -122,9 +124,9 @@ Command line interface can be accessed through `/s6-bin/softether-vpnsrv/vpncmd`
 | `DHCP_END`           | End address of distrubuted IP addresses.                             | 254           |
 | `DHCP_LEASE`         | Lease time of distrubuted IP addresses.                              | 12h           |
 
-## Setup
+## Deploy
 
-### Deploy via docker-compose
+### docker-compose
 
 Clone the GitHub repository to get an environmental variable initiation script and preconfigured docker-compose file if you wish to get a head start. Advised way to run the setup is with docker-compose but it can be run with a long command with docker run.
 
@@ -151,7 +153,7 @@ interface=tap_soft
 dhcp-range=tap_soft,${REST_OF_THE_VARIABLES}
 ```
 
-### Deploy via docker
+### docker
 
 ```shell
 docker create \

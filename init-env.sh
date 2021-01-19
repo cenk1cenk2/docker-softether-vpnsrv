@@ -7,6 +7,12 @@ ENVFILENAME=.env
 ENVFILECONTENTS=(
   "# Timezone"
   "TZ="
+  "# Sleep Time for Server Alive Check in Seconds (default: 600)"
+  "SLEEPTIME="
+  "# Keep logs or delete them in between sleeptime. To keep set the type to 1."
+  "KEEP_SERVER_LOG="
+  "KEEP_PACKET_LOG="
+  "KEEP_SECURITY_LOG="
   "# VPN Server IP Subnet in form of xx.xx.xx (default: 10.0.0), it can also rewrite dnsmasq.conf with SED if \$SRVIPSUBNET inside dnsmasq.conf is set."
   "SRVIPSUBNET="
   "# VPN Server IP Subnet Netmask in form of xx.xx.xx.xx (default: 255.255.255.0) \$SRVIPNETMASK"
@@ -17,12 +23,6 @@ ENVFILECONTENTS=(
   "DHCP_END="
   "# IP lease time (default: 12h)"
   "DHCP_LEASE="
-  "# Sleep Time for Server Alive Check in Seconds (default: 600)"
-  "SLEEPTIME="
-  "# Keep logs or delete them in between sleeptime. To keep set the type to 1."
-  "KEEP_SERVER_LOG="
-  "KEEP_PACKET_LOG="
-  "KEEP_SECURITY_LOG="
 )
 
 ## Script
