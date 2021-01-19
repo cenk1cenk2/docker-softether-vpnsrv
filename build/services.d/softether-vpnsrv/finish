@@ -2,7 +2,7 @@
 
 source /scripts/logger.sh
 
-log_start "Terminating services..." "both"
+log_interrupt "Terminating services..." "both"
 
 log_warn "Shutting down SoftEther daemon..."
 /s6-bin/softether-vpnsrv/vpnserver stop >&/dev/null
@@ -17,4 +17,4 @@ ip link delete tap_soft >&/dev/null
 log_warn "Shutting down DNSMASQ daemon..."
 pkill /usr/sbin/dnsmasq >&/dev/null
 
-log_finish "Terminated services." "both"
+log_interrupt "Terminated services." "both"
