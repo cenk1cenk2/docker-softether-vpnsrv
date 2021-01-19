@@ -27,6 +27,8 @@
 
 <!-- tocstop -->
 
+---
+
 ## Description
 
 SoftEther VPN is free open-source, cross-platform, multi-protocol VPN client and VPN server software, developed as part of Daiyuu Nobori's master's thesis research at the University of Tsukuba. VPN protocols such as SSL VPN, L2TP/IPsec, OpenVPN, and Microsoft Secure Socket Tunneling Protocol are provided in a single VPN server.
@@ -34,8 +36,6 @@ SoftEther VPN is free open-source, cross-platform, multi-protocol VPN client and
 This container runs a SoftEther VPN Server bundled together with a DNSMASQ DHCP server to distribute the IPs. With this way it utilizes a Linux virtual ethernet tap device to distribute the network traffic through.
 
 [Read more](https://www.softether.org/) about SoftEther in the official documentation.
-
----
 
 ## Features
 
