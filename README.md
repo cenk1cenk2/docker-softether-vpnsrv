@@ -18,11 +18,11 @@
     - [Mounting Custom DNSMASQ Configuration File](#mounting-custom-dnsmasq-configuration-file)
   - [SoftEther Setup](#softether-setup)
     - [Mounting Custom SoftEther Configuration File](#mounting-custom-softether-configuration-file)
-- [Interface](#interface)
-  - [Command Line Interface](#command-line-interface)
 - [Deploy](#deploy)
   - [docker-compose](#docker-compose)
   - [docker](#docker)
+- [Interface](#interface)
+  - [Command Line Interface](#command-line-interface)
 - [SoftEther VPN Client](#softether-vpn-client)
 
 <!-- tocstop -->
@@ -132,14 +132,6 @@ Configuration has defaults as follows.
 
 **For further customization ensure that you have a `vpn_server.config` file mounted in `/config` folder.**
 
-## Interface
-
-If you ever want to interact with the underlying applications you can execute the tasks in the container.
-
-### Command Line Interface
-
-Command line interface can be accessed through `/s6-bin/softether-vpnsrv/vpncmd`.
-
 ## Deploy
 
 ### docker-compose
@@ -183,6 +175,14 @@ docker create \
   --privileged \
   cenk1cenk2/softether-vpnsrv:latest
 ```
+
+## Interface
+
+If you ever want to interact with the underlying applications you can execute the tasks in the container.
+
+### Command Line Interface
+
+Command line interface can be accessed through `/s6-bin/softether-vpnsrv/vpncmd`.
 
 ## SoftEther VPN Client
 
