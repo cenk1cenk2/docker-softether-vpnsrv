@@ -12,14 +12,14 @@
   - [Always Alive](#always-alive)
   - [Graceful Shutdown](#graceful-shutdown)
   - [Configurable](#configurable)
-- [Initial Setup](#initial-setup)
+- [Setup](#setup)
   - [DNSMASQ Setup](#dnsmasq-setup)
   - [SoftEther Setup](#softether-setup)
   - [Command Line Interface](#command-line-interface)
 - [Environment Variables](#environment-variables)
-- [Setup](#setup)
-  - [Deploy via docker-compose](#deploy-via-docker-compose)
-  - [Deploy via docker](#deploy-via-docker)
+- [Deploy](#deploy)
+  - [docker-compose](#docker-compose)
+  - [docker](#docker)
 - [SoftEther VPN Client](#softether-vpn-client)
 
 <!-- tocstop -->
