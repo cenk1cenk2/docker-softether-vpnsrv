@@ -70,7 +70,7 @@ At shutdown or crashes, the container cleans up all the created veth interfaces,
 | Environment Variable | Description                                                                       | Default Value |
 | -------------------- | --------------------------------------------------------------------------------- | ------------- |
 | `TZ`                 | Timezone for the server.                                                          |               |
-| `LOG_LEVEL`          | Log level for the scripts. Can be: [ SILENT, DEBUG, ERROR, WARN, LIFETIME, INFO ] | INFO          |
+| `LOG_LEVEL`          | Log level for the scripts. Can be: [ SILENT, ERROR, WARN, LIFETIME, INFO, DEBUG ] | INFO          |
 | `SLEEPTIME`          | The time in seconds between checks of whether everything is working.              | 3600          |
 | `KEEP_SERVER_LOG`    | Keep server logs, set to 1 to keep.                                               |               |
 | `KEEP_PACKET_LOG`    | Keep packet logs, set to 1 to keep.                                               |               |

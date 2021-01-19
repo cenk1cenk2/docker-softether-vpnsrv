@@ -7,7 +7,7 @@ ENVFILENAME=.env
 ENVFILECONTENTS=(
   "# Timezone"
   "TZ="
-  "# Log level for the scripts. Can be [ SILENT, DEBUG, ERROR, WARN, LIFETIME, INFO ] (default: INFO)"
+  "# Log level for the scripts. Can be [ SILENT, ERROR, WARN, LIFETIME, INFO, DEBUG ] (default: INFO)"
   "LOG_LEVEL=INFO"
   "# Sleep Time for Server Alive Check in Seconds (default: 600)"
   "SLEEPTIME=600"
