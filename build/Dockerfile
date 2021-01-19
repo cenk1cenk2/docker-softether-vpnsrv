@@ -50,12 +50,13 @@ RUN apk --no-cache --no-progress update && \
 # Open necassary ports
 EXPOSE 1443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp 1701/udp
 
-# Copy scripts
-COPY ./scripts /scripts
-
 # Create default configuration folders
-RUN mkdir -p /default/dnsmasq && \
+RUN mkdir -p /scripts && \
+  mkdir -p /default/dnsmasq && \
   mkdir -p /default/vpnserver
+
+# Copy scripts
+ADD https://gist.githubusercontent.com/cenk1cenk2/e03d8610534a9c78f755c1c1ed93a293/raw/95567f692471e847be5569220ea715b7eb212a45/logger.sh /scripts/logger.sh
 
 # Move dnsmasq default configuration
 COPY ./dnsmasq.conf /default/dnsmasq/dnsmasq.conf
