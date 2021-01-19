@@ -67,19 +67,19 @@ At shutdown or crashes, the container cleans up all the created veth interfaces,
 
 ## Environment Variables
 
-| Environment Variable | Description                                                                                  | Default Value |
-| -------------------- | -------------------------------------------------------------------------------------------- | ------------- |
-| `TZ`                 | Timezone for the server.                                                                     |               |
-| `LOG_LEVEL`          | Log level for the scripts. Can be [ "SILENT", "DEBUG", "ERROR", "WARN", "LIFETIME", "INFO" ] | INFO          |
-| `SLEEPTIME`          | The time in seconds between checks of whether everything is working.                         | 3600          |
-| `KEEP_SERVER_LOG`    | Keep server logs, set to 1 to keep.                                                          |               |
-| `KEEP_PACKET_LOG`    | Keep packet logs, set to 1 to keep.                                                          |               |
-| `KEEP_SECURITY_LOG`  | Keep security logs, set to 1 to keep.                                                        |               |
-| `SRVIPSUBNET`        | Subnet of the disturubuted IP addresses by DNSMASQ.                                          | 10.0.0        |
-| `SRVIPNETMASK`       | Netmask for the subnet.                                                                      | 255.255.255.0 |
-| `DHCP_START`         | Start address of distrubuted IP addresses.                                                   | 10            |
-| `DHCP_END`           | End address of distrubuted IP addresses.                                                     | 254           |
-| `DHCP_LEASE`         | Lease time of distrubuted IP addresses.                                                      | 12h           |
+| Environment Variable | Description                                                                       | Default Value |
+| -------------------- | --------------------------------------------------------------------------------- | ------------- |
+| `TZ`                 | Timezone for the server.                                                          |               |
+| `LOG_LEVEL`          | Log level for the scripts. Can be: [ SILENT, DEBUG, ERROR, WARN, LIFETIME, INFO ] | INFO          |
+| `SLEEPTIME`          | The time in seconds between checks of whether everything is working.              | 3600          |
+| `KEEP_SERVER_LOG`    | Keep server logs, set to 1 to keep.                                               |               |
+| `KEEP_PACKET_LOG`    | Keep packet logs, set to 1 to keep.                                               |               |
+| `KEEP_SECURITY_LOG`  | Keep security logs, set to 1 to keep.                                             |               |
+| `SRVIPSUBNET`        | Subnet of the disturubuted IP addresses by DNSMASQ.                               | 10.0.0        |
+| `SRVIPNETMASK`       | Netmask for the subnet.                                                           | 255.255.255.0 |
+| `DHCP_START`         | Start address of distrubuted IP addresses.                                        | 10            |
+| `DHCP_END`           | End address of distrubuted IP addresses.                                          | 254           |
+| `DHCP_LEASE`         | Lease time of distrubuted IP addresses.                                           | 12h           |
 
 ## Setup
 
