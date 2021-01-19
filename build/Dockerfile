@@ -50,11 +50,18 @@ RUN apk --no-cache --no-progress update && \
 # Open necassary ports
 EXPOSE 1443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp 1701/udp
 
+# Copy scripts
+COPY ./scripts /scripts
+
+# Create default configuration folders
+RUN mkdir -p /default/dnsmasq && \
+  mkdir -p /default/vpnserver
+
 # Move dnsmasq default configuration
-COPY ./dnsmasq.conf /etc/dnsmasq.conf.default
+COPY ./dnsmasq.conf /default/dnsmasq/dnsmasq.conf
 
 # Move Softether default configuration
-COPY ./vpn_server.config /etc/vpnserver/vpn_server.config.default
+COPY ./vpn_server.config /default/vpnserver/vpn_server.config
 
 # Move s6 supervisor files inside the container
 COPY ./services.d /etc/services.d

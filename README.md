@@ -4,85 +4,100 @@
 
 <!-- toc -->
 
-- [Description:](#description)
-  - [Features](#features)
-    - [Always Alive](#always-alive)
-    - [Graceful shutdown.](#graceful-shutdown)
-    - [Configurable](#configurable)
-    - [Up-to-Date](#up-to-date)
-    - [Resource-Efficient](#resource-efficient)
+- [Description](#description)
+- [Features](#features)
+  - [Resource-Efficient](#resource-efficient)
+  - [Up-to-Date](#up-to-date)
+  - [Version Tracking](#version-tracking)
+  - [Always Alive](#always-alive)
+  - [Graceful Shutdown](#graceful-shutdown)
+  - [Configurable](#configurable)
 - [Initial Setup](#initial-setup)
-  - [Dnsmasq Setup](#dnsmasq-setup)
+  - [DNSMASQ Setup](#dnsmasq-setup)
   - [SoftEther Setup](#softether-setup)
   - [Command Line Interface](#command-line-interface)
-- [Setup:](#setup)
-  - [Deploy via Docker](#deploy-via-docker)
-  - [Enviroment File](#enviroment-file)
+- [Environment Variables](#environment-variables)
+- [Setup](#setup)
+  - [Deploy via docker-compose](#deploy-via-docker-compose)
+  - [Deploy via docker](#deploy-via-docker)
 - [SoftEther VPN Client](#softether-vpn-client)
 
 <!-- tocstop -->
 
-## Description:
+## Description
 
 SoftEther VPN is free open-source, cross-platform, multi-protocol VPN client and VPN server software, developed as part of Daiyuu Nobori's master's thesis research at the University of Tsukuba. VPN protocols such as SSL VPN, L2TP/IPsec, OpenVPN, and Microsoft Secure Socket Tunneling Protocol are provided in a single VPN server.
 
-This container runs a SoftEther VPN Server bundled together with a DnsMasq DHCP server to distrubute the IPs. With this way it utilizes a Linux virtual ethernet tap device to distrubute the network traffic through.
+This container runs a SoftEther VPN Server bundled together with a DNSMASQ DHCP server to distribute the IPs. With this way it utilizes a Linux virtual ethernet tap device to distribute the network traffic through.
 
-### Features
+[Read more](https://www.softether.org/) about SoftEther in the official documentation.
 
-#### Always Alive
+---
 
-s6-overlay implemented. SLEEPTIME (default: 3600s) variable can be set through environment variables to check the server, dnsmasq.
+## Features
 
-#### Graceful shutdown.
+### Resource-Efficient
 
-Cleans up all the created veth interfaces and undoes all the system changes.
+Build on top of Alpine linux as base, ~30MB image size, ~15-20MB RAM Usage while standalone.
 
-#### Configurable
+### Up-to-Date
 
-Can handle `dnsmasq.conf` with variables. SRVIPSUBNET (default: 10.0.0) can be set through environment variables to configure the server at startup.
-Can handle `dnsmasq.conf` with variables. SRVIPNETMASK (default: 255.255.255.0) can be set through environment variables to configure the server at startup.
+This repository is always up to date tracking the [default](https://github.com/SoftEtherVPN/SoftEtherVPN) repository of SoftEther VPN on GitHub. It checks the main repository monthly, since there is not frequent updates anymore, and if a new release has been matched it will trigger the build process.
+
+It always builds the application from the source, and while doing that the dependencies will also be updated.
+
+### Version Tracking
+
+The Docker images are given matching versions to the original repository. If a update has been made on this repository itself, it will append a suffix to the original version.
+
+### Always Alive
+
+[s6-overlay](https://github.com/just-containers/s6-overlay) is implemented to check whether everything is working as expected and do a sanity check with pinging the main VPN server periodically.
+
+A environment variable, namely `SLEEPTIME` can be set in seconds to determine the period of this check.
+
+If the periodic check fails, it will go in to graceful shutdown mode and clear any resadiue like tap devices, virtual network adapters and such, so it can restart from scratch.
+
+### Graceful Shutdown
+
+At shutdown or crashes, the container cleans up all the created veth interfaces, tap devices and undoes all the system changes.
+
+### Configurable
+
+Can handle `dnsmasq.conf` with variables. If you mount a custom `dnsmasq.conf`, you can still use these variables.
 
 ```bash
 ### Example and default configuration
 port=0
 interface=tap_soft
-dhcp-option=3
-dhcp-option=6
-dhcp-range=tap_soft,$SRVIPSUBNET.129,$SRVIPSUBNET.199,$SRVIPNETMASK,12h
+dhcp-range=tap_soft,$SRVIPSUBNET.$DHCP_START,$SRVIPSUBNET.$DHCP_END,$SRVIPNETMASK,$DHCP_LEASE
+dhcp-option=tap_soft,3,$SRVIPSUBNET.1
+dhcp-option=tap_soft,6,8.8.8.8,8.8.4.4
 ```
-
-#### Up-to-Date
-
-Dockerfile always pulls the latest tag from the official repository and builds it from scratch.
-
-It will automatically check for updates and tag them matching with the offical repository once every month.
-
-#### Resource-Efficient
-
-Build on top of Alpine linux as base, ~30MB image size, ~15-20MB RAM Usage while standalone.
 
 ## Initial Setup
 
-If you dont have Dnsmasq and SoftEther configuration and containerizing existing application. You can use the defaults.
+If you do not have any default configuration for your the defaults will be applied, and the configuration will recide in `/config` folder.
 
-Remember since it creates a veth in the network workspace it has to run in Docker `--privileged` mode since it seems that NET_ADMIN capabilities are not enough.
+**You can mount a persistent folder to this folder to further edit and persist both SoftEther and DNSMASQ data. You can also let it generate the defaults with mounting a empty folder to there.**
 
-### Dnsmasq Setup
+**Remember since it creates a virtual ethernet in the network workspace it has to run in Docker `--privileged` mode since it seems that NET_ADMIN capabilities are not enough.**
 
-Configuration has defaults as follows. If you mount an empty folder to `/cfg` it will copy these settings over to host file-system.
+### DNSMASQ Setup
 
-Default settings:
+Configuration has defaults as follows.
 
-- Server distrubutes IP addresses from 10.0.0.0/24 subnet.
+- Server distributes IP addresses from 10.0.0.0/24 subnet.
 - IP range is between 10-255.
-- Trafic will be tunneled through.
+- Traffic will be tunneled through.
+
+**For further customization ensure that you have a `dnsmasq.conf` file mounted in `/config` folder.**
 
 ### SoftEther Setup
 
-Configuration has defaults. If you mount an empty folder to `/cfg` it will copy these settings over to host file-system.
+Configuration has defaults as follows.
 
-- Default port at startup if there is no config file is specified will be 1443.
+- Default port at startup will be 1443.
 - Default bridge device is set through the default config file.
 - Please check out the normal process for [SoftEther Setup](https://www.softether.org/4-docs/2-howto/9.L2TPIPsec_Setup_Guide_for_SoftEther_VPN_Server/1.Setup_L2TP%2F%2F%2F%2FIPsec_VPN_Server_on_SoftEther_VPN_Server). This can be configured through using the GUI or the CLI.
 
@@ -92,35 +107,53 @@ Configuration has defaults. If you mount an empty folder to `/cfg` it will copy 
 
 Command line interface can be accessed through `/s6-bin/softether-vpnsrv/vpncmd`.
 
-## Setup:
+## Environment Variables
+
+| Environment Variable | Description                                                          | Default Value |
+| -------------------- | -------------------------------------------------------------------- | ------------- |
+| `TZ`                 | Timezone for the server.                                             |               |
+| `SLEEPTIME`          | The time in seconds between checks of whether everything is working. | 3600          |
+| `KEEP_SERVER_LOG`    | Keep server logs, set to 1 to keep.                                  |               |
+| `KEEP_PACKET_LOG`    | Keep packet logs, set to 1 to keep.                                  |               |
+| `KEEP_SECURITY_LOG`  | Keep security logs, set to 1 to keep.                                |               |
+| `SRVIPSUBNET`        | Subnet of the disturubuted IP addresses by DNSMASQ.                  | 10.0.0        |
+| `SRVIPNETMASK`       | Netmask for the subnet.                                              | 255.255.255.0 |
+| `DHCP_START`         | Start address of distrubuted IP addresses.                           | 10            |
+| `DHCP_END`           | End address of distrubuted IP addresses.                             | 254           |
+| `DHCP_LEASE`         | Lease time of distrubuted IP addresses.                              | 12h           |
+
+## Setup
+
+### Deploy via docker-compose
 
 Clone the GitHub repository to get an environmental variable initiation script and preconfigured docker-compose file if you wish to get a head start. Advised way to run the setup is with docker-compose but it can be run with a long command with docker run.
 
-**Fast Deploy**
-
-```
-# Clone repo
+```bash
+# Clone repository
 git clone git@github.com:cenk1cenk2/softether-vpnsrv.git
-# Initiate environment variables for convience
+
+# Initiate environment variables for convienence
 chmod +x init-env.sh
+
 ./init-env.sh
-nano .env | vi .env
+
+nvim .env
 
 # Create your own configuration or copy existing
-cp dnsmasq.conf ./cfg/dnsmasq.conf # Has a default
-cp vpn_server.config ./cfg/vpn_server.config # Has a default
+cp dnsmasq.conf ./volumes/softether-vpnsrv/dnsmasq.conf # Has a default
+cp vpn_server.config ./volumes/softether-vpnsrv/vpn_server.config # Has a default
 ```
 
-`dnsmasq.conf` must include `tap_soft` as tap device both for interface and range, as in the example below.
+**Your custom `dnsmasq.conf` must include `tap_soft` as tap device both for interface and range, as in the example below.**
 
-```
+```conf
 interface=tap_soft
-dhcp-range=tap_soft,$SRVIPSUBNET.129,$SRVIPSUBNET.199,$SRVIPNETMASK,12h
+dhcp-range=tap_soft,${REST_OF_THE_VARIABLES}
 ```
 
-### Deploy via Docker
+### Deploy via docker
 
-```
+```shell
 docker create \
   --name=softether-vpnsrv \
   -e TZ=Europe/Vienna \
@@ -133,28 +166,11 @@ docker create \
   -p 500:500/udp \
   -p 4500:4500/udp \
   -p 1701:1701/tcp \
-  -v /cfg/vpn_server.config:/cfg/vpn_server.config \
-  -v /cfg/dnsmasq.conf:/cfg/dnsmasq.conf \
+  -v $PWD/cfg/vpn_server.config:/cfg/vpn_server.config \
+  -v $PWD/cfg/dnsmasq.conf:/cfg/dnsmasq.conf \
   --restart unless-stopped \
   --privileged \
   cenk1cenk2/softether-vpnsrv:latest
-```
-
-### Enviroment File
-
-```
-# Timezone
-TZ=
-# VPN Server IP Subnet in form of xx.xx.xx (default: 10.0.0), it can also can rewrite dnsmasq.conf with SED if \$SRVIPSUBNET inside dnsmasq.conf is set."
-SRVIPSUBNET=
-# VPN Server IP Subnet Netmask in form of xx.xx.xx.xx (default: 255.255.255.0), it can also can rewrite dnsmasq.conf with SED if \$SRVIPNETMASK inside dnsmasq.conf is set."
-SRVIPNETMASK=
-# Sleep Time for Server Alive Check in Seconds (default: 600)
-SLEEPTIME=
-# Keep logs or delete them in between sleeptime. To keep set the type to 1.
-KEEP_SERVER_LOG=
-KEEP_PACKET_LOG=
-KEEP_SECURITY_LOG=
 ```
 
 ## SoftEther VPN Client
