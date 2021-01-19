@@ -109,7 +109,7 @@ dhcp-option=tap_soft,3,$SRVIPSUBNET.1
 dhcp-option=tap_soft,6,8.8.8.8,8.8.4.4
 ```
 
-#### Mounting Custom SoftEtherVPN Configuration File
+#### Mounting Custom DNSMASQ Configuration File
 
 **For further customization ensure that you have a `dnsmasq.conf` file mounted in `/config` folder.** Your custom `dnsmasq.conf` must include `tap_soft` as tap device both for interface and range, as in the example below.
 
@@ -128,7 +128,7 @@ Configuration has defaults as follows.
 
 **Please remember that at initial startup there is no user defined and no admin password for managing server, it is very crucial to set them both ASAP.**
 
-#### Mounting Custom DNSMASQ Configuration File
+#### Mounting Custom SoftEther Configuration File
 
 **For further customization ensure that you have a `vpn_server.config` file mounted in `/config` folder.**
 
