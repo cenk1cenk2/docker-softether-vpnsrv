@@ -14,11 +14,11 @@
 - [Environment Variables](#environment-variables)
 - [Setup](#setup)
   - [DNSMASQ Setup](#dnsmasq-setup)
-    - [Inject Variables](#inject-variables)
-    - [Mounting Custom Configuration File](#mounting-custom-configuration-file)
+    - [Interpolating Variables](#interpolating-variables)
+    - [Mounting Custom DNSMASQ Configuration File](#mounting-custom-dnsmasq-configuration-file)
   - [SoftEther Setup](#softether-setup)
-    - [Mounting Custom Configuration File](#mounting-custom-configuration-file-1)
-  - [Interface](#interface)
+    - [Mounting Custom SoftEther Configuration File](#mounting-custom-softether-configuration-file)
+- [Interface](#interface)
   - [Command Line Interface](#command-line-interface)
 - [Deploy](#deploy)
   - [docker-compose](#docker-compose)
@@ -132,7 +132,7 @@ Configuration has defaults as follows.
 
 **For further customization ensure that you have a `vpn_server.config` file mounted in `/config` folder.**
 
-### Interface
+## Interface
 
 If you ever want to interact with the underlying applications you can execute the tasks in the container.
 
