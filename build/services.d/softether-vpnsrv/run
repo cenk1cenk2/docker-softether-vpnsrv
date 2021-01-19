@@ -26,17 +26,17 @@ while ping -c 1 -W 10 "${SRVIPSUBNET:-10.0.0}.1" >&/dev/null && pgrep dnsmasq >&
   log_info "[$(date +"%Y%m%d-%H:%M:%S")] Self test success. VPN Server alive and can access ${SRVIPSUBNET:-10.0.0}.1." "top"
 
   if [[ -z "${KEEP_SERVER_LOG}" ]]; then
-    log_debug "Clearing up server log files."
+    log_info "Clearing up server log files."
     rm /usr/local/libexec/softether/vpnserver/server_log/*.log -f
   fi
 
   if [[ -z "${KEEP_PACKET_LOG}" ]]; then
-    log_debug "Clearing up packet log files."
+    log_info "Clearing up packet log files."
     rm /usr/local/libexec/softether/vpnserver/packet_log/*.log -f
   fi
 
   if [[ -z "${KEEP_SECURITY_LOG}" ]]; then
-    log_debug "Clearing up security log files."
+    log_info "Clearing up security log files."
     rm /usr/local/libexec/softether/vpnserver/packet_log/*.log -f
   fi
 
