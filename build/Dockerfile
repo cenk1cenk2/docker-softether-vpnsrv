@@ -56,7 +56,8 @@ RUN mkdir -p /scripts && \
   mkdir -p /default/vpnserver
 
 # Copy scripts
-ADD https://gist.github.com/cenk1cenk2/e03d8610534a9c78f755c1c1ed93a293?2338 /scripts/logger.sh
+ADD https://gist.github.com/cenk1cenk2/e03d8610534a9c78f755c1c1ed93a293 /scripts/logger.sh
+RUN chmod +x /scripts/*.sh
 
 # Move dnsmasq default configuration
 COPY ./dnsmasq.conf /default/dnsmasq/dnsmasq.conf
