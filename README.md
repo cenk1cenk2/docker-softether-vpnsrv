@@ -11,12 +11,15 @@
   - [Version Tracking](#version-tracking)
   - [Always Alive](#always-alive)
   - [Graceful Shutdown](#graceful-shutdown)
-  - [Configurable](#configurable)
+- [Environment Variables](#environment-variables)
 - [Setup](#setup)
   - [DNSMASQ Setup](#dnsmasq-setup)
+    - [Inject Variables](#inject-variables)
+    - [Mounting Custom Configuration File](#mounting-custom-configuration-file)
   - [SoftEther Setup](#softether-setup)
+    - [Mounting Custom Configuration File](#mounting-custom-configuration-file-1)
+  - [Interface](#interface)
   - [Command Line Interface](#command-line-interface)
-- [Environment Variables](#environment-variables)
 - [Deploy](#deploy)
   - [docker-compose](#docker-compose)
   - [docker](#docker)
@@ -38,7 +41,7 @@ This container runs a SoftEther VPN Server bundled together with a DNSMASQ DHCP 
 
 ### Resource-Efficient
 
-Build on top of Alpine linux as base, ~30MB image size, ~15-20MB RAM Usage while standalone.
+Build on top of Alpine linux as base, ~30MB image size, ~15-20MB RAM Usage while standby.
 
 ### Up-to-Date
 
@@ -62,18 +65,20 @@ If the periodic check fails, it will go in to graceful shutdown mode and clear a
 
 At shutdown or crashes, the container cleans up all the created veth interfaces, tap devices and undoes all the system changes.
 
-### Configurable
+## Environment Variables
 
-Can handle `dnsmasq.conf` with variables. If you mount a custom `dnsmasq.conf`, you can still use these variables.
-
-```bash
-### Example and default configuration
-port=0
-interface=tap_soft
-dhcp-range=tap_soft,$SRVIPSUBNET.$DHCP_START,$SRVIPSUBNET.$DHCP_END,$SRVIPNETMASK,$DHCP_LEASE
-dhcp-option=tap_soft,3,$SRVIPSUBNET.1
-dhcp-option=tap_soft,6,8.8.8.8,8.8.4.4
-```
+| Environment Variable | Description                                                          | Default Value |
+| -------------------- | -------------------------------------------------------------------- | ------------- |
+| `TZ`                 | Timezone for the server.                                             |               |
+| `SLEEPTIME`          | The time in seconds between checks of whether everything is working. | 3600          |
+| `KEEP_SERVER_LOG`    | Keep server logs, set to 1 to keep.                                  |               |
+| `KEEP_PACKET_LOG`    | Keep packet logs, set to 1 to keep.                                  |               |
+| `KEEP_SECURITY_LOG`  | Keep security logs, set to 1 to keep.                                |               |
+| `SRVIPSUBNET`        | Subnet of the disturubuted IP addresses by DNSMASQ.                  | 10.0.0        |
+| `SRVIPNETMASK`       | Netmask for the subnet.                                              | 255.255.255.0 |
+| `DHCP_START`         | Start address of distrubuted IP addresses.                           | 10            |
+| `DHCP_END`           | End address of distrubuted IP addresses.                             | 254           |
+| `DHCP_LEASE`         | Lease time of distrubuted IP addresses.                              | 12h           |
 
 ## Setup
 
@@ -91,7 +96,27 @@ Configuration has defaults as follows.
 - IP range is between 10-255.
 - Traffic will be tunneled through.
 
-**For further customization ensure that you have a `dnsmasq.conf` file mounted in `/config` folder.**
+#### Interpolating Variables
+
+Can handle `dnsmasq.conf` with variables. If you mount a custom `dnsmasq.conf`, you can still use these variables. It will be interpolated by `sed` while linking it to the actual location.
+
+```bash
+### Example and default configuration
+port=0
+interface=tap_soft
+dhcp-range=tap_soft,$SRVIPSUBNET.$DHCP_START,$SRVIPSUBNET.$DHCP_END,$SRVIPNETMASK,$DHCP_LEASE
+dhcp-option=tap_soft,3,$SRVIPSUBNET.1
+dhcp-option=tap_soft,6,8.8.8.8,8.8.4.4
+```
+
+#### Mounting Custom SoftEtherVPN Configuration File
+
+**For further customization ensure that you have a `dnsmasq.conf` file mounted in `/config` folder.** Your custom `dnsmasq.conf` must include `tap_soft` as tap device both for interface and range, as in the example below.
+
+```conf
+interface=tap_soft
+dhcp-range=tap_soft,${REST_OF_THE_VARIABLES}
+```
 
 ### SoftEther Setup
 
@@ -101,28 +126,19 @@ Configuration has defaults as follows.
 - Default bridge device is set through the default config file.
 - Please check out the normal process for [SoftEther Setup](https://www.softether.org/4-docs/2-howto/9.L2TPIPsec_Setup_Guide_for_SoftEther_VPN_Server/1.Setup_L2TP%2F%2F%2F%2FIPsec_VPN_Server_on_SoftEther_VPN_Server). This can be configured through using the GUI or the CLI.
 
+**Please remember that at initial startup there is no user defined and no admin password for managing server, it is very crucial to set them both ASAP.**
+
+#### Mounting Custom DNSMASQ Configuration File
+
 **For further customization ensure that you have a `vpn_server.config` file mounted in `/config` folder.**
 
-**Please remember that at initial startup there is no user defined and no admin password for managing server, it is very crucial to set them both ASAP.**
+### Interface
+
+If you ever want to interact with the underlying applications you can execute the tasks in the container.
 
 ### Command Line Interface
 
 Command line interface can be accessed through `/s6-bin/softether-vpnsrv/vpncmd`.
-
-## Environment Variables
-
-| Environment Variable | Description                                                          | Default Value |
-| -------------------- | -------------------------------------------------------------------- | ------------- |
-| `TZ`                 | Timezone for the server.                                             |               |
-| `SLEEPTIME`          | The time in seconds between checks of whether everything is working. | 3600          |
-| `KEEP_SERVER_LOG`    | Keep server logs, set to 1 to keep.                                  |               |
-| `KEEP_PACKET_LOG`    | Keep packet logs, set to 1 to keep.                                  |               |
-| `KEEP_SECURITY_LOG`  | Keep security logs, set to 1 to keep.                                |               |
-| `SRVIPSUBNET`        | Subnet of the disturubuted IP addresses by DNSMASQ.                  | 10.0.0        |
-| `SRVIPNETMASK`       | Netmask for the subnet.                                              | 255.255.255.0 |
-| `DHCP_START`         | Start address of distrubuted IP addresses.                           | 10            |
-| `DHCP_END`           | End address of distrubuted IP addresses.                             | 254           |
-| `DHCP_LEASE`         | Lease time of distrubuted IP addresses.                              | 12h           |
 
 ## Deploy
 
@@ -144,13 +160,6 @@ nvim .env
 # Create your own configuration or copy existing
 cp dnsmasq.conf ./volumes/softether-vpnsrv/dnsmasq.conf # Has a default
 cp vpn_server.config ./volumes/softether-vpnsrv/vpn_server.config # Has a default
-```
-
-**Your custom `dnsmasq.conf` must include `tap_soft` as tap device both for interface and range, as in the example below.**
-
-```conf
-interface=tap_soft
-dhcp-range=tap_soft,${REST_OF_THE_VARIABLES}
 ```
 
 ### docker
