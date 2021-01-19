@@ -14,8 +14,7 @@ echo "Waiting 3 seconds."
 s6-sleep 3
 echo "Binded IP address to the server with ${SRVIPSUBNET:-10.0.0}.1"
 ip tuntap add dev tap_soft mode tap
-/sbin/ifconfig tap_soft ${SRVIPSUBNET:-10.0.0}.1
-
+/sbin/ifconfig tap_soft ${SRVIPSUBNET:-10.0.0}.1 netmask ${SRVIPNETMASK:-255.255.255.0}
 # Check health
 while ping -c 1 -W 10 "${SRVIPSUBNET:-10.0.0}.1" >&/dev/null && pgrep dnsmasq >&/dev/null; do
   echo "-------------------------------"
