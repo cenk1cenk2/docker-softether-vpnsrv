@@ -17,13 +17,13 @@ log_wait "Waiting 3 seconds."
 s6-sleep 3
 
 # Bind to ip address with tap device
-echo "Binded IP address to the server with ${SRVIPSUBNET:-10.0.0}.1"
+log_info "Binded IP address to the server with ${SRVIPSUBNET:-10.0.0}.1"
 ip tuntap add dev tap_soft mode tap
 /sbin/ifconfig tap_soft ${SRVIPSUBNET:-10.0.0}.1 netmask ${SRVIPNETMASK:-255.255.255.0}
 
 # Check health
 while ping -c 1 -W 10 "${SRVIPSUBNET:-10.0.0}.1" >&/dev/null && pgrep dnsmasq >&/dev/null; do
-  log_info "[ $(date +"%Y%m%d-%H:%M:%S") ] Self test success. VPN Server alive and can access ${SRVIPSUBNET:-10.0.0}.1." "top"
+  log_info "[$(date +"%Y%m%d-%H:%M:%S")] Self test success. VPN Server alive and can access ${SRVIPSUBNET:-10.0.0}.1." "top"
 
   if [[ -z "${KEEP_SERVER_LOG}" ]]; then
     log_debug "Clearing up server log files."
