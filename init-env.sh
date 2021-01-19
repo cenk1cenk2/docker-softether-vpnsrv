@@ -9,6 +9,8 @@ ENVFILECONTENTS=(
   "TZ="
   "# VPN Server IP Subnet in form of xx.xx.xx (default: 10.0.0), it can also rewrite dnsmasq.conf with SED if \$SRVIPSUBNET inside dnsmasq.conf is set."
   "SRVIPSUBNET="
+  "# VPN Server IP Subnet Netmask in form of xx.xx.xx.xx (default: 255.255.255.0) \$SRVIPNETMASK"
+  "SRVIPNETMASK="
   "# Sleep Time for Server Alive Check in Seconds (default: 600)"
   "SLEEPTIME="
   "# Keep logs or delete them in between sleeptime. To keep set the type to 1."

@@ -41,6 +41,7 @@ Cleans up all the created veth interfaces and undoes all the system changes.
 #### Configurable
 
 Can handle `dnsmasq.conf` with variables. SRVIPSUBNET (default: 10.0.0) can be set through environment variables to configure the server at startup.
+Can handle `dnsmasq.conf` with variables. SRVIPNETMASK (default: 255.255.255.0) can be set through environment variables to configure the server at startup.
 
 ```bash
 ### Example and default configuration
@@ -48,7 +49,7 @@ port=0
 interface=tap_soft
 dhcp-option=3
 dhcp-option=6
-dhcp-range=tap_soft,$SRVIPSUBNET.129,$SRVIPSUBNET.199,255.255.255.0,12h
+dhcp-range=tap_soft,$SRVIPSUBNET.129,$SRVIPSUBNET.199,$SRVIPNETMASK,12h
 ```
 
 #### Up-to-Date
@@ -114,7 +115,7 @@ cp vpn_server.config ./cfg/vpn_server.config # Has a default
 
 ```
 interface=tap_soft
-dhcp-range=tap_soft,$SRVIPSUBNET.129,$SRVIPSUBNET.199,255.255.255.0,12h
+dhcp-range=tap_soft,$SRVIPSUBNET.129,$SRVIPSUBNET.199,$SRVIPNETMASK,12h
 ```
 
 ### Deploy via Docker
@@ -124,6 +125,7 @@ docker create \
   --name=softether-vpnsrv \
   -e TZ=Europe/Vienna \
   -e SRVIPSUBNET=10.0.0 \
+  -e SRVIPNETMASK=255.255.255.0 \
   -p 1443:1443/tcp \
   -p 992:992/tcp \
   -p 5555:5555/tcp \
@@ -145,6 +147,8 @@ docker create \
 TZ=
 # VPN Server IP Subnet in form of xx.xx.xx (default: 10.0.0), it can also can rewrite dnsmasq.conf with SED if \$SRVIPSUBNET inside dnsmasq.conf is set."
 SRVIPSUBNET=
+# VPN Server IP Subnet Netmask in form of xx.xx.xx.xx (default: 255.255.255.0), it can also can rewrite dnsmasq.conf with SED if \$SRVIPNETMASK inside dnsmasq.conf is set."
+SRVIPNETMASK=
 # Sleep Time for Server Alive Check in Seconds (default: 600)
 SLEEPTIME=
 # Keep logs or delete them in between sleeptime. To keep set the type to 1.
