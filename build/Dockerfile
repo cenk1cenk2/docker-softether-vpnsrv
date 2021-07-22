@@ -2,7 +2,7 @@ FROM alpine:latest
 
 ENV SOFTETHER_REPO https://github.com/SoftEtherVPN/SoftEtherVPN.git
 ENV SOFTETHER_REPO_API https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/releases/latest
-ENV S6_VERSION 1.21.8.0
+ENV S6_VERSION 2.2.0.3
 
 # Install s6 overlay
 ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_VERSION}/s6-overlay-amd64.tar.gz /tmp/
@@ -15,7 +15,7 @@ RUN apk --no-cache --no-progress update && \
   mkdir -p /etc/services.d && mkdir -p /etc/cont-init.d && mkdir -p /s6-bin && \
   mkdir -p /cfg && \
   # Install build dependencies
-  apk --no-cache --no-progress --virtual .build-deps add git libgcc libstdc++ gcc musl-dev libc-dev g++ ncurses-dev \
+  apk --no-cache --no-progress --virtual .build-deps add git libgcc libstdc++ gcc musl-dev libc-dev g++ ncurses-dev libsodium-dev \
   readline-dev openssl-dev cmake make zlib-dev curl && \
   # Grab and build Softether from GitHub
   git clone ${SOFTETHER_REPO} /tmp/softether && \
@@ -24,7 +24,7 @@ RUN apk --no-cache --no-progress update && \
   # Checkout Latest Tag
   git checkout ${TRACK_LATEST} && git submodule init && git submodule update && export USE_MUSL=YES && \
   # Build
-  ./configure && make --silent -C tmp && make --silent -C tmp install &&  \
+  ./configure && make --silent -C build && make --silent -C install &&  \
   cp /tmp/softether/build/libcedar.so /tmp/softether/build/libmayaqua.so /usr/lib && \
   # Removing build extensions
   apk del .build-deps && apk del --no-cache --purge && \
@@ -56,7 +56,7 @@ RUN mkdir -p /scripts && \
   mkdir -p /default/vpnserver
 
 # Copy scripts
-ADD https://gist.githubusercontent.com/cenk1cenk2/e03d8610534a9c78f755c1c1ed93a293/raw/28b96c2e3d6150cb0adc4489c87c7a1658747d0f/logger.sh /scripts/logger.sh
+ADD https://gist.githubusercontent.com/cenk1cenk2/raw/28b96c2e3d6150cb0adc4489c87c7a1658747d0f/logger.sh /scripts/logger.sh
 RUN chmod +x /scripts/*.sh
 
 # Move dnsmasq default configuration
