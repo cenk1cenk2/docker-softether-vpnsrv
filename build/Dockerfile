@@ -1,4 +1,4 @@
-FROM alpine:3.13.0
+FROM alpine:3.13
 
 ENV SOFTETHER_REPO https://github.com/SoftEtherVPN/SoftEtherVPN.git
 ENV SOFTETHER_REPO_API https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/releases/latest
