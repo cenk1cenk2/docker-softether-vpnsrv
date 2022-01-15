@@ -51,6 +51,25 @@ steps:
       branch:
         - master
 
+  - name: publish-edge
+    image: plugins/docker
+    working_dir: /drone/src/build
+    settings:
+      repo: cenk1cenk2/softether-vpnsrv
+      dockerfile: Dockerfile-edge
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      tag:
+        - edge
+    when:
+      event:
+        - cron
+        - push
+      branch:
+        - master
+
   - name: publish
     image: plugins/docker
     working_dir: /drone/src/build

@@ -23,23 +23,23 @@ ip tuntap add dev tap_soft mode tap >&/dev/null
 
 # Check health
 while ping -c 1 -W 10 "${SRVIPSUBNET:-10.0.0}.1" >&/dev/null && pgrep dnsmasq >&/dev/null; do
-  log_this "Self test success. VPN Server alive and can access ${SRVIPSUBNET:-10.0.0}.1." "${CYAN}$(date +"%Y%m%d-%H:%M:%S")${RESET}" "INFO" "top"
+	log_this "Self test success. VPN Server alive and can access ${SRVIPSUBNET:-10.0.0}.1." "${CYAN}$(date +"%Y%m%d-%H:%M:%S")${RESET}" "INFO" "top"
 
-  if [[ -z "${KEEP_SERVER_LOG}" ]]; then
-    log_info "Clearing up server log files."
-    rm /usr/local/libexec/softether/vpnserver/server_log/*.log -f >&/dev/null
-  fi
+	if [[ -z "${KEEP_SERVER_LOG}" ]]; then
+		log_info "Clearing up server log files."
+		rm /usr/local/libexec/softether/vpnserver/server_log/*.log -f >&/dev/null
+	fi
 
-  if [[ -z "${KEEP_PACKET_LOG}" ]]; then
-    log_info "Clearing up packet log files."
-    rm /usr/local/libexec/softether/vpnserver/packet_log/*.log -f >&/dev/null
-  fi
+	if [[ -z "${KEEP_PACKET_LOG}" ]]; then
+		log_info "Clearing up packet log files."
+		rm /usr/local/libexec/softether/vpnserver/packet_log/*.log -f >&/dev/null
+	fi
 
-  if [[ -z "${KEEP_SECURITY_LOG}" ]]; then
-    log_info "Clearing up security log files."
-    rm /usr/local/libexec/softether/vpnserver/packet_log/*.log -f >&/dev/null
-  fi
+	if [[ -z "${KEEP_SECURITY_LOG}" ]]; then
+		log_info "Clearing up security log files."
+		rm /usr/local/libexec/softether/vpnserver/packet_log/*.log -f >&/dev/null
+	fi
 
-  log_wait "Next check in ${SLEEPTIME:-600} seconds."
-  s6-sleep ${SLEEPTIME:-600}
+	log_wait "Next check in ${SLEEPTIME:-600} seconds."
+	s6-sleep ${SLEEPTIME:-600}
 done
