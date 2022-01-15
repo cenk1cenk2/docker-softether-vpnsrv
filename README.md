@@ -31,9 +31,9 @@
 
 ## Description
 
-SoftEther VPN is free open-source, cross-platform, multi-protocol VPN client and VPN server software, developed as part of Daiyuu Nobori's master's thesis research at the University of Tsukuba. VPN protocols such as SSL VPN, L2TP/IPsec, OpenVPN, and Microsoft Secure Socket Tunneling Protocol are provided in a single VPN server.
+SoftEther VPN is a free open-source, cross-platform, multi-protocol VPN client and VPN server software developed as part of Daiyuu Nobori's master's thesis research at the University of Tsukuba. VPN protocols such as SSL VPN, L2TP/IPsec, OpenVPN, and Microsoft Secure Socket Tunneling Protocol are provided in a single VPN server.
 
-This container runs a SoftEther VPN Server bundled together with a DNSMASQ DHCP server to distribute the IPs. With this way it utilizes a Linux virtual ethernet tap device to distribute the network traffic through.
+This container runs a SoftEther VPN Server bundled together with a DNSMASQ DHCP server to distribute the IPs. In this way, it utilizes a Linux virtual ethernet tap device to distribute the network traffic.
 
 [Read more](https://www.softether.org/) about SoftEther in the official documentation.
 
@@ -41,29 +41,31 @@ This container runs a SoftEther VPN Server bundled together with a DNSMASQ DHCP 
 
 ### Resource-Efficient
 
-Build on top of Alpine linux as base, ~30MB image size, ~15-20MB RAM Usage while standby.
+Build on top of Alpine Linux as a base, ~30MB image size, ~15-20MB RAM Usage while standby.
 
 ### Up-to-Date
 
-This repository is always up to date tracking the [default](https://github.com/SoftEtherVPN/SoftEtherVPN) repository of SoftEther VPN on GitHub. It checks the main repository monthly, since there is not frequent updates anymore, and if a new release has been matched it will trigger the build process.
+This repository is always up to date tracking the [default](https://github.com/SoftEtherVPN/SoftEtherVPN) repository of SoftEther VPN on GitHub. It checks the main repository monthly since there are no frequent updates anymore, and if a new release has been matched it will trigger the build process.
 
 It always builds the application from the source, and while doing that the dependencies will also be updated.
 
 ### Version Tracking
 
-The Docker images are given matching versions to the original repository. If a update has been made on this repository itself, it will append a suffix to the original version.
+The Docker images are given matching versions to the original repository. If an update has been made on this repository itself, it will append a suffix to the original version.
+
+Please use the `edge` version since tags are few and in-between the build from master goes to the `edge` version.
 
 ### Always Alive
 
 [s6-overlay](https://github.com/just-containers/s6-overlay) is implemented to check whether everything is working as expected and do a sanity check with pinging the main VPN server periodically.
 
-A environment variable, namely `SLEEPTIME` can be set in seconds to determine the period of this check.
+An environment variable, namely `SLEEPTIME` can be set in seconds to determine the period of this check.
 
-If the periodic check fails, it will go in to graceful shutdown mode and clear any resadiue like tap devices, virtual network adapters and such, so it can restart from scratch.
+If the periodic check fails, it will go into graceful shutdown mode and clear any residue like tap devices, virtual network adapters, and such, so it can restart from scratch.
 
 ### Graceful Shutdown
 
-At shutdown or crashes, the container cleans up all the created veth interfaces, tap devices and undoes all the system changes.
+At shutdown or crashes, the container cleans up all the created VETH interfaces, tap devices, and undoes all the system changes.
 
 ## Environment Variables
 
@@ -75,25 +77,25 @@ At shutdown or crashes, the container cleans up all the created veth interfaces,
 | `KEEP_SERVER_LOG`    | Keep server logs, set to 1 to keep.                                               |               |
 | `KEEP_PACKET_LOG`    | Keep packet logs, set to 1 to keep.                                               |               |
 | `KEEP_SECURITY_LOG`  | Keep security logs, set to 1 to keep.                                             |               |
-| `SRVIPSUBNET`        | Subnet of the disturubuted IP addresses by DNSMASQ.                               | 10.0.0        |
+| `SRVIPSUBNET`        | Subnet of the distributed IP addresses by DNSMASQ.                                | 10.0.0        |
 | `SRVIPNETMASK`       | Netmask for the subnet.                                                           | 255.255.255.0 |
-| `DHCP_START`         | Start address of distrubuted IP addresses.                                        | 10            |
-| `DHCP_END`           | End address of distrubuted IP addresses.                                          | 254           |
-| `DHCP_LEASE`         | Lease time of distrubuted IP addresses.                                           | 12h           |
+| `DHCP_START`         | Start address of distributed IP addresses.                                        | 10            |
+| `DHCP_END`           | End address of distributed IP addresses.                                          | 254           |
+| `DHCP_LEASE`         | Lease time of distributed IP addresses.                                           | 12h           |
 
 ## Setup
 
-If you do not have any default configuration for your the defaults will be applied, and the configuration will recide in `/config` folder.
+If you do not have any default configuration for your the defaults will be applied, and the configuration will reside in the `/config` folder.
 
-**You can mount a persistent folder to this folder to further edit and persist both SoftEther and DNSMASQ data. You can also let it generate the defaults with mounting a empty folder to there.**
+**You can mount a persistent folder to this folder to further edit and persist both SoftEther and DNSMASQ data. You can also let it generate the defaults by mounting an empty folder to there.**
 
 **Remember since it creates a virtual ethernet in the network workspace it has to run in Docker `--privileged` mode since it seems that NET_ADMIN capabilities are not enough.**
 
 ### DNSMASQ Setup
 
-Configuration has defaults as follows.
+The configuration has defaults as follows.
 
-- Server distributes IP addresses from 10.0.0.0/24 subnet.
+- Server distributes IP addresses from the 10.0.0.0/24 subnet.
 - IP range is between 10-255.
 - Traffic will be tunneled through.
 
@@ -121,17 +123,17 @@ dhcp-range=tap_soft,${REST_OF_THE_VARIABLES}
 
 ### SoftEther Setup
 
-Configuration has defaults as follows.
+The configuration has defaults as follows.
 
 - Default port at startup will be 1443.
 - Default bridge device is set through the default config file.
 - Please check out the normal process for [SoftEther Setup](https://www.softether.org/4-docs/2-howto/9.L2TPIPsec_Setup_Guide_for_SoftEther_VPN_Server/1.Setup_L2TP%2F%2F%2F%2FIPsec_VPN_Server_on_SoftEther_VPN_Server). This can be configured through using the GUI or the CLI.
 
-**Please remember that at initial startup there is no user defined and no admin password for managing server, it is very crucial to set them both ASAP.**
+**Please remember that at initial startup there is no user-defined and no admin password for managing the server, it is very crucial to set them both ASAP.**
 
 #### Mounting Custom SoftEther Configuration File
 
-**For further customization ensure that you have a `vpn_server.config` file mounted in `/config` folder.**
+**For further customization ensure that you have a `vpn_server.config` file mounted in the `/config` folder.**
 
 ## Deploy
 
@@ -143,7 +145,7 @@ Clone the GitHub repository to get an environmental variable initiation script a
 # Clone repository
 git clone git@github.com:cenk1cenk2/softether-vpnsrv.git
 
-# Initiate environment variables for convienence
+# Initiate environment variables for convenience
 chmod +x init-env.sh
 
 ./init-env.sh
@@ -187,4 +189,4 @@ Command line interface can be accessed through `/s6-bin/softether-vpnsrv/vpncmd`
 
 ## SoftEther VPN Client
 
-Complementary Docker container for this server can be found at [here](https://github.com/cenk1cenk2/softether-vpncli).
+The complementary Docker container for this server can be found at [here](https://github.com/cenk1cenk2/softether-vpncli).
