@@ -7,6 +7,8 @@ ENV S6_VERSION 2.2.0.3
 ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_VERSION}/s6-overlay-amd64.tar.gz /tmp/
 RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C /
 
+COPY .tags /tmp/.tags
+
 RUN \
   apk --no-cache --no-progress update && \
   apk --no-cache --no-progress upgrade && \
@@ -18,13 +20,8 @@ RUN \
   apk --no-cache --no-progress --virtual .build-deps add git libgcc libstdc++ gcc musl-dev libc-dev g++ ncurses-dev libsodium-dev \
   readline-dev openssl-dev cmake make zlib-dev && \
   # Grab and build Softether from GitHub
-  git clone ${REPOSITORY} /tmp/softether
-
-WORKDIR /tmp/softether
-
-COPY .tags /tmp/.tags
-
-RUN \
+  git clone ${REPOSITORY} /tmp/softether && \
+  cd /tmp/softether && \
   # Checkout Latest Tag
   git checkout "$(cat /tmp/.tags)" && git submodule init && git submodule update && export USE_MUSL=YES && \
   # Build
@@ -42,9 +39,7 @@ RUN \
   # Link Libraries to Binary
   ln -s /usr/local/bin/vpnserver /usr/bin/softether-vpnsrv && \
   ln -s /usr/local/bin/vpncmd /usr/bin/softether-vpncmd && \
-  ln -s /usr/local/libexec/softether/vpnserver/ /etc
-
-RUN \
+  ln -s /usr/local/libexec/softether/vpnserver/ /etc && \
   # Install dnsmasq and create the tun network adapter.
   apk add --no-cache dnsmasq iptables && \
   echo "tun" >> /etc/modules && \
