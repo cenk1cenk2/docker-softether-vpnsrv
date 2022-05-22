@@ -6,6 +6,7 @@ stages:
 
 variables:
   DOCKER_IMAGE_NAME: cenk1cenk2/softether-vpnsrv
+  GH_REPOSITORY: SoftEtherVPN/SoftEtherVPN
   README_DESCRIPTION: |
     SoftEther VPN server in a container with pre-configured setup for networking.
 
