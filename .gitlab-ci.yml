@@ -25,10 +25,6 @@ gh-release-tracker:
     TAGS_FILE: .tags
 
 build-docker-image:
-  only:
-    refs:
-      - schedules
-      - master
   parallel:
     matrix:
       - DOCKERFILE_NAME: Dockerfile
@@ -38,5 +34,7 @@ build-docker-image:
       - DOCKERFILE_NAME: Dockerfile-edge
         IMAGE_TAGS: edge
   rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $DOCKERFILE_NAME == "Dockerfile"
       allow_failure: true
