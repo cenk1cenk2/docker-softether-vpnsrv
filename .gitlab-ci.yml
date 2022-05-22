@@ -10,25 +10,35 @@ variables:
   README_DESCRIPTION: |
     SoftEther VPN server in a container with pre-configured setup for networking.
 
+.docker-common:
+  stage: docker
+  trigger:
+    include:
+      - project: devops/pipes
+        file: /templates/docker-build-with-artifacts-dockerhub.gitlab-ci.yml
+    strategy: depend
+  only:
+    refs:
+      - schedules
+      - master
+
 include:
   - project: devops/pipes
     file: /templates/gh-release-tracker.gitlab-ci.yml
 
   - project: devops/pipes
-    file: /templates/docker-build-dockerhub.gitlab-ci.yml
-
-  - project: devops/pipes
     file: /templates/update-docker-hub-readme.gitlab-ci.yml
 
-build-docker-image:
-  parallel:
-    matrix:
-      - TAGS_FILE: .tags
-        DOCKERFILE_NAME: Dockerfile
-      - IMAGE_TAG: edge
-        TAGS_FILE: ''
-        DOCKERFILE_NAME: Dockerfile-edge
-  only:
-    refs:
-      - schedules
-      - master
+build-softether-tag:
+  extends: .docker-common
+  variables:
+    PARENT_DOWNLOAD_ARTIFACTS: gh-release-tracker
+    DOCKERFILE_NAME: Dockerfile
+
+build-softether-edge:
+  extends: .docker-common
+  variables:
+    PARENT_DOWNLOAD_ARTIFACTS: ''
+    DOCKERFILE_NAME: Dockerfile-edge
+    TAGS_FILE: ''
+    IMAGE_TAG: edge
