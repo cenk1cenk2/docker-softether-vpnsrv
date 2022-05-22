@@ -24,6 +24,9 @@ variables:
 
 include:
   - project: devops/pipes
+    file: /templates/parent-pipeline-id.gitlab-ci.yml
+
+  - project: devops/pipes
     file: /templates/gh-release-tracker.gitlab-ci.yml
 
   - project: devops/pipes
@@ -41,4 +44,4 @@ build-softether-edge:
     PARENT_DOWNLOAD_ARTIFACTS: ''
     DOCKERFILE_NAME: Dockerfile-edge
     TAGS_FILE: ''
-    IMAGE_TAG: edge
+    IMAGE_TAGS: edge
