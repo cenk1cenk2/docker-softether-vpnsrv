@@ -22,8 +22,8 @@ services:
       - ./logs/security_log:/etc/vpnserver/security_log
       - ./logs/server_log:/etc/vpnserver/server_log
     cap_add:
-      - cap_setgid
-      - cap_setuid
-      - cap_net_admin
-      - cap_net_raw
-      - cap_net_bind_service
+      - SETGID
+      - SETUID
+      - NET_ADMIN
+      - NET_RAW
+      - NET_BIND_SERVICE

@@ -96,11 +96,11 @@ Basically it needs the following capabilities to function properly, since it cre
 
 ```yaml
 cap_add:
-  - cap_setgid
-  - cap_setuid
-  - cap_net_admin
-  - cap_net_raw
-  - cap_net_bind_service
+  - SETGID
+  - SETUID
+  - NET_ADMIN
+  - NET_RAW
+  - NET_BIND_SERVICE
 ```
 
 It also needs to access the `tun` device of the machine which can be added as follows.
