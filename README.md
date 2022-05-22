@@ -1,6 +1,6 @@
 # cenk1cenk2/softether-vpnsrv
 
-[![Build Status](https://drone.kilic.dev/api/badges/cenk1cenk2/docker-softether-vpnsrv/status.svg)](https://drone.kilic.dev/cenk1cenk2/docker-softether-vpnsrv) [![Docker Pulls](https://img.shields.io/docker/pulls/cenk1cenk2/softether-vpnsrv)](https://hub.docker.com/repository/docker/cenk1cenk2/softether-vpnsrv) [![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/cenk1cenk2/softether-vpnsrv)](https://hub.docker.com/repository/docker/cenk1cenk2/softether-vpnsrv) [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/cenk1cenk2/softether-vpnsrv)](https://hub.docker.com/repository/docker/cenk1cenk2/softether-vpnsrv) [![GitHub last commit](https://img.shields.io/github/last-commit/cenk1cenk2/softether-vpnsrv)](https://github.com/cenk1cenk2/softether-vpnsrv)
+[![pipeline status](https://gitlab.kilic.dev/docker/softether-vpnsrv/badges/master/pipeline.svg)](https://gitlab.kilic.dev/docker/softether-vpnsrv/-/commits/master) [![Docker Pulls](https://img.shields.io/docker/pulls/cenk1cenk2/softether-vpnsrv)](https://hub.docker.com/repository/docker/cenk1cenk2/softether-vpnsrv) [![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/cenk1cenk2/softether-vpnsrv)](https://hub.docker.com/repository/docker/cenk1cenk2/softether-vpnsrv) [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/cenk1cenk2/softether-vpnsrv)](https://hub.docker.com/repository/docker/cenk1cenk2/softether-vpnsrv) [![GitHub last commit](https://img.shields.io/github/last-commit/cenk1cenk2/softether-vpnsrv)](https://github.com/cenk1cenk2/softether-vpnsrv)
 
 <!-- toc -->
 
@@ -13,14 +13,13 @@
   - [Graceful Shutdown](#graceful-shutdown)
 - [Environment Variables](#environment-variables)
 - [Setup](#setup)
+  - [Permissions](#permissions)
   - [DNSMASQ Setup](#dnsmasq-setup)
     - [Interpolating Variables](#interpolating-variables)
     - [Mounting Custom DNSMASQ Configuration File](#mounting-custom-dnsmasq-configuration-file)
   - [SoftEther Setup](#softether-setup)
     - [Mounting Custom SoftEther Configuration File](#mounting-custom-softether-configuration-file)
 - [Deploy](#deploy)
-  - [docker-compose](#docker-compose)
-  - [docker](#docker)
 - [Interface](#interface)
   - [Command Line Interface](#command-line-interface)
 - [SoftEther VPN Client](#softether-vpn-client)
@@ -57,7 +56,7 @@ Please use the `edge` version since tags are few and in-between the build from m
 
 ### Always Alive
 
-[s6-overlay](https://github.com/just-containers/s6-overlay) is implemented to check whether everything is working as expected and do a sanity check with pinging the main VPN server periodically.
+[s6-overlay](https://github.com/just-containers/s6-overlay) is implemented to check whether everything is working as expected and do a sanity check by pinging the main VPN server periodically.
 
 An environment variable, namely `SLEEPTIME` can be set in seconds to determine the period of this check.
 
@@ -65,7 +64,7 @@ If the periodic check fails, it will go into graceful shutdown mode and clear an
 
 ### Graceful Shutdown
 
-At shutdown or crashes, the container cleans up all the created VETH interfaces, tap devices, and undoes all the system changes.
+At shutdown or crashes, the container cleans up all the created virtual ethernet interfaces, tap devices, and undoes all the system changes.
 
 ## Environment Variables
 
@@ -87,16 +86,36 @@ At shutdown or crashes, the container cleans up all the created VETH interfaces,
 
 If you do not have any default configuration for your the defaults will be applied, and the configuration will reside in the `/config` folder.
 
-**You can mount a persistent folder to this folder to further edit and persist both SoftEther and DNSMASQ data. You can also let it generate the defaults by mounting an empty folder to there.**
+**You can mount a persistent folder to this folder to further edit and persist both SoftEther and DNSMASQ data. You can also let it generate the defaults by mounting an empty folder there.**
 
-**Remember since it creates a virtual ethernet in the network workspace it has to run in Docker `--privileged` mode since it seems that NET_ADMIN capabilities are not enough.**
+### Permissions
+
+**This container needs extra Linux capabilities as provided by [thjderjktyrjkt](https://github.com/thjderjktyrjkt), you can find this in the mentioned issue [#20](https://github.com/cenk1cenk2/docker-softether-vpnsrv/issues/20).**
+
+Basically it needs the following capabilities to function properly, since it creates a virtual network adapter for the communication.
+
+```yaml
+cap_add:
+  - cap_setgid
+  - cap_setuid
+  - cap_net_admin
+  - cap_net_raw
+  - cap_net_bind_service
+```
+
+It also needs to access the `tun` device of the machine which can be added as follows.
+
+```yaml
+devices:
+  - /dev/net/tun
+```
 
 ### DNSMASQ Setup
 
 The configuration has defaults as follows.
 
 - Server distributes IP addresses from the 10.0.0.0/24 subnet.
-- IP range is between 10-255.
+- The IP range is between 10-255.
 - Traffic will be tunneled through.
 
 #### Interpolating Variables
@@ -114,7 +133,7 @@ dhcp-option=tap_soft,6,8.8.8.8,8.8.4.4
 
 #### Mounting Custom DNSMASQ Configuration File
 
-**For further customization ensure that you have a `dnsmasq.conf` file mounted in `/config` folder.** Your custom `dnsmasq.conf` must include `tap_soft` as tap device both for interface and range, as in the example below.
+**For further customization ensure that you have a `dnsmasq.conf` file mounted in the `/config` folder.** Your custom `dnsmasq.conf` must include `tap_soft` as tap device both for interface and range, as in the example below.
 
 ```conf
 interface=tap_soft
@@ -129,7 +148,7 @@ The configuration has defaults as follows.
 - Default bridge device is set through the default config file.
 - Please check out the normal process for [SoftEther Setup](https://www.softether.org/4-docs/2-howto/9.L2TPIPsec_Setup_Guide_for_SoftEther_VPN_Server/1.Setup_L2TP%2F%2F%2F%2FIPsec_VPN_Server_on_SoftEther_VPN_Server). This can be configured through using the GUI or the CLI.
 
-**Please remember that at initial startup there is no user-defined and no admin password for managing the server, it is very crucial to set them both ASAP.**
+**Please remember that at the initial startup there is no user-defined and no admin password for managing the server, it is very crucial to set them both ASAP.**
 
 #### Mounting Custom SoftEther Configuration File
 
@@ -137,9 +156,7 @@ The configuration has defaults as follows.
 
 ## Deploy
 
-### docker-compose
-
-Clone the GitHub repository to get an environmental variable initiation script and preconfigured docker-compose file if you wish to get a head start. Advised way to run the setup is with docker-compose but it can be run with a long command with docker run.
+Clone the GitHub repository to get an environmental variable initiation script and preconfigured docker-compose file if you wish to get a head start. The advised way to run the setup is with docker-compose but it can be run with a long command with docker run.
 
 ```bash
 # Clone repository
@@ -157,35 +174,13 @@ cp dnsmasq.conf ./volumes/softether-vpnsrv/dnsmasq.conf # Has a default
 cp vpn_server.config ./volumes/softether-vpnsrv/vpn_server.config # Has a default
 ```
 
-### docker
-
-```shell
-docker create \
-  --name=softether-vpnsrv \
-  -e TZ=Europe/Vienna \
-  -e SRVIPSUBNET=10.0.0 \
-  -e SRVIPNETMASK=255.255.255.0 \
-  -p 1443:1443/tcp \
-  -p 992:992/tcp \
-  -p 5555:5555/tcp \
-  -p 1194:1194/udp \
-  -p 500:500/udp \
-  -p 4500:4500/udp \
-  -p 1701:1701/tcp \
-  -v $PWD/cfg/vpn_server.config:/cfg/vpn_server.config \
-  -v $PWD/cfg/dnsmasq.conf:/cfg/dnsmasq.conf \
-  --restart unless-stopped \
-  --privileged \
-  cenk1cenk2/softether-vpnsrv:latest
-```
-
 ## Interface
 
 If you ever want to interact with the underlying applications you can execute the tasks in the container.
 
 ### Command Line Interface
 
-Command line interface can be accessed through `/s6-bin/softether-vpnsrv/vpncmd`.
+Command-line interface can be accessed through `softether-vpncmd`.
 
 ## SoftEther VPN Client
 

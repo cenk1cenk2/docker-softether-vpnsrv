@@ -1,0 +1,32 @@
+---
+stages:
+  - publish
+  - docker
+  - post
+
+variables:
+  DOCKER_IMAGE_NAME: cenk1cenk2/softether-vpnsrv
+  README_DESCRIPTION: |
+    SoftEther VPN server in a container with pre-configured setup for networking.
+
+include:
+  - project: devops/pipes
+    file: /templates/gh-release-tracker.gitlab-ci.yml
+
+  - project: devops/pipes
+    file: /templates/docker-build-dockerhub.gitlab-ci.yml
+
+  - project: devops/pipes
+    file: /templates/update-docker-hub-readme.gitlab-ci.yml
+
+build-docker-image:
+  parallel:
+    matrix:
+      - TAGS_FILE: .tags
+        DOCKERFILE_NAME: Dockerfile
+      - IMAGE_TAG: edge
+        DOCKERFILE_NAME: Dockerfile-edge
+  only:
+    refs:
+      - schedules
+      - master

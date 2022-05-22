@@ -4,7 +4,7 @@ source /scripts/logger.sh
 
 # SOFTETHER START
 log_start "Starting Softether Server..."
-/s6-bin/softether-vpnsrv/vpnserver start >&/dev/null
+softether-vpnsrv start >&/dev/null
 
 # Start DHCP Server
 log_start "Starting DHCP server."

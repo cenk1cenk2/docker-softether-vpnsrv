@@ -5,7 +5,7 @@ source /scripts/logger.sh
 log_interrupt "Terminating services..." "both"
 
 log_warn "Shutting down SoftEther daemon..."
-/s6-bin/softether-vpnsrv/vpnserver stop >&/dev/null
+softether-vpnsrv stop >&/dev/null
 
 log_warn "Removing tap software adapter..."
 ip tuntap del dev tap_soft mode tap

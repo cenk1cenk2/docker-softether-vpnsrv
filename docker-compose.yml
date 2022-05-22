@@ -1,9 +1,10 @@
-version: '3'
+version: '3.7'
 services:
   softether-vpnsrv:
-    image: cenk1cenk2/softether-vpnsrv
+    image: cenk1cenk2/softether-vpnsrv:edge
     env_file: .env
-    privileged: true
+    devices:
+      - /dev/net/tun
     ports:
       - 1443:1443/tcp
       - 992:992/tcp
@@ -12,6 +13,7 @@ services:
       - 500:500/udp
       - 4500:4500/udp
       - 1701:1701/tcp
+    network_mode: bridge
     volumes:
       # Configuration Files
       - ./volumes/softether-vpnsrv:/cfg
@@ -19,4 +21,9 @@ services:
       - ./logs/packet_log:/etc/vpnserver/packet_log
       - ./logs/security_log:/etc/vpnserver/security_log
       - ./logs/server_log:/etc/vpnserver/server_log
-    network_mode: "bridge"
+    cap_add:
+      - cap_setgid
+      - cap_setuid
+      - cap_net_admin
+      - cap_net_raw
+      - cap_net_bind_service
