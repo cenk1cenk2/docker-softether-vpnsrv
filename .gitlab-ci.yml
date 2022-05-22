@@ -33,5 +33,10 @@ build-docker-image:
     matrix:
       - DOCKERFILE_NAME: Dockerfile
         TAGS_FILE: '.tags'
+        TAG_AS_LATEST_FOR_BRANCHES_REGEX: |
+          [ "master" ]
       - DOCKERFILE_NAME: Dockerfile-edge
         IMAGE_TAGS: edge
+  rules:
+    - if: $DOCKERFILE_NAME == "Dockerfile"
+      allow_failure: true
