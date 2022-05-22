@@ -26,6 +26,7 @@ build-docker-image:
       - TAGS_FILE: .tags
         DOCKERFILE_NAME: Dockerfile
       - IMAGE_TAG: edge
+        TAGS_FILE: ''
         DOCKERFILE_NAME: Dockerfile-edge
   only:
     refs:
