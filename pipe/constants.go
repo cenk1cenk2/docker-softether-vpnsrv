@@ -1,0 +1,5 @@
+package pipe
+
+var ()
+
+const ()
