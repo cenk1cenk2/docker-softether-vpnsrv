@@ -27,11 +27,11 @@ gh-release-tracker:
 build-docker-image:
   parallel:
     matrix:
-      - DOCKERFILE_NAME: Dockerfile
+      - DOCKERFILE_NAME: Dockerfile-stable
         TAGS_FILE: '.tags'
         TAG_AS_LATEST_FOR_BRANCHES_REGEX: |
           [ "master" ]
-      - DOCKERFILE_NAME: Dockerfile-edge
+      - DOCKERFILE_NAME: Dockerfile
         IMAGE_TAGS: edge
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"

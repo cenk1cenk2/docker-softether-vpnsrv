@@ -4,7 +4,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	pipe "github.com/cenk1cenk2/docker-softether-vpnsrv/pipe"
-	. "gitlab.kilic.dev/libraries/plumber/v2"
+	. "gitlab.kilic.dev/libraries/plumber/v3"
 )
 
 func main() {
@@ -18,13 +18,23 @@ func main() {
 				Usage:       DESCRIPTION,
 				Description: DESCRIPTION,
 				Flags:       p.AppendFlags(pipe.Flags),
+				Before: func(ctx *cli.Context) error {
+					p.SetOnTerminate(func() error {
+						pipe.TL.Pipe.Terminator.ShouldTerminate <- true
+
+						<-pipe.TL.Pipe.Terminator.Terminated
+
+						return nil
+					})
+
+					return nil
+				},
 				Action: func(ctx *cli.Context) error {
 					return pipe.TL.RunJobs(
-						pipe.TL.JobSequence(
-							pipe.New(p).Job(ctx),
-						),
+						pipe.New(p, ctx).Job(),
 					)
 				},
 			}
-		}).Run()
+		}).
+		Run()
 }

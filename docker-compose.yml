@@ -2,6 +2,9 @@ version: '3.7'
 services:
   softether-vpnsrv:
     image: cenk1cenk2/softether-vpnsrv:edge
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file: .env
     devices:
       - /dev/net/tun
@@ -16,7 +19,7 @@ services:
     network_mode: bridge
     volumes:
       # Configuration Files
-      - ./volumes/softether-vpnsrv:/cfg
+      - ./volumes/softether-vpnsrv:/conf
       # Log files
       - ./logs/packet_log:/etc/vpnserver/packet_log
       - ./logs/security_log:/etc/vpnserver/security_log
