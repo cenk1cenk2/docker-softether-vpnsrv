@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"path"
 	"text/template"
 	"time"
 
@@ -31,7 +32,7 @@ type Ctx struct {
 }
 
 func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("setup").
+	return tl.CreateTask("init").
 		Set(func(t *Task[Pipe]) error {
 			// set network setup
 			_, network, err := net.ParseCIDR(t.Pipe.Server.CidrAddress)
@@ -103,7 +104,7 @@ func CreatePostroutingRules(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("dhcp-server-configuration").
+	return tl.CreateTask("dnsmasq-conf").
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).
@@ -144,48 +145,63 @@ func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		Set(func(t *Task[Pipe]) error {
-			// generate dnsmasq configuration
-			tmpl, err := template.ParseFiles(t.Pipe.DhcpServer.Template)
+			linkFrom := path.Join(CONF_DIR, CONF_DNSMASQ_NAME)
+			linkTo := path.Join(CONF_DNSMASQ_DIR, CONF_DNSMASQ_NAME)
 
-			if err != nil {
+			if _, err := os.Stat(linkFrom); os.IsNotExist(err) {
+				// generate dnsmasq configuration
+				tmpl, err := template.ParseFiles(t.Pipe.DhcpServer.Template)
+
+				if err != nil {
+					return err
+				}
+
+				output := new(bytes.Buffer)
+
+				if err := tmpl.Execute(output, DnsMasqConfigurationTemplate{
+					TapInterface:      fmt.Sprintf("tap_%s", t.Pipe.DhcpServer.TapInterface),
+					RangeStartAddress: t.Pipe.Ctx.Server.RangeStart.String(),
+					RangeEndAddress:   t.Pipe.Ctx.Server.RangeEnd.String(),
+					Gateway:           t.Pipe.DhcpServer.Gateway,
+					RangeNetmask:      net.IP(t.Pipe.Ctx.Server.Network.Mask).String(),
+					LeaseTime:         t.Pipe.DhcpServer.Lease,
+					ForwardingZone:    t.Pipe.DhcpServer.ForwardingZone.Value(),
+					Options:           t.Pipe.Ctx.DhcpServer.Options,
+				}); err != nil {
+					return err
+				}
+
+				f, err := os.Create(linkFrom)
+
+				if err != nil {
+					return err
+				}
+
+				defer f.Close()
+
+				if _, err = f.Write(output.Bytes()); err != nil {
+					return err
+				}
+
+				t.Log.Infof("DHCP server configuration file generated: %s", linkFrom)
+			} else {
+				t.Log.Infof("Persistent configuration file found: %s", linkFrom)
+			}
+
+			if err := os.Remove(linkTo); err != nil {
 				return err
 			}
 
-			output := new(bytes.Buffer)
-
-			if err := tmpl.Execute(output, DnsMasqConfigurationTemplate{
-				TapInterface:      fmt.Sprintf("tap_%s", t.Pipe.DhcpServer.TapInterface),
-				RangeStartAddress: t.Pipe.Ctx.Server.RangeStart.String(),
-				RangeEndAddress:   t.Pipe.Ctx.Server.RangeEnd.String(),
-				Gateway:           t.Pipe.DhcpServer.Gateway,
-				RangeNetmask:      net.IP(t.Pipe.Ctx.Server.Network.Mask).String(),
-				LeaseTime:         t.Pipe.DhcpServer.Lease,
-				ForwardingZone:    t.Pipe.DhcpServer.ForwardingZone.Value(),
-				Options:           t.Pipe.Ctx.DhcpServer.Options,
-			}); err != nil {
+			if err := os.Symlink(linkFrom, linkTo); err != nil {
 				return err
 			}
-
-			f, err := os.Create(CONF_FILE_DNSMASQ)
-
-			if err != nil {
-				return err
-			}
-
-			defer f.Close()
-
-			if _, err = f.Write(output.Bytes()); err != nil {
-				return err
-			}
-
-			t.Log.Infof("DHCP server configuration file generated: %s", CONF_FILE_DNSMASQ)
 
 			return nil
 		})
 }
 
 func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("tap").
+	return tl.CreateTask("interface-tap").
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).

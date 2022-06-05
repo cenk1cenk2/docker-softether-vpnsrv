@@ -48,7 +48,7 @@ func RunSoftEtherVpnServer(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("health").
+	return tl.CreateTask("health-ping").
 		Set(func(t *Task[Pipe]) error {
 			pinger, err := ping.NewPinger(t.Pipe.Health.DhcpServerAddress)
 			pinger.Count = 3

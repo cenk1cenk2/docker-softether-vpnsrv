@@ -11,7 +11,7 @@ func TerminatePredicate(tl *TaskList[Pipe]) JobPredicate {
 
 		a := <-tl.Pipe.Terminator.ShouldTerminate
 
-		tl.Log.Warnln("Terminating the application.")
+		tl.Log.Warnln("Running termination tasks...")
 
 		return a
 	})
@@ -73,8 +73,8 @@ func TerminateDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 		})
 }
 
-func TerminateInterfaces(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("terminate-interfaces").
+func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("terminate-interface-tap").
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).

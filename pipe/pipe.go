@@ -88,6 +88,7 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 						RunSoftEtherVpnServer(&TL).Job(),
 					),
 
+					// health check after start
 					TL.JobLoop(
 						TL.JobParallel(
 							HealthCheckPing(&TL).Job(),
@@ -95,6 +96,7 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 					),
 				),
 
+				// terminate handler
 				TL.JobBackground(
 					TL.JobIf(
 						TerminatePredicate(&TL),
@@ -103,7 +105,7 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 								TL.JobParallel(
 									TerminateSoftEther(&TL).Job(),
 									TerminateDhcpServer(&TL).Job(),
-									TerminateInterfaces(&TL).Job(),
+									TerminateTapInterface(&TL).Job(),
 								),
 								Terminated(&TL).Job(),
 							),
