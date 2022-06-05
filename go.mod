@@ -5,9 +5,8 @@ go 1.18
 require (
 	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/go-ping/ping v1.1.0
-	github.com/sirupsen/logrus v1.8.1
 	github.com/urfave/cli/v2 v2.8.1
-	gitlab.kilic.dev/libraries/plumber/v3 v3.4.1
+	gitlab.kilic.dev/libraries/plumber/v3 v3.5.1
 )
 
 require (
@@ -20,6 +19,7 @@ require (
 	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/workanator/go-floc/v3 v3.0.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	gitlab.kilic.dev/libraries/go-utils v1.1.2 // indirect

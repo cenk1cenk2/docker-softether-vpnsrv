@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/apparentlymart/go-cidr/cidr"
-	"github.com/sirupsen/logrus"
 	. "gitlab.kilic.dev/libraries/plumber/v3"
 )
 
@@ -71,7 +70,7 @@ func CreatePostroutingRules(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("postrouting").
 		Set(func(t *Task[Pipe]) error {
 			t.CreateCommand("iptables").
-				SetLogLevel(logrus.DebugLevel, 0, logrus.DebugLevel).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				Set(func(c *Command[Pipe]) error {
 					c.AppendArgs(
 						"-t",
@@ -221,7 +220,7 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				"mode",
 				"tap",
 			).
-				SetLogLevel(logrus.DebugLevel, 0, logrus.DebugLevel).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			t.CreateCommand(
@@ -231,7 +230,7 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				"netmask",
 				net.IP(t.Pipe.Ctx.Server.Network.Mask).String(),
 			).
-				SetLogLevel(logrus.DebugLevel, 0, logrus.DebugLevel).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			return nil

@@ -1,7 +1,6 @@
 package pipe
 
 import (
-	"github.com/sirupsen/logrus"
 	. "gitlab.kilic.dev/libraries/plumber/v3"
 )
 
@@ -35,7 +34,7 @@ func TerminateSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("terminate-softether").
 		Set(func(t *Task[Pipe]) error {
 			t.CreateCommand("softether-vpnsrv", "stop").
-				SetLogLevel(logrus.DebugLevel, 0, logrus.DebugLevel).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			return nil
@@ -59,7 +58,7 @@ func TerminateDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 				"pkill",
 				"dnsmasq",
 			).
-				SetLogLevel(logrus.DebugLevel, 0, logrus.DebugLevel).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			return nil
@@ -84,7 +83,7 @@ func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Pipe.DhcpServer.TapInterface,
 				"down",
 			).
-				SetLogLevel(logrus.DebugLevel, 0, logrus.DebugLevel).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			t.CreateCommand(
@@ -93,7 +92,7 @@ func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 				"delete",
 				t.Pipe.DhcpServer.TapInterface,
 			).
-				SetLogLevel(logrus.DebugLevel, 0, logrus.DebugLevel).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			t.CreateCommand(
@@ -105,7 +104,7 @@ func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 				"mode",
 				"tap",
 			).
-				SetLogLevel(logrus.DebugLevel, 0, logrus.DebugLevel).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			return nil

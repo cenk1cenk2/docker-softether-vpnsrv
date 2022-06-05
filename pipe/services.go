@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/go-ping/ping"
-	"github.com/sirupsen/logrus"
 	. "gitlab.kilic.dev/libraries/plumber/v3"
 )
 
@@ -15,7 +14,7 @@ func RunDnsServer(tl *TaskList[Pipe]) *Task[Pipe] {
 		}).
 		Set(func(t *Task[Pipe]) error {
 			t.CreateCommand("dnsmasq").
-				SetLogLevel(logrus.DebugLevel, 0, logrus.DebugLevel).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			return nil
@@ -33,7 +32,7 @@ func RunSoftEtherVpnServer(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("softether").
 		Set(func(t *Task[Pipe]) error {
 			t.CreateCommand("softether-vpnsrv", "start").
-				SetLogLevel(logrus.DebugLevel, 0, logrus.DebugLevel).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			return nil

@@ -6,7 +6,6 @@ import (
 
 const (
 	category_health       = "health"
-	category_logs         = "logs"
 	category_dhcp_server  = "dhcp-server"
 	category_linux_bridge = "linux-bridge"
 	category_server       = "server"
@@ -33,48 +32,6 @@ var Flags = []cli.Flag{
 		EnvVars:     []string{"HEALTH_DHCP_SERVER_ADDRESS"},
 		Value:       "",
 		Destination: &TL.Pipe.Health.DhcpServerAddress,
-	},
-
-	// logs
-
-	&cli.BoolFlag{
-		Name:        "logs.clean-server-logs",
-		Usage:       "Clean log files generated for the server.",
-		Category:    category_logs,
-		Required:    false,
-		EnvVars:     []string{"CLEAN_SERVER_LOG"},
-		Value:       true,
-		Destination: &TL.Pipe.Logs.CleanServerLogs,
-	},
-
-	&cli.BoolFlag{
-		Name:        "logs.clean-packet-logs",
-		Usage:       "Clean log files generated for the packets.",
-		Category:    category_logs,
-		Required:    false,
-		EnvVars:     []string{"CLEAN_PACKET_LOG"},
-		Value:       true,
-		Destination: &TL.Pipe.Logs.CleanPacketLogs,
-	},
-
-	&cli.BoolFlag{
-		Name:        "logs.clean-security-logs",
-		Usage:       "Clean log files generated for the security.",
-		Category:    category_logs,
-		Required:    false,
-		EnvVars:     []string{"CLEAN_SECURITY_LOG"},
-		Value:       true,
-		Destination: &TL.Pipe.Logs.CleanSecurityLogs,
-	},
-
-	&cli.StringFlag{
-		Name:        "logs.clean-logs-interval",
-		Usage:       "Clean up interval for the log files in duration.",
-		Category:    category_logs,
-		Required:    false,
-		EnvVars:     []string{"CLEAN_LOGS_INTERVAL"},
-		Value:       "4h",
-		Destination: &TL.Pipe.Logs.CleanLogsInterval,
 	},
 
 	// dhcp server
