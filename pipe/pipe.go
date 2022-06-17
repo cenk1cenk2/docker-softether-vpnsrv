@@ -25,7 +25,7 @@ type (
 	}
 
 	SoftEther struct {
-		Template     string
+		Template     string `validate:"file"`
 		TapInterface string
 	}
 
