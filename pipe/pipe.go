@@ -101,22 +101,28 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 				TL.JobBackground(
 					TL.JobIf(
 						TerminatePredicate(&TL),
-						TL.GuardResume(
-							TL.JobSequence(
-								TL.GuardIgnorePanic(
-									TL.JobParallel(
-										TL.GuardResume(TerminateSoftEther(&TL).Job(), TASK_ANY),
-										TL.GuardResume(TerminateDhcpServer(&TL).Job(), TASK_ANY),
-										TL.GuardResume(TerminateTapInterface(&TL).Job(), TASK_ANY),
-										TL.GuardResume(
-											TerminateBridgeInterface(&TL).Job(),
-											TASK_ANY,
-										),
+						TL.JobSequence(
+							TL.GuardIgnorePanic(
+								TL.JobSequence(
+									TL.GuardResume(
+										TerminateSoftEther(&TL).Job(),
+										TASK_ANY,
+									),
+									TL.GuardResume(
+										TerminateDhcpServer(&TL).Job(),
+										TASK_ANY,
+									),
+									TL.GuardResume(
+										TerminateTapInterface(&TL).Job(),
+										TASK_ANY,
+									),
+									TL.GuardResume(
+										TerminateBridgeInterface(&TL).Job(),
+										TASK_ANY,
 									),
 								),
-								TL.GuardResume(Terminated(&TL).Job(), TASK_ANY),
 							),
-							TASK_ANY,
+							TL.GuardResume(Terminated(&TL).Job(), TASK_ANY),
 						),
 					),
 				),
