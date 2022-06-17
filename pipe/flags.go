@@ -9,6 +9,7 @@ const (
 	category_dhcp_server  = "dhcp-server"
 	category_linux_bridge = "linux-bridge"
 	category_server       = "server"
+	category_softether    = "softether"
 )
 
 var Flags = []cli.Flag{
@@ -42,7 +43,7 @@ var Flags = []cli.Flag{
 		Category:    category_dhcp_server,
 		Required:    false,
 		EnvVars:     []string{"DHCP_SERVER_TEMPLATE"},
-		Value:       "/template/dnsmasq.conf.tmpl",
+		Value:       "/etc/template/dnsmasq.conf.tmpl",
 		Destination: &TL.Pipe.DhcpServer.Template,
 	},
 
@@ -54,16 +55,6 @@ var Flags = []cli.Flag{
 		EnvVars:     []string{"DHCP_SERVER_LEASE"},
 		Value:       "12h",
 		Destination: &TL.Pipe.DhcpServer.Lease,
-	},
-
-	&cli.StringFlag{
-		Name:        "dhcp-server.tap-interface",
-		Usage:       "Interface name for SoftEther and the DNS server to bind to as a tap device.",
-		Category:    category_dhcp_server,
-		Required:    false,
-		EnvVars:     []string{"DHCP_SERVER_TAP_INTERFACE"},
-		Value:       "soft",
-		Destination: &TL.Pipe.DhcpServer.TapInterface,
 	},
 
 	&cli.BoolFlag{
@@ -96,16 +87,6 @@ var Flags = []cli.Flag{
 		Destination: &TL.Pipe.DhcpServer.ForwardingZone,
 	},
 
-	&cli.StringFlag{
-		Name:        "dhcp-server.options",
-		Usage:       `Set custom options for the DHCP server. (format: json { "key": "value" })`,
-		Category:    category_dhcp_server,
-		Required:    false,
-		EnvVars:     []string{"DHCP_SERVER_OPTIONS"},
-		Value:       "{}",
-		Destination: &TL.Pipe.DhcpServer.Options,
-	},
-
 	// linux bridge
 
 	&cli.StringFlag{
@@ -113,7 +94,7 @@ var Flags = []cli.Flag{
 		Usage:       "Interface name for the resulting communication bridge interface.",
 		Category:    category_linux_bridge,
 		Required:    false,
-		EnvVars:     []string{"LINUX_BRIDGE_INTERFACE"},
+		EnvVars:     []string{"LINUX_BRIDGE_INTERFACE_NAME"},
 		Value:       "br100",
 		Destination: &TL.Pipe.LinuxBridge.BridgeInterface,
 	},
@@ -123,19 +104,31 @@ var Flags = []cli.Flag{
 		Usage:       "Interface name for the upstream parent network interface to bridge to, this interface should provide a DHCP server to handle the clients.",
 		Category:    category_linux_bridge,
 		Required:    false,
-		EnvVars:     []string{"LINUX_UPSTREAM_INTERFACE"},
+		EnvVars:     []string{"LINUX_BRIDGE_UPSTREAM_INTERFACE"},
 		Value:       "eth0",
 		Destination: &TL.Pipe.LinuxBridge.UpstreamInterface,
 	},
 
+	// softether
+
 	&cli.StringFlag{
-		Name:        "linux-bridge.tap-interface",
-		Usage:       "Interface name for SoftEther to bind to as a tap device. Directly binding to the upstream interface causes slow connection, so it is a middle ground between the upstream interface and the SoftEtherVPN server.",
-		Category:    category_linux_bridge,
+		Name:        "softether.template",
+		Usage:       "Template location for the SoftEtherVPN server.",
+		Category:    category_softether,
 		Required:    false,
-		EnvVars:     []string{"LINUX_PARENT_INTERFACE"},
-		Value:       "eth0",
-		Destination: &TL.Pipe.LinuxBridge.UpstreamInterface,
+		EnvVars:     []string{"SOFTETHER_TEMPLATE"},
+		Value:       "/etc/template/vpn_server.config.tmpl",
+		Destination: &TL.Pipe.SoftEther.Template,
+	},
+
+	&cli.StringFlag{
+		Name:        "dhcp-server.tap-interface",
+		Usage:       "Interface name for SoftEther and the server to bind to as a tap device.",
+		Category:    category_softether,
+		Required:    false,
+		EnvVars:     []string{"SOFTETHER_TAP_INTERFACE"},
+		Value:       "soft",
+		Destination: &TL.Pipe.SoftEther.TapInterface,
 	},
 
 	// server

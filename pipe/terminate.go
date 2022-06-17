@@ -17,7 +17,7 @@ func TerminatePredicate(tl *TaskList[Pipe]) JobPredicate {
 }
 
 func Terminated(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("terminated").
+	return tl.CreateTask("terminate").
 		Set(func(t *Task[Pipe]) error {
 			t.Log.Infoln("Graceful termination finished.")
 
@@ -31,7 +31,7 @@ func Terminated(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func TerminateSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("terminate-softether").
+	return tl.CreateTask("terminate:softether").
 		Set(func(t *Task[Pipe]) error {
 			t.CreateCommand("softether-vpnsrv", "stop").
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
@@ -40,16 +40,12 @@ func TerminateSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			t.Channel.Err <- t.RunCommandJobAsJobSequenceWithExtension(func(job Job) Job {
-				return tl.GuardResume(job, TASK_ANY)
-			})
-
-			return nil
+			return t.RunCommandJobAsJobSequence()
 		})
 }
 
 func TerminateDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("terminate-dnsmasq").
+	return tl.CreateTask("terminate:dnsmasq").
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).
@@ -64,23 +60,16 @@ func TerminateDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			t.Channel.Err <- t.RunCommandJobAsJobSequenceWithExtension(func(job Job) Job {
-				return tl.GuardResume(job, TASK_ANY)
-			})
-
-			return nil
+			return t.RunCommandJobAsJobSequence()
 		})
 }
 
 func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("terminate-interface-tap").
-		ShouldDisable(func(t *Task[Pipe]) bool {
-			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
-		}).
+	return tl.CreateTask("terminate:interface:tap").
 		Set(func(t *Task[Pipe]) error {
 			t.CreateCommand(
 				"ifconfig",
-				t.Pipe.DhcpServer.TapInterface,
+				t.Pipe.SoftEther.TapInterface,
 				"down",
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
@@ -90,7 +79,7 @@ func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 				"ip",
 				"link",
 				"delete",
-				t.Pipe.DhcpServer.TapInterface,
+				t.Pipe.SoftEther.TapInterface,
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
@@ -100,7 +89,7 @@ func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 				"tuntap",
 				"del",
 				"dev",
-				t.Pipe.DhcpServer.TapInterface,
+				t.Pipe.SoftEther.TapInterface,
 				"mode",
 				"tap",
 			).
@@ -110,10 +99,35 @@ func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			t.Channel.Err <- t.RunCommandJobAsJobSequenceWithExtension(func(job Job) Job {
-				return tl.GuardResume(job, TASK_ANY)
-			})
+			return t.RunCommandJobAsJobSequence()
+		})
+}
+
+func TerminateBridgeInterface(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("terminate:interface:bridge").
+		ShouldDisable(func(t *Task[Pipe]) bool {
+			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE
+		}).
+		Set(func(t *Task[Pipe]) error {
+			t.CreateCommand(
+				"ifconfig",
+				t.Pipe.LinuxBridge.BridgeInterface,
+				"down",
+			).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
+
+			t.CreateCommand(
+				"brctl",
+				"delbr",
+				t.Pipe.LinuxBridge.BridgeInterface,
+			).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
 
 			return nil
+		}).
+		ShouldRunAfter(func(t *Task[Pipe]) error {
+			return t.RunCommandJobAsJobSequence()
 		})
 }

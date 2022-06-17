@@ -9,6 +9,9 @@ type (
 		LeaseTime         string
 		Gateway           string
 		ForwardingZone    []string
-		Options           map[string]string
+	}
+
+	SoftEtherConfigurationTemplate struct {
+		Interface string
 	}
 )

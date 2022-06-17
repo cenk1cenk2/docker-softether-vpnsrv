@@ -1,9 +1,6 @@
 package pipe
 
 import (
-	"time"
-
-	"github.com/go-ping/ping"
 	. "gitlab.kilic.dev/libraries/plumber/v3"
 )
 
@@ -43,30 +40,5 @@ func RunSoftEtherVpnServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			t.Log.Infoln("Started SoftEtherVPN server.")
 
 			return err
-		})
-}
-
-func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("health-ping").
-		Set(func(t *Task[Pipe]) error {
-			pinger, err := ping.NewPinger(t.Pipe.Health.DhcpServerAddress)
-			pinger.Count = 3
-
-			if err != nil {
-				return err
-			}
-
-			if err := pinger.Run(); err != nil {
-				return err
-			}
-
-			stats := pinger.Statistics()
-
-			t.Log.Debugf("Ping health check to %s in avg %s.", stats.IPAddr.String(), stats.AvgRtt)
-
-			t.Log.Debugf("Next health check in: %s", t.Pipe.Ctx.Health.Duration.String())
-			time.Sleep(t.Pipe.Ctx.Health.Duration)
-
-			return nil
 		})
 }

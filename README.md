@@ -2,9 +2,24 @@
 
 [![pipeline status](https://gitlab.kilic.dev/docker/softether-vpnsrv/badges/master/pipeline.svg)](https://gitlab.kilic.dev/docker/softether-vpnsrv/-/commits/master) [![Docker Pulls](https://img.shields.io/docker/pulls/cenk1cenk2/softether-vpnsrv)](https://hub.docker.com/repository/docker/cenk1cenk2/softether-vpnsrv) [![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/cenk1cenk2/softether-vpnsrv)](https://hub.docker.com/repository/docker/cenk1cenk2/softether-vpnsrv) [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/cenk1cenk2/softether-vpnsrv)](https://hub.docker.com/repository/docker/cenk1cenk2/softether-vpnsrv) [![GitHub last commit](https://img.shields.io/github/last-commit/cenk1cenk2/softether-vpnsrv)](https://github.com/cenk1cenk2/softether-vpnsrv)
 
+## Breaking Changes
+
+**This repository contains breaking changes with older versions that are built on top of `s6-overlay`!**
+
+Sorry for any inconvenience caused. It was a decision between making some breaking changes to expand this container or just abandoning this one and creating a new one.
+
+Since my use-case now also requires to create bridge networks to access a local network, I had to introduce a new way of configuring this container. This renders the older versions intentionally incompatible for any user to see that something is wrong and hopefully visit here again to easily fix it.
+
+## Description
+
+SoftEther VPN is a free open-source, cross-platform, multi-protocol VPN client and VPN server software developed as part of Daiyuu Nobori's master's thesis research at the University of Tsukuba. VPN protocols such as SSL VPN, L2TP/IPsec, OpenVPN, and Microsoft Secure Socket Tunneling Protocol are provided in a single VPN server.
+
+This container runs a SoftEther VPN Server bundled together with a DNSMASQ DHCP server to distribute the IPs. In this way, it utilizes a Linux virtual ethernet tap device to distribute the network traffic.
+
+[Read more](https://www.softether.org/) about SoftEther in the official documentation.
+
 <!-- toc -->
 
-- [Description](#description)
 - [Features](#features)
   - [Resource-Efficient](#resource-efficient)
   - [Up-to-Date](#up-to-date)
@@ -28,14 +43,6 @@
 
 ---
 
-## Description
-
-SoftEther VPN is a free open-source, cross-platform, multi-protocol VPN client and VPN server software developed as part of Daiyuu Nobori's master's thesis research at the University of Tsukuba. VPN protocols such as SSL VPN, L2TP/IPsec, OpenVPN, and Microsoft Secure Socket Tunneling Protocol are provided in a single VPN server.
-
-This container runs a SoftEther VPN Server bundled together with a DNSMASQ DHCP server to distribute the IPs. In this way, it utilizes a Linux virtual ethernet tap device to distribute the network traffic.
-
-[Read more](https://www.softether.org/) about SoftEther in the official documentation.
-
 ## Features
 
 ### Resource-Efficient
@@ -48,23 +55,21 @@ This repository is always up to date tracking the [default](https://github.com/S
 
 It always builds the application from the source, and while doing that the dependencies will also be updated.
 
-### Version Tracking
+### Versioning
 
-The Docker images are given matching versions to the original repository. If an update has been made on this repository itself, it will append a suffix to the original version.
+The Docker images are tagged with matching versions to the original repository.
 
-Please use the `edge` version since tags are few and in-between the build from master goes to the `edge` version.
+`latest` tag is reserved for the current snapshot of the `master` branch on the upstream.
 
-### Always Alive
+### Health Check
 
-[s6-overlay](https://github.com/just-containers/s6-overlay) is implemented to check whether everything is working as expected and do a sanity check by pinging the main VPN server periodically.
-
-An environment variable, namely `SLEEPTIME` can be set in seconds to determine the period of this check.
-
-If the periodic check fails, it will go into graceful shutdown mode and clear any residue like tap devices, virtual network adapters, and such, so it can restart from scratch.
+Periodic health check for monitoring the processes as well as pinging the DHCP server has been implemented. If one of the health checks fail the container will terminate itself. You can use the `docker` restart feature to start the container back on failure.
 
 ### Graceful Shutdown
 
 At shutdown or crashes, the container cleans up all the created virtual ethernet interfaces, tap devices, and undoes all the system changes.
+
+This is a best effort process and it can not guarantee to finish this process successfully.
 
 ## Environment Variables
 

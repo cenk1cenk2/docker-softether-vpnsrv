@@ -11,27 +11,22 @@ type (
 		DhcpServerAddress string
 	}
 
-	Logs struct {
-		CleanServerLogs   bool
-		CleanPacketLogs   bool
-		CleanSecurityLogs bool
-		CleanLogsInterval string
-	}
-
 	DhcpServer struct {
 		Template       string `validate:"omitempty,file"`
-		TapInterface   string
 		Lease          string
 		Gateway        string `validate:"omitempty,ip"`
 		SendGateway    bool
 		ForwardingZone cli.StringSlice `validate:"omitempty,ip"`
-		Options        string          `validate:"omitempty,json"`
 	}
 
 	LinuxBridge struct {
 		BridgeInterface   string
 		UpstreamInterface string
-		TapInterface      string
+	}
+
+	SoftEther struct {
+		Template     string
+		TapInterface string
 	}
 
 	Server struct {
@@ -49,9 +44,9 @@ type (
 		Terminator
 
 		Health
-		Logs
 		DhcpServer
 		LinuxBridge
+		SoftEther
 		Server
 	}
 )
@@ -77,10 +72,12 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 					TL.JobParallel(
 						CreatePostroutingRules(&TL).Job(),
 						GenerateDhcpServerConfiguration(&TL).Job(),
+						GenerateSoftEtherServerConfiguration(&TL).Job(),
 					),
 
-					TL.JobParallel(
+					TL.JobSequence(
 						CreateTapDevice(&TL).Job(),
+						CreateBridgeDevice(&TL).Job(),
 					),
 
 					TL.JobParallel(
@@ -88,12 +85,16 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 						RunSoftEtherVpnServer(&TL).Job(),
 					),
 
-					// health check after start
-					TL.JobLoop(
+					TL.JobSequence(
+						HealthCheckSetup(&TL).Job(),
 						TL.JobParallel(
-							HealthCheckPing(&TL).Job(),
+							TL.JobBackground(TL.JobLoop(HealthCheckPing(&TL).Job())),
+							TL.JobBackground(TL.JobLoop(HealthCheckSoftEther(&TL).Job())),
+							TL.JobBackground(TL.JobLoop(HealthCheckDhcpServer(&TL).Job())),
 						),
 					),
+
+					KeepAlive(&TL).Job(),
 				),
 
 				// terminate handler
@@ -102,12 +103,18 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 						TerminatePredicate(&TL),
 						TL.GuardResume(
 							TL.JobSequence(
-								TL.JobParallel(
-									TerminateSoftEther(&TL).Job(),
-									TerminateDhcpServer(&TL).Job(),
-									TerminateTapInterface(&TL).Job(),
+								TL.GuardIgnorePanic(
+									TL.JobParallel(
+										TL.GuardResume(TerminateSoftEther(&TL).Job(), TASK_ANY),
+										TL.GuardResume(TerminateDhcpServer(&TL).Job(), TASK_ANY),
+										TL.GuardResume(TerminateTapInterface(&TL).Job(), TASK_ANY),
+										TL.GuardResume(
+											TerminateBridgeInterface(&TL).Job(),
+											TASK_ANY,
+										),
+									),
 								),
-								Terminated(&TL).Job(),
+								TL.GuardResume(Terminated(&TL).Job(), TASK_ANY),
 							),
 							TASK_ANY,
 						),

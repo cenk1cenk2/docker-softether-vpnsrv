@@ -1,6 +1,8 @@
 ---
 stages:
-  - publish
+  - install
+  - build
+  - track
   - docker
   - post
 
@@ -11,6 +13,9 @@ variables:
     SoftEther VPN server in a container with pre-configured setup for networking.
 
 include:
+  - project: devops/pipes
+    file: /templates/go.gitlab-ci.yml
+
   - project: devops/pipes
     file: /templates/gh-release-tracker.gitlab-ci.yml
 
@@ -29,12 +34,14 @@ build-docker-image:
     matrix:
       - DOCKERFILE_NAME: Dockerfile-stable
         TAGS_FILE: '.tags'
-        TAG_AS_LATEST_FOR_BRANCHES_REGEX: |
-          [ "master" ]
       - DOCKERFILE_NAME: Dockerfile
-        IMAGE_TAGS: edge
+        IMAGE_TAGS: latest
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: on_success
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: on_success
     - if: $DOCKERFILE_NAME == "Dockerfile"
       allow_failure: true
+  tags:
+    - external

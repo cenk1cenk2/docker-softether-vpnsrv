@@ -2,7 +2,6 @@ package pipe
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"net"
 	"os"
@@ -13,22 +12,6 @@ import (
 	"github.com/apparentlymart/go-cidr/cidr"
 	. "gitlab.kilic.dev/libraries/plumber/v3"
 )
-
-type Ctx struct {
-	Health struct {
-		Duration time.Duration
-	}
-
-	Server struct {
-		Network    *net.IPNet
-		RangeStart net.IP
-		RangeEnd   net.IP
-	}
-
-	DhcpServer struct {
-		Options map[string]string
-	}
-}
 
 func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("init").
@@ -62,8 +45,30 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 				return err
 			}
 
+			// set default health address
+			if t.Pipe.Health.DhcpServerAddress == "" {
+				t.Lock.Lock()
+				t.Pipe.Health.DhcpServerAddress = t.Pipe.Ctx.Server.RangeStart.String()
+				t.Lock.Unlock()
+
+				t.Log.Debugf(
+					"Default health address for DHCP server set as default: %s",
+					t.Pipe.Health.DhcpServerAddress,
+				)
+			}
+
 			return nil
 		})
+}
+
+func KeepAlive(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("keep-alive").
+		Set(func(t *Task[Pipe]) error {
+			<-t.Pipe.Terminator.Terminated
+
+			return nil
+		})
+
 }
 
 func CreatePostroutingRules(tl *TaskList[Pipe]) *Task[Pipe] {
@@ -103,22 +108,11 @@ func CreatePostroutingRules(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("dnsmasq-conf").
+	return tl.CreateTask("conf:dnsmasq").
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).
 		ShouldRunBefore(func(t *Task[Pipe]) error {
-			// set default health address
-			if t.Pipe.Health.DhcpServerAddress == "" {
-				t.Lock.Lock()
-				t.Pipe.Health.DhcpServerAddress = t.Pipe.Ctx.Server.RangeStart.String()
-				t.Lock.Unlock()
-
-				t.Log.Infof(
-					"Default health address for DHCP server set as default: %s",
-					t.Pipe.Health.DhcpServerAddress,
-				)
-			}
 
 			// set default gateway address
 			if t.Pipe.DhcpServer.Gateway == "" && t.Pipe.DhcpServer.SendGateway {
@@ -126,19 +120,10 @@ func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Pipe.DhcpServer.Gateway = t.Pipe.Ctx.Server.RangeStart.String()
 				t.Lock.Unlock()
 
-				t.Log.Infof(
+				t.Log.Debugf(
 					"Default gateway address for DHCP server set as default: %s",
 					t.Pipe.Health.DhcpServerAddress,
 				)
-			}
-
-			// unmarshal dhcp server options from json
-			t.Lock.Lock()
-			err := json.Unmarshal([]byte(t.Pipe.DhcpServer.Options), &t.Pipe.Ctx.DhcpServer.Options)
-			t.Lock.Unlock()
-
-			if err != nil {
-				return err
 			}
 
 			return nil
@@ -158,14 +143,13 @@ func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 				output := new(bytes.Buffer)
 
 				if err := tmpl.Execute(output, DnsMasqConfigurationTemplate{
-					TapInterface:      fmt.Sprintf("tap_%s", t.Pipe.DhcpServer.TapInterface),
+					TapInterface:      fmt.Sprintf("tap_%s", t.Pipe.SoftEther.TapInterface),
 					RangeStartAddress: t.Pipe.Ctx.Server.RangeStart.String(),
 					RangeEndAddress:   t.Pipe.Ctx.Server.RangeEnd.String(),
 					Gateway:           t.Pipe.DhcpServer.Gateway,
 					RangeNetmask:      net.IP(t.Pipe.Ctx.Server.Network.Mask).String(),
 					LeaseTime:         t.Pipe.DhcpServer.Lease,
 					ForwardingZone:    t.Pipe.DhcpServer.ForwardingZone.Value(),
-					Options:           t.Pipe.Ctx.DhcpServer.Options,
 				}); err != nil {
 					return err
 				}
@@ -188,7 +172,58 @@ func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 			}
 
 			if err := os.Remove(linkTo); err != nil {
+				t.Log.Debugf(err.Error())
+			}
+
+			if err := os.Symlink(linkFrom, linkTo); err != nil {
 				return err
+			}
+
+			return nil
+		})
+}
+
+func GenerateSoftEtherServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("conf:softether").
+		Set(func(t *Task[Pipe]) error {
+			linkFrom := path.Join(CONF_DIR, CONF_SOFTETHER_NAME)
+			linkTo := path.Join(CONF_SOFTETHER_DIR, CONF_SOFTETHER_NAME)
+
+			if _, err := os.Stat(linkFrom); os.IsNotExist(err) {
+				// generate softether configuration
+				tmpl, err := template.ParseFiles(t.Pipe.SoftEther.Template)
+
+				if err != nil {
+					return err
+				}
+
+				output := new(bytes.Buffer)
+
+				if err := tmpl.Execute(output, SoftEtherConfigurationTemplate{
+					Interface: t.Pipe.SoftEther.TapInterface,
+				}); err != nil {
+					return err
+				}
+
+				f, err := os.Create(linkFrom)
+
+				if err != nil {
+					return err
+				}
+
+				defer f.Close()
+
+				if _, err = f.Write(output.Bytes()); err != nil {
+					return err
+				}
+
+				t.Log.Warnf("SoftEtherVPN server configuration file generated: %s", linkFrom)
+			} else {
+				t.Log.Infof("Persistent configuration file found: %s", linkFrom)
+			}
+
+			if err := os.Remove(linkTo); err != nil {
+				t.Log.Debugf(err.Error())
 			}
 
 			if err := os.Symlink(linkFrom, linkTo); err != nil {
@@ -200,35 +235,81 @@ func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("interface-tap").
-		ShouldDisable(func(t *Task[Pipe]) bool {
-			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
-		}).
+	return tl.CreateTask("interface:tap").
 		ShouldRunBefore(func(t *Task[Pipe]) error {
-			t.Pipe.DhcpServer.TapInterface = fmt.Sprintf("tap_%s", t.Pipe.DhcpServer.TapInterface)
+			t.Pipe.SoftEther.TapInterface = fmt.Sprintf(
+				"tap_%s",
+				t.Pipe.SoftEther.TapInterface,
+			)
 
 			return nil
 		}).
 		Set(func(t *Task[Pipe]) error {
-
 			t.CreateCommand(
 				"ip",
 				"tuntap",
 				"add",
 				"dev",
-				t.Pipe.DhcpServer.TapInterface,
+				t.Pipe.SoftEther.TapInterface,
 				"mode",
 				"tap",
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
+				// give the server static ip for dnsmasq when on dhcp mode
+			if t.Pipe.Server.Mode == SERVER_MODE_DHCP {
+				t.CreateCommand(
+					"ifconfig",
+					t.Pipe.SoftEther.TapInterface,
+					t.Pipe.DhcpServer.Gateway,
+					"netmask",
+					net.IP(t.Pipe.Ctx.Server.Network.Mask).String(),
+				).
+					SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+					AddSelfToTheTask()
+
+				t.Log.Debugf(
+					"Should add gateway to the tap interface: %s -> %s",
+					t.Pipe.SoftEther.TapInterface,
+					t.Pipe.DhcpServer.Gateway,
+				)
+			}
+
+			return nil
+		}).
+		ShouldRunAfter(func(t *Task[Pipe]) error {
+			err := t.RunCommandJobAsJobSequence()
+
+			t.Log.Infof(
+				"Created tap adapter: %s",
+				t.Pipe.SoftEther.TapInterface,
+			)
+
+			return err
+		})
+}
+
+func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("interface:bridge").
+		ShouldDisable(func(t *Task[Pipe]) bool {
+			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE
+		}).
+		Set(func(t *Task[Pipe]) error {
 			t.CreateCommand(
-				"ifconfig",
-				t.Pipe.DhcpServer.TapInterface,
-				t.Pipe.DhcpServer.Gateway,
-				"netmask",
-				net.IP(t.Pipe.Ctx.Server.Network.Mask).String(),
+				"brctl",
+				"addbr",
+				t.Pipe.LinuxBridge.BridgeInterface,
+			).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
+
+			t.CreateCommand(
+				"brctl",
+				"addif",
+				t.Pipe.LinuxBridge.BridgeInterface,
+				t.Pipe.SoftEther.TapInterface,
+				t.Pipe.LinuxBridge.UpstreamInterface,
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
@@ -239,9 +320,10 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 			err := t.RunCommandJobAsJobSequence()
 
 			t.Log.Infof(
-				"Created tap adapter: %s -> %s",
-				t.Pipe.DhcpServer.TapInterface,
-				t.Pipe.DhcpServer.Gateway,
+				"Created bridge adapter: %s -> %s %s",
+				t.Pipe.LinuxBridge.BridgeInterface,
+				t.Pipe.SoftEther.TapInterface,
+				t.Pipe.LinuxBridge.UpstreamInterface,
 			)
 
 			return err
