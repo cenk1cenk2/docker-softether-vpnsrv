@@ -336,8 +336,6 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
-			time.Sleep(time.Second)
-
 			t.CreateCommand(
 				"brctl",
 				"addif",
@@ -347,8 +345,6 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
-			time.Sleep(time.Second)
-
 			t.CreateCommand(
 				"brctl",
 				"addif",
@@ -357,8 +353,6 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
-
-			time.Sleep(time.Second)
 
 			t.CreateCommand(
 				"ip",
