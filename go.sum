@@ -55,8 +55,8 @@ github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 h1:bAn7/zixMGCfxrRT
 github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673/go.mod h1:N3UwUGtsrSj3ccvlPHLoLsHnpR27oXr4ZE984MbSER8=
 gitlab.kilic.dev/libraries/go-utils v1.1.2 h1:bxsYz6zw9gpz/ZkyZbLbL4c3QhS7EQ1071hcelcgKo4=
 gitlab.kilic.dev/libraries/go-utils v1.1.2/go.mod h1:OZi5+ignKLdxrlWo1kykO7A5yw8Rj+Wv8iKHw7oawcQ=
-gitlab.kilic.dev/libraries/plumber/v3 v3.7.1 h1:yFv+DdVhtHQUVm7QJJiadyZsvrkVb/pFe2qJb/5gBjk=
-gitlab.kilic.dev/libraries/plumber/v3 v3.7.1/go.mod h1:nVzdf8GmFBr7hmR0j6Ba/fuRC5XSOGCYnH2sk8QZeZ4=
+gitlab.kilic.dev/libraries/plumber/v3 v3.7.2 h1:xBG9UC/9DZEH6HRD+32XuuGRmcje24pgnbfDgdY/j5c=
+gitlab.kilic.dev/libraries/plumber/v3 v3.7.2/go.mod h1:nVzdf8GmFBr7hmR0j6Ba/fuRC5XSOGCYnH2sk8QZeZ4=
 golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e h1:T8NU3HyQ8ClP4SEE+KbFlg6n0NhuTsN4MyznaarGsZM=
 golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
