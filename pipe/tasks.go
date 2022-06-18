@@ -341,15 +341,18 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				"addif",
 				t.Pipe.LinuxBridge.BridgeInterface,
 				t.Pipe.SoftEther.TapInterface,
+				t.Pipe.LinuxBridge.UpstreamInterface,
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			t.CreateCommand(
-				"brctl",
-				"addif",
+				"ip",
+				"link",
+				"set",
+				"dev",
 				t.Pipe.LinuxBridge.BridgeInterface,
-				t.Pipe.LinuxBridge.UpstreamInterface,
+				"up",
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
