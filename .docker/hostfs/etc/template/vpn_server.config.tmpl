@@ -29,7 +29,7 @@ declare root
 	{
 		bool EtherIP_IPsec false
 		string IPsec_Secret vpn
-		string L2TP_DefaultHub DEFAULT
+		string L2TP_DefaultHub {{ .DefaultHub }}
 		bool L2TP_IPsec false
 		bool L2TP_Raw false
 
@@ -71,7 +71,7 @@ declare root
     declare LocalBridge0
 		{
 			string DeviceName {{ .Interface }}
-			string HubName DEFAULT
+			string HubName {{ .DefaultHub }}
 			bool LimitBroadcast false
 			bool MonitorMode false
 			bool NoPromiscuousMode false
@@ -184,7 +184,7 @@ declare root
 	}
 	declare VirtualHUB
 	{
-		declare DEFAULT
+		declare {{ .DefaultHub }}
 		{
 			uint64 CreatedTime 1585366080783
 			byte HashedPassword +WzqGYrR3VYXrAhKPZLGEHcIwO8=

@@ -12,6 +12,7 @@ type (
 	}
 
 	SoftEtherConfigurationTemplate struct {
-		Interface string
+		Interface  string
+		DefaultHub string
 	}
 )

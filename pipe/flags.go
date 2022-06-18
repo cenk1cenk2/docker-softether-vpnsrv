@@ -27,7 +27,7 @@ var Flags = []cli.Flag{
 
 	&cli.StringFlag{
 		Name:        "health.dhcp-server-address",
-		Usage:       "Upstream DHCP server address for doing health checks. [default: cidr address start]",
+		Usage:       "Upstream DHCP server address for doing health checks. (default: cidr address start)",
 		Category:    category_health,
 		Required:    false,
 		EnvVars:     []string{"HEALTH_DHCP_SERVER_ADDRESS"},
@@ -69,7 +69,7 @@ var Flags = []cli.Flag{
 
 	&cli.StringFlag{
 		Name:        "dhcp-server.gateway",
-		Usage:       "Set the gateway option for the underlying DNS server. [default: cidr address start]",
+		Usage:       "Set the gateway option for the underlying DNS server. (default: cidr address start)",
 		Category:    category_dhcp_server,
 		Required:    false,
 		EnvVars:     []string{"DHCP_SERVER_GATEWAY"},
@@ -122,13 +122,23 @@ var Flags = []cli.Flag{
 	},
 
 	&cli.StringFlag{
-		Name:        "dhcp-server.tap-interface",
+		Name:        "softether.tap-interface",
 		Usage:       "Interface name for SoftEther and the server to bind to as a tap device.",
 		Category:    category_softether,
 		Required:    false,
 		EnvVars:     []string{"SOFTETHER_TAP_INTERFACE"},
 		Value:       "soft",
 		Destination: &TL.Pipe.SoftEther.TapInterface,
+	},
+
+	&cli.StringFlag{
+		Name:        "softether.default-hub",
+		Usage:       "Default hub name for SoftEtherVPN server.",
+		Category:    category_softether,
+		Required:    false,
+		EnvVars:     []string{"SOFTETHER_DEFAULT_HUB"},
+		Value:       "DEFAULT",
+		Destination: &TL.Pipe.SoftEther.DefaultHub,
 	},
 
 	// server
@@ -144,7 +154,7 @@ var Flags = []cli.Flag{
 
 	&cli.StringFlag{
 		Name:        "server.cidr-address",
-		Usage:       `Server mode changes the behavior of the container. [enum: "dhcp", "bridge"]`,
+		Usage:       "CIDR address of the server.",
 		Category:    category_server,
 		Required:    false,
 		Value:       "10.0.0.0/24",

@@ -41,11 +41,11 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 			pinger.Timeout = time.Second * 10
 
 			if err != nil {
-				return err
+				t.Channel.Fatal <- err
 			}
 
 			if err := pinger.Run(); err != nil {
-				return err
+				t.Channel.Fatal <- err
 			}
 
 			stats := pinger.Statistics()
@@ -66,7 +66,15 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health:softether").
 		Set(func(t *Task[Pipe]) error {
-			t.Channel.Fatal <- fmt.Errorf("yat")
+			process, err := ps.FindProcess(t.Pipe.Ctx.Health.SoftEtherPID)
+
+			if err != nil {
+				t.Log.Debugln(err)
+			}
+
+			if process == nil {
+				t.Channel.Fatal <- fmt.Errorf("SoftEther process is not alive.")
+			}
 
 			t.Log.Debugf(
 				"Next SoftEther process health check in: %s",
@@ -85,11 +93,23 @@ func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).
 		Set(func(t *Task[Pipe]) error {
+			process, err := ps.FindProcess(t.Pipe.Ctx.Health.DnsMasqPID)
+
+			if err != nil {
+				t.Log.Debugln(err)
+			}
+
+			if process == nil {
+				t.Channel.Fatal <- fmt.Errorf("SoftEther process is not alive.")
+			}
+
 			t.Log.Debugf(
 				"Next DNSMASQ process health check in: %s",
 				t.Pipe.Ctx.Health.Duration.String(),
 			)
+
 			time.Sleep(t.Pipe.Ctx.Health.Duration)
+
 			return nil
 		})
 }

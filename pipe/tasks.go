@@ -200,7 +200,8 @@ func GenerateSoftEtherServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 				output := new(bytes.Buffer)
 
 				if err := tmpl.Execute(output, SoftEtherConfigurationTemplate{
-					Interface: t.Pipe.SoftEther.TapInterface,
+					Interface:  t.Pipe.SoftEther.TapInterface,
+					DefaultHub: t.Pipe.SoftEther.DefaultHub,
 				}); err != nil {
 					return err
 				}

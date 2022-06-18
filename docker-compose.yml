@@ -21,9 +21,9 @@ services:
       # Configuration Files
       - ./volumes/softether-vpnsrv:/conf
       # Log files
-      - ./logs/packet_log:/etc/vpnserver/packet_log
-      - ./logs/security_log:/etc/vpnserver/security_log
-      - ./logs/server_log:/etc/vpnserver/server_log
+      - ./logs/server_log:/etc/softether/server_log
+      - ./logs/security_log:/etc/softether/security_log
+      - ./logs/packet_log:/etc/softether/packet_log
     cap_add:
       - SETGID
       - SETUID

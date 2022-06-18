@@ -27,6 +27,7 @@ type (
 	SoftEther struct {
 		Template     string `validate:"file"`
 		TapInterface string
+		DefaultHub   string
 	}
 
 	Server struct {
@@ -101,29 +102,7 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 				TL.JobBackground(
 					TL.JobIf(
 						TerminatePredicate(&TL),
-						TL.JobSequence(
-							TL.GuardIgnorePanic(
-								TL.JobSequence(
-									TL.GuardResume(
-										TerminateSoftEther(&TL).Job(),
-										TASK_ANY,
-									),
-									TL.GuardResume(
-										TerminateDhcpServer(&TL).Job(),
-										TASK_ANY,
-									),
-									TL.GuardResume(
-										TerminateTapInterface(&TL).Job(),
-										TASK_ANY,
-									),
-									TL.GuardResume(
-										TerminateBridgeInterface(&TL).Job(),
-										TASK_ANY,
-									),
-								),
-							),
-							TL.GuardResume(Terminated(&TL).Job(), TASK_ANY),
-						),
+						TL.GuardAlways(Terminate(&TL).Job()),
 					),
 				),
 			),

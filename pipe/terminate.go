@@ -16,9 +16,25 @@ func TerminatePredicate(tl *TaskList[Pipe]) JobPredicate {
 	})
 }
 
-func Terminated(tl *TaskList[Pipe]) *Task[Pipe] {
+func Terminate(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("terminate").
 		Set(func(t *Task[Pipe]) error {
+			t.SetSubtask(
+				tl.JobParallel(
+					TerminateSoftEther(&TL).Job(),
+					TerminateDhcpServer(&TL).Job(),
+					TerminateTapInterface(&TL).Job(),
+					TerminateBridgeInterface(&TL).Job(),
+				),
+			)
+
+			return nil
+		}).
+		ShouldRunAfter(func(t *Task[Pipe]) error {
+			if err := t.RunSubtasks(); err != nil {
+				return err
+			}
+
 			t.Log.Infoln("Graceful termination finished.")
 
 			t.Pipe.Terminator.Terminated <- true
