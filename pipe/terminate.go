@@ -88,7 +88,7 @@ func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Pipe.SoftEther.TapInterface,
 				"down",
 			).
-				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			t.CreateCommand(
@@ -97,7 +97,7 @@ func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 				"delete",
 				t.Pipe.SoftEther.TapInterface,
 			).
-				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			t.CreateCommand(
@@ -130,7 +130,7 @@ func TerminateBridgeInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Pipe.LinuxBridge.BridgeInterface,
 				"down",
 			).
-				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			t.CreateCommand(
@@ -138,7 +138,7 @@ func TerminateBridgeInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 				"delbr",
 				t.Pipe.LinuxBridge.BridgeInterface,
 			).
-				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
 			return nil

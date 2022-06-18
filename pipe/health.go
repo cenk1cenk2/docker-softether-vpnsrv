@@ -51,7 +51,10 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 			stats := pinger.Statistics()
 
 			if stats.PacketLoss == 100 {
-				return fmt.Errorf("Can not reach the upstream DHCP server.")
+				t.Channel.Fatal <- fmt.Errorf(
+					"Can not ping the upstream DHCP server: %s",
+					t.Pipe.Health.DhcpServerAddress,
+				)
 			}
 
 			t.Log.Debugf("Ping health check to %s in avg %s.", stats.IPAddr.String(), stats.AvgRtt)
@@ -97,7 +100,7 @@ func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			}
 
 			if process == nil {
-				t.Channel.Fatal <- fmt.Errorf("SoftEther process is not alive.")
+				t.Channel.Fatal <- fmt.Errorf("DNSMASQ process is not alive.")
 			}
 
 			t.Log.Debugf(
