@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.13
 
 ENV REPOSITORY https://github.com/SoftEtherVPN/SoftEtherVPN.git
 ENV S6_VERSION 2.2.0.3
@@ -6,6 +6,8 @@ ENV S6_VERSION 2.2.0.3
 # Install s6 overlay
 ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_VERSION}/s6-overlay-amd64.tar.gz /tmp/
 RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C /
+
+COPY .tags /tmp/.tags
 
 RUN \
   apk --no-cache --no-progress update && \
@@ -21,7 +23,7 @@ RUN \
   git clone ${REPOSITORY} /tmp/softether && \
   cd /tmp/softether && \
   # Checkout Latest Tag
-  git submodule init && git submodule update && export USE_MUSL=YES && \
+  git checkout "$(cat /tmp/.tags)" && git submodule init && git submodule update && export USE_MUSL=YES && \
   # Build
   ./configure && make --silent -C build && make --silent -C build install &&  \
   cp /tmp/softether/build/libcedar.so /tmp/softether/build/libmayaqua.so /usr/lib && \
