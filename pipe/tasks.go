@@ -74,36 +74,30 @@ func KeepAlive(tl *TaskList[Pipe]) *Task[Pipe] {
 func CreatePostroutingRules(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("postrouting").
 		Set(func(t *Task[Pipe]) error {
-			t.CreateCommand("iptables").
+			t.CreateCommand(
+				"iptables",
+				"-t",
+				"nat",
+				"-A",
+				"POSTROUTING",
+				"-s",
+				t.Pipe.Server.CidrAddress,
+				"-j",
+				"MASQUERADE",
+			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
-				Set(func(c *Command[Pipe]) error {
-					c.AppendArgs(
-						"-t",
-						"nat",
-						"-A",
-						"POSTROUTING",
-						"-s",
-						t.Pipe.Server.CidrAddress,
-						"-j",
-						"MASQUERADE",
-					)
-
-					return nil
-				}).
 				AddSelfToTheTask()
 
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			err := t.RunCommandJobAsJobParallel()
-
-			if err != nil {
+			if err := t.RunCommandJobAsJobParallel(); err != nil {
 				return err
 			}
 
 			t.Log.Infof("Created postrouting rules for: %s", t.Pipe.Server.CidrAddress)
 
-			return err
+			return nil
 		})
 }
 
@@ -293,14 +287,16 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			err := t.RunCommandJobAsJobSequence()
+			if err := t.RunCommandJobAsJobSequence(); err != nil {
+				return err
+			}
 
 			t.Log.Infof(
 				"Created tap adapter: %s",
 				t.Pipe.SoftEther.TapInterface,
 			)
 
-			return err
+			return nil
 		})
 }
 
@@ -365,10 +361,26 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
+			t.CreateCommand(
+				"iptables",
+				"-t",
+				"nat",
+				"-A",
+				"POSTROUTING",
+				"-o",
+				t.Pipe.LinuxBridge.UpstreamInterface,
+				"-j",
+				"MASQUERADE",
+			).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
+
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			err := t.RunCommandJobAsJobSequence()
+			if err := t.RunCommandJobAsJobSequence(); err != nil {
+				return err
+			}
 
 			t.Log.Infof(
 				"Created bridge adapter: %s -> %s %s",
@@ -377,6 +389,6 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Pipe.LinuxBridge.UpstreamInterface,
 			)
 
-			return err
+			return nil
 		})
 }

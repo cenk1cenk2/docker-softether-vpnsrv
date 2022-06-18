@@ -17,11 +17,13 @@ func RunDnsServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			err := t.RunCommandJobAsJobSequence()
+			if err := t.RunCommandJobAsJobSequence(); err != nil {
+				return err
+			}
 
 			t.Log.Infoln("Started DNSMASQ DHCP server.")
 
-			return err
+			return nil
 		})
 }
 
@@ -35,10 +37,12 @@ func RunSoftEtherVpnServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			err := t.RunCommandJobAsJobSequence()
+			if err := t.RunCommandJobAsJobSequence(); err != nil {
+				return err
+			}
 
 			t.Log.Infoln("Started SoftEtherVPN server.")
 
-			return err
+			return nil
 		})
 }
