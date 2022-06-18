@@ -119,7 +119,7 @@ The following options are only valid whenever `SERVER_MODE` is `dhcp`.
 | --- | --- | --- | --- | --- |
 | `DHCP_SERVER_TEMPLATE` | Template location for the DHCP server. | "/etc/template/dnsmasq.conf.tmpl" | string(path) |  |
 | `DHCP_SERVER_GATEWAY` | Set the gateway option for the underlying DNS server. | cidr address start | string(cidr) |  |
-| `DHCP_SERVER_SEND_GATEWAY` | Whether to send the default gateway to the client. Sometimes you do not want to proxy traffic through the network, rather just establish a connection to the VPN network. |  | boolean |  |
+| `DHCP_SERVER_SEND_GATEWAY` | Whether to send the default gateway to the client. Sometimes you do not want to proxy traffic through the network, rather just establish a connection to the VPN network. | true | boolean |  |
 | `DHCP_SERVER_LEASE` | DHCP server lease time for clients. | "12h" | string(duration) |  |
 | `DHCP_SERVER_FORWARDING_ZONE` | Set forwarding-zone DNS addresses for the DHCP server. | "8.8.8.8,8.8.4.4" | multiple(string, ",") |  |
 
