@@ -91,7 +91,14 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 						TL.JobParallel(
 							TL.JobBackground(TL.JobLoop(HealthCheckPing(&TL).Job())),
 							TL.JobBackground(TL.JobLoop(HealthCheckSoftEther(&TL).Job())),
-							TL.JobBackground(TL.JobLoop(HealthCheckDhcpServer(&TL).Job())),
+							TL.JobBackground(
+								TL.JobIf(
+									TL.Predicate(
+										func(tl *TaskList[Pipe]) bool { return TL.Pipe.Server.Mode == SERVER_MODE_DHCP },
+									),
+									TL.JobLoop(HealthCheckDhcpServer(&TL).Job()),
+								),
+							),
 						),
 					),
 

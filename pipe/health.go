@@ -89,9 +89,6 @@ func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 
 func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health:dnsmasq").
-		ShouldDisable(func(t *Task[Pipe]) bool {
-			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
-		}).
 		Set(func(t *Task[Pipe]) error {
 			process, err := ps.FindProcess(t.Pipe.Ctx.Health.DnsMasqPID)
 
