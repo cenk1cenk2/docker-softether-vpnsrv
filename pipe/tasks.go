@@ -299,6 +299,24 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 		}).
 		Set(func(t *Task[Pipe]) error {
 			t.CreateCommand(
+				"ifconfig",
+				t.Pipe.LinuxBridge.BridgeInterface,
+				"down",
+			).
+				SetIgnoreError(true).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
+
+			t.CreateCommand(
+				"brctl",
+				"delbr",
+				t.Pipe.LinuxBridge.BridgeInterface,
+			).
+				SetIgnoreError(true).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
+
+			t.CreateCommand(
 				"brctl",
 				"addbr",
 				t.Pipe.LinuxBridge.BridgeInterface,
