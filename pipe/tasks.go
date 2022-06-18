@@ -237,9 +237,7 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Pipe.SoftEther.TapInterface,
 			)
 
-			return nil
-		}).
-		Set(func(t *Task[Pipe]) error {
+			// remove existing interface
 			t.CreateCommand(
 				"ip",
 				"tuntap",
@@ -253,6 +251,10 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
+			return nil
+		}).
+		Set(func(t *Task[Pipe]) error {
+			// create interface
 			t.CreateCommand(
 				"ip",
 				"tuntap",
@@ -261,6 +263,18 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Pipe.SoftEther.TapInterface,
 				"mode",
 				"tap",
+			).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
+
+				// start interface
+			t.CreateCommand(
+				"ip",
+				"link",
+				"set",
+				"dev",
+				t.Pipe.SoftEther.TapInterface,
+				"up",
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
@@ -305,7 +319,8 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE
 		}).
-		Set(func(t *Task[Pipe]) error {
+		ShouldRunBefore(func(t *Task[Pipe]) error {
+			// remove existing interface first
 			t.CreateCommand(
 				"ifconfig",
 				t.Pipe.LinuxBridge.BridgeInterface,
@@ -324,6 +339,10 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
+			return nil
+		}).
+		Set(func(t *Task[Pipe]) error {
+			// create new interface
 			t.CreateCommand(
 				"brctl",
 				"addbr",
@@ -332,16 +351,26 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
+				// add interfaces
 			t.CreateCommand(
 				"brctl",
 				"addif",
 				t.Pipe.LinuxBridge.BridgeInterface,
 				t.Pipe.LinuxBridge.UpstreamInterface,
+			).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
+
+			t.CreateCommand(
+				"brctl",
+				"addif",
+				t.Pipe.LinuxBridge.BridgeInterface,
 				t.Pipe.SoftEther.TapInterface,
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
+				// start the interface
 			t.CreateCommand(
 				"ip",
 				"link",
@@ -353,24 +382,11 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
+				// debug
 			t.CreateCommand(
 				"brctl",
 				"show",
 				t.Pipe.LinuxBridge.BridgeInterface,
-			).
-				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
-				AddSelfToTheTask()
-
-			t.CreateCommand(
-				"iptables",
-				"-t",
-				"nat",
-				"-A",
-				"POSTROUTING",
-				"-o",
-				t.Pipe.LinuxBridge.UpstreamInterface,
-				"-j",
-				"MASQUERADE",
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
