@@ -14,7 +14,7 @@ RUN \
   # Grab and build Softether from GitHub
   git clone ${REPOSITORY} /tmp/softether && \
   cd /tmp/softether && \
-  # Checkout Latest Tag
+  # init submodules
   git submodule init && git submodule update && \
   # Build
   export USE_MUSL=YES && ./configure && make --silent -C build && make --silent -C build install &&  \
