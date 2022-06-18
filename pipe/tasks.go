@@ -249,6 +249,19 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 			t.CreateCommand(
 				"ip",
 				"tuntap",
+				"del",
+				"dev",
+				t.Pipe.SoftEther.TapInterface,
+				"mode",
+				"tap",
+			).
+				SetIgnoreError(true).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
+
+			t.CreateCommand(
+				"ip",
+				"tuntap",
 				"add",
 				"dev",
 				t.Pipe.SoftEther.TapInterface,
@@ -256,7 +269,6 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				"tap",
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
-				SetIgnoreError(true).
 				AddSelfToTheTask()
 
 				// give the server static ip for dnsmasq when on dhcp mode
