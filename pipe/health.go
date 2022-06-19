@@ -44,13 +44,13 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 			pinger.Timeout = time.Second * 10
 
 			if err != nil {
-				t.Plumber.SendCustomFatal(t.Log, err)
+				t.SendFatal(err)
 
 				return nil
 			}
 
 			if err := pinger.Run(); err != nil {
-				t.Plumber.SendCustomFatal(t.Log, err)
+				t.SendFatal(err)
 
 				return nil
 			}
@@ -58,7 +58,7 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 			stats := pinger.Statistics()
 
 			if stats.PacketLoss == 100 {
-				t.Plumber.SendCustomFatal(t.Log, fmt.Errorf(
+				t.SendFatal(fmt.Errorf(
 					"Can not ping the upstream DHCP server: %s",
 					t.Pipe.Health.DhcpServerAddress,
 				))
@@ -87,7 +87,7 @@ func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 			}
 
 			if process == nil {
-				t.Plumber.SendCustomFatal(t.Log, fmt.Errorf("SoftEther process is not alive."))
+				t.SendFatal(fmt.Errorf("SoftEther process is not alive."))
 
 				return nil
 			}
@@ -117,7 +117,7 @@ func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			}
 
 			if process == nil {
-				t.Plumber.SendCustomFatal(t.Log, fmt.Errorf("DNSMASQ process is not alive."))
+				t.SendFatal(fmt.Errorf("DNSMASQ process is not alive."))
 
 				return nil
 			}
