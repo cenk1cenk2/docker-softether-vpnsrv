@@ -351,26 +351,20 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
-				// add interfaces
-			t.CreateCommand(
-				"brctl",
-				"addif",
-				t.Pipe.LinuxBridge.BridgeInterface,
-				t.Pipe.LinuxBridge.UpstreamInterface,
-			).
-				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
-				AddSelfToTheTask()
+			// add interfaces
+			for _, v := range []string{t.Pipe.LinuxBridge.UpstreamInterface, t.Pipe.SoftEther.TapInterface} {
+				t.CreateCommand(
+					"brctl",
+					"addif",
+					t.Pipe.LinuxBridge.BridgeInterface,
+					v,
+				).
+					SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+					AddSelfToTheTask()
 
-			t.CreateCommand(
-				"brctl",
-				"addif",
-				t.Pipe.LinuxBridge.BridgeInterface,
-				t.Pipe.SoftEther.TapInterface,
-			).
-				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
-				AddSelfToTheTask()
+			}
 
-				// start the interface
+			// start the interface
 			t.CreateCommand(
 				"ip",
 				"link",
@@ -382,7 +376,7 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
-				// debug
+			// debug
 			t.CreateCommand(
 				"brctl",
 				"show",
