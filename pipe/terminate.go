@@ -19,7 +19,11 @@ func TerminatePredicate(tl *TaskList[Pipe]) JobPredicate {
 func Terminate(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("terminate").
 		SetJobWrapper(func(job Job) Job {
-			return TL.GuardAlways(job)
+			return tl.JobBackground(
+				tl.JobIf(
+					TerminatePredicate(tl), tl.GuardAlways(job),
+				),
+			)
 		}).
 		Set(func(t *Task[Pipe]) error {
 			t.SetSubtask(

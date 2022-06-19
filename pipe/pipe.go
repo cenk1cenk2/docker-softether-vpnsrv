@@ -99,12 +99,7 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 				),
 
 				// terminate handler
-				TL.JobBackground(
-					TL.JobIf(
-						TerminatePredicate(&TL),
-						Terminate(&TL).Job(),
-					),
-				),
+				Terminate(&TL).Job(),
 			),
 		)
 }
