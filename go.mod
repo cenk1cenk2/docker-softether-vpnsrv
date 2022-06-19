@@ -7,7 +7,7 @@ require (
 	github.com/go-ping/ping v1.1.0
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/urfave/cli/v2 v2.8.1
-	gitlab.kilic.dev/libraries/plumber/v3 v3.7.2
+	gitlab.kilic.dev/libraries/plumber/v3 v3.8.2
 )
 
 require (
@@ -30,3 +30,5 @@ require (
 	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c // indirect
 	golang.org/x/text v0.3.7 // indirect
 )
+
+// replace gitlab.kilic.dev/libraries/plumber/v3 => /home/cenk/development/plumber

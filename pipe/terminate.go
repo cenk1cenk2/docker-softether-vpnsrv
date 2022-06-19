@@ -18,13 +18,16 @@ func TerminatePredicate(tl *TaskList[Pipe]) JobPredicate {
 
 func Terminate(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("terminate").
+		SetJobWrapper(func(job Job) Job {
+			return TL.GuardAlways(job)
+		}).
 		Set(func(t *Task[Pipe]) error {
 			t.SetSubtask(
 				tl.JobParallel(
-					TerminateSoftEther(&TL).Job(),
-					TerminateDhcpServer(&TL).Job(),
-					TerminateTapInterface(&TL).Job(),
-					TerminateBridgeInterface(&TL).Job(),
+					TerminateSoftEther(tl).Job(),
+					TerminateDhcpServer(tl).Job(),
+					TerminateTapInterface(tl).Job(),
+					TerminateBridgeInterface(tl).Job(),
 				),
 			)
 

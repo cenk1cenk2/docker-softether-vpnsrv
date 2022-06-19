@@ -89,16 +89,9 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 					TL.JobSequence(
 						HealthCheckSetup(&TL).Job(),
 						TL.JobParallel(
-							TL.JobBackground(TL.JobLoop(HealthCheckPing(&TL).Job())),
-							TL.JobBackground(TL.JobLoop(HealthCheckSoftEther(&TL).Job())),
-							TL.JobBackground(
-								TL.JobIf(
-									TL.Predicate(
-										func(tl *TaskList[Pipe]) bool { return TL.Pipe.Server.Mode == SERVER_MODE_DHCP },
-									),
-									TL.JobLoop(HealthCheckDhcpServer(&TL).Job()),
-								),
-							),
+							HealthCheckPing(&TL).Job(),
+							HealthCheckSoftEther(&TL).Job(),
+							HealthCheckDhcpServer(&TL).Job(),
 						),
 					),
 
@@ -109,7 +102,7 @@ func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 				TL.JobBackground(
 					TL.JobIf(
 						TerminatePredicate(&TL),
-						TL.GuardAlways(Terminate(&TL).Job()),
+						Terminate(&TL).Job(),
 					),
 				),
 			),

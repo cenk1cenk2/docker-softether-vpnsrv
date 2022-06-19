@@ -35,6 +35,9 @@ func HealthCheckSetup(tl *TaskList[Pipe]) *Task[Pipe] {
 
 func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health:ping").
+		SetJobWrapper(func(job Job) Job {
+			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Ctx.Health.Duration))
+		}).
 		Set(func(t *Task[Pipe]) error {
 			pinger, err := ping.NewPinger(t.Pipe.Health.DhcpServerAddress)
 			pinger.Count = 3
@@ -60,7 +63,6 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 			t.Log.Debugf("Ping health check to %s in avg %s.", stats.IPAddr.String(), stats.AvgRtt)
 
 			t.Log.Debugf("Next ping health check in: %s", t.Pipe.Ctx.Health.Duration.String())
-			time.Sleep(t.Pipe.Ctx.Health.Duration)
 
 			return nil
 		})
@@ -68,6 +70,9 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 
 func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health:softether").
+		SetJobWrapper(func(job Job) Job {
+			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Ctx.Health.Duration))
+		}).
 		Set(func(t *Task[Pipe]) error {
 			process, err := ps.FindProcess(t.Pipe.Ctx.Health.SoftEtherPID)
 
@@ -84,14 +89,18 @@ func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Pipe.Ctx.Health.Duration.String(),
 			)
 
-			time.Sleep(t.Pipe.Ctx.Health.Duration)
-
 			return nil
 		})
 }
 
 func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health:dnsmasq").
+		ShouldDisable(func(t *Task[Pipe]) bool {
+			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
+		}).
+		SetJobWrapper(func(job Job) Job {
+			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Ctx.Health.Duration))
+		}).
 		Set(func(t *Task[Pipe]) error {
 			process, err := ps.FindProcess(t.Pipe.Ctx.Health.DnsMasqPID)
 
@@ -107,8 +116,6 @@ func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 				"Next DNSMASQ process health check in: %s",
 				t.Pipe.Ctx.Health.Duration.String(),
 			)
-
-			time.Sleep(t.Pipe.Ctx.Health.Duration)
 
 			return nil
 		})
