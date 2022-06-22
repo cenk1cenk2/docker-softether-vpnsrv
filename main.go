@@ -19,13 +19,7 @@ func main() {
 				Description: DESCRIPTION,
 				Flags:       p.AppendFlags(pipe.Flags),
 				Before: func(ctx *cli.Context) error {
-					p.SetOnTerminate(func() error {
-						pipe.TL.Pipe.Terminator.ShouldTerminate <- true
-
-						<-pipe.TL.Pipe.Terminator.Terminated
-
-						return nil
-					})
+					p.EnableTerminator()
 
 					return nil
 				},

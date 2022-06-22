@@ -35,14 +35,8 @@ type (
 		CidrAddress string `validate:"cidrv4"`
 	}
 
-	Terminator struct {
-		ShouldTerminate chan bool
-		Terminated      chan bool
-	}
-
 	Pipe struct {
 		Ctx
-		Terminator
 
 		Health
 		DhcpServer
@@ -59,12 +53,6 @@ var TL = TaskList[Pipe]{
 func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
 	return TL.New(p).
 		SetCliContext(ctx).
-		ShouldRunBefore(func(tl *TaskList[Pipe]) error {
-			tl.Pipe.Terminator.ShouldTerminate = make(chan bool, 1)
-			tl.Pipe.Terminator.Terminated = make(chan bool, 1)
-
-			return nil
-		}).
 		SetTasks(
 			TL.JobParallel(
 				TL.JobSequence(

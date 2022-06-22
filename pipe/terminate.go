@@ -8,11 +8,9 @@ func TerminatePredicate(tl *TaskList[Pipe]) JobPredicate {
 	return tl.Predicate(func(tl *TaskList[Pipe]) bool {
 		tl.Log.Debugln("Registered terminate listener.")
 
-		a := <-tl.Pipe.Terminator.ShouldTerminate
+		<-tl.Plumber.Terminator.ShouldTerminate
 
-		tl.Log.Warnln("Running termination tasks...")
-
-		return a
+		return true
 	})
 }
 
@@ -26,6 +24,8 @@ func Terminate(tl *TaskList[Pipe]) *Task[Pipe] {
 			)
 		}).
 		Set(func(t *Task[Pipe]) error {
+			tl.Log.Warnln("Running termination tasks...")
+
 			t.SetSubtask(
 				tl.JobParallel(
 					TerminateSoftEther(tl).Job(),
@@ -44,10 +44,7 @@ func Terminate(tl *TaskList[Pipe]) *Task[Pipe] {
 
 			t.Log.Infoln("Graceful termination finished.")
 
-			t.Pipe.Terminator.Terminated <- true
-
-			close(t.Pipe.Terminator.ShouldTerminate)
-			close(t.Pipe.Terminator.Terminated)
+			t.Plumber.SendTerminated()
 
 			return nil
 		})

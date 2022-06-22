@@ -61,16 +61,6 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 		})
 }
 
-func KeepAlive(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("keep-alive").
-		Set(func(t *Task[Pipe]) error {
-			<-t.Pipe.Terminator.Terminated
-
-			return nil
-		})
-
-}
-
 func CreatePostroutingRules(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("postrouting").
 		Set(func(t *Task[Pipe]) error {

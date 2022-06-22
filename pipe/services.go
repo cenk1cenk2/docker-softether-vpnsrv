@@ -46,3 +46,12 @@ func RunSoftEtherVpnServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		})
 }
+
+func KeepAlive(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("keep-alive").
+		Set(func(t *Task[Pipe]) error {
+			<-t.Plumber.Terminator.Terminated
+
+			return nil
+		})
+}
