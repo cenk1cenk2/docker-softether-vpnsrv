@@ -53,40 +53,37 @@ var TL = TaskList[Pipe]{
 func New(p *Plumber) *TaskList[Pipe] {
 	return TL.New(p).
 		SetTasks(
-			TL.JobParallel(
-				TL.JobSequence(
-					Setup(&TL).Job(),
-
-					TL.JobParallel(
-						CreatePostroutingRules(&TL).Job(),
-						GenerateDhcpServerConfiguration(&TL).Job(),
-						GenerateSoftEtherServerConfiguration(&TL).Job(),
-					),
-
-					TL.JobSequence(
-						CreateTapDevice(&TL).Job(),
-						CreateBridgeDevice(&TL).Job(),
-					),
-
-					TL.JobParallel(
-						RunDnsServer(&TL).Job(),
-						RunSoftEtherVpnServer(&TL).Job(),
-					),
-
-					TL.JobSequence(
-						HealthCheckSetup(&TL).Job(),
-						TL.JobParallel(
-							HealthCheckPing(&TL).Job(),
-							HealthCheckSoftEther(&TL).Job(),
-							HealthCheckDhcpServer(&TL).Job(),
-						),
-					),
-
-					KeepAlive(&TL).Job(),
-				),
-
+			TL.JobSequence(
 				// terminate handler
 				Terminate(&TL).Job(),
+				Setup(&TL).Job(),
+
+				TL.JobParallel(
+					CreatePostroutingRules(&TL).Job(),
+					GenerateDhcpServerConfiguration(&TL).Job(),
+					GenerateSoftEtherServerConfiguration(&TL).Job(),
+				),
+
+				TL.JobSequence(
+					CreateTapDevice(&TL).Job(),
+					CreateBridgeDevice(&TL).Job(),
+				),
+
+				TL.JobParallel(
+					RunDnsServer(&TL).Job(),
+					RunSoftEtherVpnServer(&TL).Job(),
+				),
+
+				TL.JobSequence(
+					HealthCheckSetup(&TL).Job(),
+					TL.JobParallel(
+						HealthCheckPing(&TL).Job(),
+						HealthCheckSoftEther(&TL).Job(),
+						HealthCheckDhcpServer(&TL).Job(),
+					),
+				),
+
+				TL.JobWaitForTerminator(),
 			),
 		)
 }
