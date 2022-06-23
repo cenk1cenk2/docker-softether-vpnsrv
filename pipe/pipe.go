@@ -74,14 +74,7 @@ func New(p *Plumber) *TaskList[Pipe] {
 					RunSoftEtherVpnServer(&TL).Job(),
 				),
 
-				TL.JobSequence(
-					HealthCheckSetup(&TL).Job(),
-					TL.JobParallel(
-						HealthCheckPing(&TL).Job(),
-						HealthCheckSoftEther(&TL).Job(),
-						HealthCheckDhcpServer(&TL).Job(),
-					),
-				),
+				HealthCheck(&TL).Job(),
 
 				TL.JobWaitForTerminator(),
 			),

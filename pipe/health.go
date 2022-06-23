@@ -9,8 +9,18 @@ import (
 	. "gitlab.kilic.dev/libraries/plumber/v3"
 )
 
-func HealthCheckSetup(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("health:init").
+func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("health:main").
+		SetJobWrapper(func(job Job) Job {
+			return TL.JobSequence(
+				job,
+				TL.JobParallel(
+					HealthCheckPing(tl).Job(),
+					HealthCheckSoftEther(tl).Job(),
+					HealthCheckDhcpServer(tl).Job(),
+				),
+			)
+		}).
 		Set(func(t *Task[Pipe]) error {
 			processes, err := ps.Processes()
 
