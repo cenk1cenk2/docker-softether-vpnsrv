@@ -25,7 +25,7 @@ func main() {
 				},
 				Action: func(ctx *cli.Context) error {
 					return pipe.TL.RunJobs(
-						pipe.New(p, ctx).Job(),
+						pipe.New(p).SetCliContext(ctx).Job(),
 					)
 				},
 			}

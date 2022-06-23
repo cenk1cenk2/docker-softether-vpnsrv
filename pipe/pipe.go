@@ -50,9 +50,8 @@ var TL = TaskList[Pipe]{
 	Pipe: Pipe{},
 }
 
-func New(p *Plumber, ctx *cli.Context) *TaskList[Pipe] {
+func New(p *Plumber) *TaskList[Pipe] {
 	return TL.New(p).
-		SetCliContext(ctx).
 		SetTasks(
 			TL.JobParallel(
 				TL.JobSequence(
