@@ -237,7 +237,7 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				"mode",
 				"tap",
 			).
-				SetIgnoreError(true).
+				SetIgnoreError().
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
@@ -316,7 +316,7 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Pipe.LinuxBridge.BridgeInterface,
 				"down",
 			).
-				SetIgnoreError(true).
+				SetIgnoreError().
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
@@ -325,7 +325,7 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				"delbr",
 				t.Pipe.LinuxBridge.BridgeInterface,
 			).
-				SetIgnoreError(true).
+				SetIgnoreError().
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
