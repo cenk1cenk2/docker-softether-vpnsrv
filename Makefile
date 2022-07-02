@@ -38,10 +38,13 @@ clean:
 
 # Cross compilation
 
-build: build-linux-amd64
+build: build-linux-amd64 build-linux-arm64
 
 build-linux-amd64:
-	CGO_ENABLED=$(GO_OPTION_C) GOOS=linux GOARCH=amd64 $(GO_BUILD) -mod=readonly -o $(BINARY_FOLDER)/$(BINARY_NAME)
+	CGO_ENABLED=$(GO_OPTION_C) GOOS=linux GOARCH=amd64 $(GO_BUILD) -mod=readonly -o $(BINARY_FOLDER)/$(BINARY_NAME)-linux-amd64
+
+build-linux-arm64:
+	CGO_ENABLED=$(GO_OPTION_C) GOOS=linux GOARCH=arm64 $(GO_BUILD) -mod=readonly -o $(BINARY_FOLDER)/$(BINARY_NAME)-linux-arm64
 
 dev:
 	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) --log-level debug $(ARGS)

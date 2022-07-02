@@ -8,6 +8,8 @@ stages:
 
 variables:
   DOCKER_IMAGE_NAME: cenk1cenk2/softether-vpnsrv
+  DOCKER_USE_BUILDX: 'true'
+  DOCKER_BUILDX_PLATFORMS: linux/amd64,linux/arm64
   GH_REPOSITORY: SoftEtherVPN/SoftEtherVPN
   README_DESCRIPTION: |
     SoftEther VPN server in a container with pre-configured setup for networking.

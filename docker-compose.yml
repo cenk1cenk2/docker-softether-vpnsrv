@@ -5,6 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        TARGET_OS: linux
+        TARGET_ARCH: amd64
     env_file: .env
     devices:
       - /dev/net/tun

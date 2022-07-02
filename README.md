@@ -80,6 +80,10 @@ At shutdown or crashes, the container cleans up all the created virtual ethernet
 
 This is a best-effort process and it can not guarantee to finish this process successfully.
 
+### Architecture
+
+This image is build for `linux-amd64` and `linux-arm64` architectures.
+
 ## Environment Variables
 
 ### General
@@ -171,6 +175,8 @@ The configuration has defaults as follows.
 The log files can be found on `/etc/softether/server_log`, `/etc/softether/security_log`, `/etc/softether/packet_log` inside the container. So you can mount a folder there to obtain the logs from SoftEtherVPN server.
 
 **The auto-generated configuration file will SoftEtherVPN server will have the logging disabled by default.** You can re-enable it through the options of the server.
+
+If you do not need any kind of logs you can always mount them to `/dev/null`.
 
 ### Ports
 

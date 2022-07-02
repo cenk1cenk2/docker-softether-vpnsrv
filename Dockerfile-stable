@@ -1,5 +1,9 @@
 FROM alpine:latest
 
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETVARIANT
+
 ENV REPOSITORY https://github.com/SoftEtherVPN/SoftEtherVPN.git
 
 COPY .tags /tmp/.tags
@@ -52,7 +56,7 @@ VOLUME [ "/conf" ]
 
 # Move host file system
 COPY ./.docker/hostfs /
-COPY ./dist/pipe /usr/bin/pipe
+COPY ./dist/pipe-${TARGETOS}-${TARGETARCH}${TARGETVARIANT} /usr/bin/pipe
 
 RUN chmod +x /usr/bin/pipe
 
