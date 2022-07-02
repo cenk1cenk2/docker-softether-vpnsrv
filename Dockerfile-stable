@@ -25,7 +25,7 @@ RUN \
   # init submodules
   git submodule init && git submodule update && \
   # Build
-  if [ "${TARGETARCH}" == "arm64" ]; then export CMAKE_FLAGS="${CMAKE_FLAGS} -DSKIP_CPU_FEATURES"; fi && \
+  if [ "${TARGETARCH}" == "arm64" ]; then export CMAKE_FLAGS="${CMAKE_FLAGS} -DSKIP_CPU_FEATURES=ON"; fi && \
   export USE_MUSL=YES && ./configure && make --silent -C build && make --silent -C build install &&  \
   cp /tmp/softether/build/libcedar.so /tmp/softether/build/libmayaqua.so /usr/lib && \
   # Removing build extensions
