@@ -38,13 +38,7 @@ build-docker-image:
         TAGS_FILE: '.tags'
       - DOCKERFILE_NAME: Dockerfile
         IMAGE_TAGS: latest
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: on_success
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: on_success
-    - if: $DOCKERFILE_NAME == "Dockerfile-stable"
-      allow_failure: true
-    - when: never
-  tags:
-    - external
+  only:
+    refs:
+      - schedules
+      - master
