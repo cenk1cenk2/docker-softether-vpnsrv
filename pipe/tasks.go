@@ -415,10 +415,10 @@ func UseDhcpForBridge(tl *TaskList[Pipe]) *Task[Pipe] {
 		}).
 		Set(func(t *Task[Pipe]) error {
 			t.CreateCommand("dhclient", "-v", t.Pipe.LinuxBridge.BridgeInterface).
-				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				EnableStreamRecording().
 				ShouldRunAfter(func(c *Command[Pipe]) error {
-					stream := c.GetStdoutStream()
+					stream := c.GetCombinedStream()
 					var ip string
 					for _, line := range stream {
 						if strings.HasPrefix(line, "DHCPRELEASE") {
