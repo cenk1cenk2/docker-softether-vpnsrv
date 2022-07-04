@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   softether-vpnsrv:
-    image: cenk1cenk2/softether-vpnsrv:edge
+    image: cenk1cenk2/softether-vpnsrv:test
     build:
       context: .
       dockerfile: Dockerfile

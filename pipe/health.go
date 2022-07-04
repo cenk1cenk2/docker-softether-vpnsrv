@@ -10,7 +10,7 @@ import (
 )
 
 func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("health:main").
+	return tl.CreateTask("health:parent").
 		SetJobWrapper(func(job Job) Job {
 			return TL.JobSequence(
 				job,

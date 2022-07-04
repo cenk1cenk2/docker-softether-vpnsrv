@@ -22,6 +22,8 @@ type (
 	LinuxBridge struct {
 		BridgeInterface   string
 		UpstreamInterface string
+		UseDhcp           bool
+		StaticIp          string `validate:"omitempty,ip"`
 	}
 
 	SoftEther struct {
@@ -66,7 +68,7 @@ func New(p *Plumber) *TaskList[Pipe] {
 
 				TL.JobSequence(
 					CreateTapDevice(&TL).Job(),
-					CreateBridgeDevice(&TL).Job(),
+					BridgeSetupParent(&TL).Job(),
 				),
 
 				TL.JobParallel(

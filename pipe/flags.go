@@ -109,6 +109,26 @@ var Flags = []cli.Flag{
 		Destination: &TL.Pipe.LinuxBridge.UpstreamInterface,
 	},
 
+	&cli.BoolFlag{
+		Name:        "linux-bridge.use-dhcp",
+		Usage:       "Use the upstream DHCP server to get ip for the bridge interface.",
+		Category:    category_linux_bridge,
+		Required:    false,
+		EnvVars:     []string{"LINUX_BRIDGE_USE_DHCP"},
+		Value:       true,
+		Destination: &TL.Pipe.LinuxBridge.UseDhcp,
+	},
+
+	&cli.StringFlag{
+		Name:        "linux-bridge.static-ip",
+		Usage:       "Use a static IP for the bridge interface.",
+		Category:    category_linux_bridge,
+		Required:    false,
+		EnvVars:     []string{"LINUX_BRIDGE_STATIC_IP"},
+		Value:       "",
+		Destination: &TL.Pipe.LinuxBridge.StaticIp,
+	},
+
 	// softether
 
 	&cli.StringFlag{

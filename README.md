@@ -135,6 +135,8 @@ The following options are only valid whenever `SERVER_MODE` is `bridge`.
 | --- | --- | --- | --- | --- |
 | `LINUX_BRIDGE_INTERFACE_NAME` | Interface name for the resulting communication bridge interface. | "br100" | string |  |
 | `LINUX_BRIDGE_UPSTREAM_INTERFACE` | Interface name for the upstream parent network interface to bridge to, this interface should provide a DHCP server to handle the clients. | "eth0" | string |  |
+| `LINUX_BRIDGE_USE_DHCP` | Use the upstream DHCP server to get ip for the bridge interface. | true | boolean |  |
+| `LINUX_BRIDGE_STATIC_IP` | Use a static IP for the bridge interface. |  | string |  |
 
 ## Setup
 

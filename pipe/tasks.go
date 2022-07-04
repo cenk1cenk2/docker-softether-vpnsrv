@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"path"
+	"strings"
 	"text/template"
 	"time"
 
@@ -304,6 +305,20 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 		})
 }
 
+func BridgeSetupParent(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("interface:bridge:parent").
+		ShouldDisable(func(t *Task[Pipe]) bool {
+			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE
+		}).
+		SetJobWrapper(func(job Job) Job {
+			return tl.JobSequence(
+				CreateBridgeDevice(tl).Job(),
+				UseDhcpForBridge(tl).Job(),
+				UseStaticIpForBridge(tl).Job(),
+			)
+		})
+}
+
 func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("interface:bridge").
 		ShouldDisable(func(t *Task[Pipe]) bool {
@@ -390,5 +405,61 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 			)
 
 			return nil
+		})
+}
+
+func UseDhcpForBridge(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("interface:bridge:dhcp").
+		ShouldDisable(func(t *Task[Pipe]) bool {
+			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE || !t.Pipe.LinuxBridge.UseDhcp
+		}).
+		Set(func(t *Task[Pipe]) error {
+			t.CreateCommand("dhclient", "-v", t.Pipe.LinuxBridge.BridgeInterface).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				EnableStreamRecording().
+				ShouldRunAfter(func(c *Command[Pipe]) error {
+					stream := c.GetStdoutStream()
+					var ip string
+					for _, line := range stream {
+						if strings.HasPrefix(line, "DHCPRELEASE") {
+							ip = line
+						}
+					}
+
+					t.Log.Infof(
+						"Bridge adapter upstream IP: %s -> %s",
+						t.Pipe.LinuxBridge.BridgeInterface,
+						ip,
+					)
+
+					return nil
+				}).
+				AddSelfToTheTask()
+
+			return nil
+		}).
+		ShouldRunAfter(func(t *Task[Pipe]) error {
+			return t.RunCommandJobAsJobSequence()
+		})
+}
+
+func UseStaticIpForBridge(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("interface:bridge:static").
+		ShouldDisable(func(t *Task[Pipe]) bool {
+			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE || t.Pipe.LinuxBridge.UseDhcp
+		}).
+		Set(func(t *Task[Pipe]) error {
+			if t.Pipe.LinuxBridge.StaticIp == "" {
+				return fmt.Errorf("You should define a static IP in the CIDR range if you do not want to use the upstream DHCP server.")
+			}
+
+			t.CreateCommand("ifconfig", t.Pipe.LinuxBridge.BridgeInterface, t.Pipe.LinuxBridge.StaticIp).
+				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
+
+			return nil
+		}).
+		ShouldRunAfter(func(t *Task[Pipe]) error {
+			return t.RunCommandJobAsJobSequence()
 		})
 }
