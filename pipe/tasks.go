@@ -421,7 +421,7 @@ func UseDhcpForBridge(tl *TaskList[Pipe]) *Task[Pipe] {
 					stream := c.GetCombinedStream()
 					var ip string
 					for _, line := range stream {
-						if strings.HasPrefix(line, "DHCPRELEASE") {
+						if strings.HasPrefix(line, "bound to") {
 							ip = line
 						}
 					}
