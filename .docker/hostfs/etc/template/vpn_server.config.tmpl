@@ -120,7 +120,7 @@ declare root
 		bool OpenVPNObfuscation false
 		string OpenVPNObfuscationMask $
 		bool OpenVPNPushDummyIPv4AddressOnL2Mode true
-		string OpenVPN_UdpPortList 1194
+		string PortsUDP 1194
 		bool SaveDebugLog false
 		byte ServerCert
 		byte ServerKey
@@ -285,8 +285,8 @@ declare root
 				bool DisableCorrectIpOffloadChecksum false
 				bool DisableHttpParsing false
 				bool DisableIPParsing false
-				bool DisableIpRawModeSecureNAT false
-				bool DisableKernelModeSecureNAT false
+				bool DisableIpRawModeSecureNAT true
+				bool DisableKernelModeSecureNAT true
 				bool DisableUdpAcceleration false
 				bool DisableUdpFilterForLocalBridgeNic false
 				bool DisableUserModeSecureNAT false
