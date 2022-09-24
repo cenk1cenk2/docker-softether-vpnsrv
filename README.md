@@ -18,6 +18,9 @@ This container runs a SoftEther VPN Server bundled together with a configuration
 
 [Read more](https://www.softether.org/) about SoftEther in the official documentation.
 
+---
+
+- [CLI Documentation](./CLI.md)
 <!-- toc -->
 
 - [Features](#features)
@@ -88,55 +91,55 @@ This image is built for `linux-amd64` and `linux-arm64` architectures.
 
 ### General
 
-| Environment Variable | Description                   | Default | Format                                                      | Required |
-| -------------------- | ----------------------------- | ------- | ----------------------------------------------------------- | -------- |
-| `TZ`                 | Timezone for the server.      |         | string                                                      |          |
-| `LOG_LEVEL`          | Log level for the supervisor. | INFO    | enum("PANIC", "FATAL", "WARNING", "INFO", "DEBUG", "TRACE") |          |
+| Flag / Environment |  Description   |  Type    | Required | Default |
+|---------------- | --------------- | --------------- |  --------------- |  --------------- |
+| `$DEBUG` | Enable debugging for the application. | `Bool` | `false` | false |
+| `$LOG_LEVEL` | Define the log level for the application.  | `String`<br/>enum(&#34;PANIC&#34;, &#34;FATAL&#34;, &#34;WARNING&#34;, &#34;INFO&#34;, &#34;DEBUG&#34;, &#34;TRACE&#34;) | `false` | &#34;info&#34; |
 
 ### Server
 
-| Environment Variable  | Description                                        | Default       | Format                 | Required |
-| --------------------- | -------------------------------------------------- | ------------- | ---------------------- | -------- |
-| `SERVER_MODE`         | Server mode changes the behavior of the container. |               | enum("dhcp", "bridge") | yes      |
-| `SERVER_CIDR_ADDRESS` | CIDR address of the server.                        | "10.0.0.0/24" | string(cidr)           |          |
+| Flag / Environment |  Description   |  Type    | Required | Default |
+|---------------- | --------------- | --------------- |  --------------- |  --------------- |
+| `$SERVER_MODE` | Server mode changes the behavior of the container.  | `String`<br/>enum(&#34;dhcp&#34;, &#34;bridge&#34;) | `true` |  |
+| `$SERVER_CIDR_ADDRESS` | CIDR address of the server. | `String` | `false` | &#34;10.0.0.0/24&#34; |
 
 ### SoftEther
 
-| Environment Variable      | Description                                                             | Default                                | Format       | Required |
-| ------------------------- | ----------------------------------------------------------------------- | -------------------------------------- | ------------ | -------- |
-| `SOFTETHER_TAP_INTERFACE` | Interface name for SoftEther and the server to bind to as a tap device. | "soft"                                 | string       |          |
-| `SOFTETHER_TEMPLATE`      | Template location for the SoftEtherVPN server.                          | "/etc/template/vpn_server.config.tmpl" | string(path) |          |
-| `SOFTETHER_DEFAULT_HUB`   | Default hub name for SoftEtherVPN server.                               | "DEFAULT"                              | string       |          |
+| Flag / Environment |  Description   |  Type    | Required | Default |
+|---------------- | --------------- | --------------- |  --------------- |  --------------- |
+| `$SOFTETHER_TEMPLATE` | Template location for the SoftEtherVPN server. | `String` | `false` | &#34;/etc/template/vpn_server.config.tmpl&#34; |
+| `$SOFTETHER_TAP_INTERFACE` | Interface name for SoftEther and the server to bind to as a tap device. | `String` | `false` | &#34;soft&#34; |
+| `$SOFTETHER_DEFAULT_HUB` | Default hub name for SoftEtherVPN server. | `String` | `false` | &#34;DEFAULT&#34; |
 
 ### Health
 
-| Environment Variable         | Description                                               | Default            | Format           | Required |
-| ---------------------------- | --------------------------------------------------------- | ------------------ | ---------------- | -------- |
-| `HEALTH_CHECK_INTERVAL`      | Health check interval to the upstream server in duration. | "1h"               | string(duration) |          |
-| `HEALTH_DHCP_SERVER_ADDRESS` | Upstream DHCP server address for doing health checks.     | cidr address start | string(cidr)     |          |
+| Flag / Environment |  Description   |  Type    | Required | Default |
+|---------------- | --------------- | --------------- |  --------------- |  --------------- |
+| `$HEALTH_CHECK_INTERVAL` | Health check interval to the upstream server in duration. | `String` | `false` | &#34;1h&#34; |
+| `$HEALTH_DHCP_SERVER_ADDRESS` | Upstream DHCP server address for doing health checks.  | `String`<br/>dynamic(&#34;cidr address start&#34;) | `false` |  |
 
 ### DHCP-Server
 
 The following options are only valid whenever `SERVER_MODE` is `dhcp`.
 
-| Environment Variable | Description | Default | Format | Required |
-| --- | --- | --- | --- | --- |
-| `DHCP_SERVER_TEMPLATE` | Template location for the DHCP server. | "/etc/template/dnsmasq.conf.tmpl" | string(path) |  |
-| `DHCP_SERVER_GATEWAY` | Set the gateway option for the underlying DNS server. | cidr address start | string(cidr) |  |
-| `DHCP_SERVER_SEND_GATEWAY` | Whether to send the default gateway to the client. Sometimes you do not want to proxy traffic through the network, rather just establish a connection to the VPN network. | true | boolean |  |
-| `DHCP_SERVER_LEASE` | DHCP server lease time for clients. | "12h" | string(duration) |  |
-| `DHCP_SERVER_FORWARDING_ZONE` | Set forwarding-zone DNS addresses for the DHCP server. | "8.8.8.8,8.8.4.4" | multiple(string, ",") |  |
+| Flag / Environment |  Description   |  Type    | Required | Default |
+|---------------- | --------------- | --------------- |  --------------- |  --------------- |
+| `$DHCP_SERVER_TEMPLATE` | Template location for the DHCP server. | `String` | `false` | &#34;/etc/template/dnsmasq.conf.tmpl&#34; |
+| `$DHCP_SERVER_LEASE` | DHCP server lease time for clients. | `String` | `false` | &#34;12h&#34; |
+| `$DHCP_SERVER_SEND_GATEWAY` | Whether to send the default gateway to the client. Sometimes you do not want to proxy traffic through the network, rather just establish a connection to the VPN network. | `Bool` | `false` | true |
+| `$DHCP_SERVER_GATEWAY` | Set the gateway option for the underlying DNS server.  | `String`<br/>dynamic(&#34;cidr address start&#34;) | `false` |  |
+| `$DHCP_SERVER_FORWARDING_ZONE` | Set forwarding-zone DNS addresses for the DHCP server. | `StringSlice` | `false` | [8.8.8.8 8.8.4.4] |
 
 ### Linux-Bridge
 
 The following options are only valid whenever `SERVER_MODE` is `bridge`.
 
-| Environment Variable | Description | Default | Format | Required |
-| --- | --- | --- | --- | --- |
-| `LINUX_BRIDGE_INTERFACE_NAME` | Interface name for the resulting communication bridge interface. | "br100" | string |  |
-| `LINUX_BRIDGE_UPSTREAM_INTERFACE` | Interface name for the upstream parent network interface to bridge to, this interface should provide a DHCP server to handle the clients. | "eth0" | string |  |
-| `LINUX_BRIDGE_USE_DHCP` | Use the upstream DHCP server to get ip for the bridge interface. | true | boolean |  |
-| `LINUX_BRIDGE_STATIC_IP` | Use a static IP for the bridge interface. |  | string |  |
+| Flag / Environment |  Description   |  Type    | Required | Default |
+|---------------- | --------------- | --------------- |  --------------- |  --------------- |
+| `$LINUX_BRIDGE_INTERFACE_NAME` | Interface name for the resulting communication bridge interface. | `String` | `false` | &#34;br100&#34; |
+| `$LINUX_BRIDGE_UPSTREAM_INTERFACE` | Interface name for the upstream parent network interface to bridge to, this interface should provide a DHCP server to handle the clients. | `String` | `false` | &#34;eth0&#34; |
+| `$LINUX_BRIDGE_USE_DHCP` | Use the upstream DHCP server to get ip for the bridge interface. | `Bool` | `false` | true |
+| `$LINUX_BRIDGE_STATIC_IP` | Use a static IP for the bridge interface. | `String` | `false` |  |
 
 ## Setup
 

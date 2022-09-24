@@ -98,7 +98,6 @@ func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).
 		ShouldRunBefore(func(t *Task[Pipe]) error {
-
 			// set default gateway address
 			if t.Pipe.DhcpServer.Gateway == "" && t.Pipe.DhcpServer.SendGateway {
 				t.Lock.Lock()
@@ -366,7 +365,6 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 				).
 					SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 					AddSelfToTheTask()
-
 			}
 
 			// start the interface

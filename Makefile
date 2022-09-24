@@ -1,4 +1,4 @@
-GO_VERSION=1.18
+GO_VERSION=1.19
 
 GO_CMD=go
 GO_BUILD=$(GO_CMD) build
@@ -25,7 +25,10 @@ tidy:
 BINARY_FOLDER=dist
 BINARY_NAME=pipe
 
-all: test build
+all: lint test build
+
+lint:
+	CGO_ENABLED=$(GO_OPTION_C)	golangci-lint run ./...
 
 test:
 	CGO_ENABLED=$(GO_OPTION_C) $(GO_TEST) -v -p 1 ./...
@@ -46,11 +49,14 @@ build-linux-amd64:
 build-linux-arm64:
 	CGO_ENABLED=$(GO_OPTION_C) GOOS=linux GOARCH=arm64 $(GO_BUILD) -mod=readonly -o $(BINARY_FOLDER)/$(BINARY_NAME)-linux-arm64
 
+build-docker:
+	docker-compose build
+
 dev:
 	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) --log-level debug $(ARGS)
 
 docs:
-	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) --log-level debug docs
+	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) MARKDOWN_DOC
 
 help:
 	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) --help

@@ -4,12 +4,14 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+//revive:disable:line-length-limit
+
 const (
-	category_health       = "health"
-	category_dhcp_server  = "dhcp-server"
-	category_linux_bridge = "linux-bridge"
-	category_server       = "server"
-	category_softether    = "softether"
+	category_health       = "Health"
+	category_dhcp_server  = "Dhcp-Server"
+	category_linux_bridge = "Linux-Bridge"
+	category_server       = "Server"
+	category_softether    = "SoftEther"
 )
 
 var Flags = []cli.Flag{
@@ -27,7 +29,7 @@ var Flags = []cli.Flag{
 
 	&cli.StringFlag{
 		Name:        "health.dhcp-server-address",
-		Usage:       "Upstream DHCP server address for doing health checks. (default: cidr address start)",
+		Usage:       `Upstream DHCP server address for doing health checks. dynamic("cidr address start")`,
 		Category:    category_health,
 		Required:    false,
 		EnvVars:     []string{"HEALTH_DHCP_SERVER_ADDRESS"},
@@ -69,7 +71,7 @@ var Flags = []cli.Flag{
 
 	&cli.StringFlag{
 		Name:        "dhcp-server.gateway",
-		Usage:       "Set the gateway option for the underlying DNS server. (default: cidr address start)",
+		Usage:       `Set the gateway option for the underlying DNS server. dynamic("cidr address start")`,
 		Category:    category_dhcp_server,
 		Required:    false,
 		EnvVars:     []string{"DHCP_SERVER_GATEWAY"},
@@ -165,7 +167,7 @@ var Flags = []cli.Flag{
 
 	&cli.StringFlag{
 		Name:        "server.mode",
-		Usage:       `Server mode changes the behavior of the container. [enum: "dhcp", "bridge"]`,
+		Usage:       `Server mode changes the behavior of the container. enum("dhcp", "bridge")`,
 		Category:    category_server,
 		Required:    true,
 		EnvVars:     []string{"SERVER_MODE"},
