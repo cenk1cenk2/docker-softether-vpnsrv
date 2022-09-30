@@ -113,7 +113,7 @@ func CreatePostroutingRules(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("conf:dnsmasq").
+	return tl.CreateTask("conf", "dnsmasq").
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).
@@ -188,7 +188,7 @@ func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func GenerateSoftEtherServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("conf:softether").
+	return tl.CreateTask("conf", "softether").
 		Set(func(t *Task[Pipe]) error {
 			linkFrom := path.Join(CONF_DIR, CONF_SOFTETHER_NAME)
 			linkTo := path.Join(CONF_SOFTETHER_DIR, CONF_SOFTETHER_NAME)
@@ -240,7 +240,7 @@ func GenerateSoftEtherServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("interface:tap").
+	return tl.CreateTask("interface", "tap").
 		ShouldRunBefore(func(t *Task[Pipe]) error {
 			t.Pipe.SoftEther.TapInterface = fmt.Sprintf(
 				"tap_%s",
@@ -329,7 +329,7 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func BridgeSetupParent(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("interface:bridge:parent").
+	return tl.CreateTask("interface", "bridge", "parent").
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE
 		}).
@@ -343,7 +343,7 @@ func BridgeSetupParent(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("interface:bridge").
+	return tl.CreateTask("interface", "bridge").
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE
 		}).
@@ -435,12 +435,16 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func UseDhcpForBridge(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("interface:bridge:dhcp").
+	return tl.CreateTask("interface", "bridge", "dhcp").
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE || !t.Pipe.LinuxBridge.UseDhcp
 		}).
 		Set(func(t *Task[Pipe]) error {
-			t.CreateCommand("dhclient", "-v", t.Pipe.LinuxBridge.BridgeInterface).
+			t.CreateCommand(
+				"dhclient",
+				"-v",
+				t.Pipe.LinuxBridge.BridgeInterface,
+			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG, LOG_LEVEL_DEBUG).
 				EnableStreamRecording().
 				ShouldRunAfter(func(c *Command[Pipe]) error {
@@ -470,7 +474,7 @@ func UseDhcpForBridge(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func UseStaticIpForBridge(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("interface:bridge:static").
+	return tl.CreateTask("interface", "bridge", "static").
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE || t.Pipe.LinuxBridge.UseDhcp
 		}).
@@ -479,7 +483,11 @@ func UseStaticIpForBridge(tl *TaskList[Pipe]) *Task[Pipe] {
 				return fmt.Errorf("You should define a static IP in the CIDR range if you do not want to use the upstream DHCP server.")
 			}
 
-			t.CreateCommand("ifconfig", t.Pipe.LinuxBridge.BridgeInterface, t.Pipe.LinuxBridge.StaticIp).
+			t.CreateCommand(
+				"ifconfig",
+				t.Pipe.LinuxBridge.BridgeInterface,
+				t.Pipe.LinuxBridge.StaticIp,
+			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 

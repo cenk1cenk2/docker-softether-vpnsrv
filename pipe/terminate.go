@@ -7,7 +7,10 @@ import (
 func TerminateSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("terminate", "softether").
 		Set(func(t *Task[Pipe]) error {
-			t.CreateCommand("softether-vpnsrv", "stop").
+			t.CreateCommand(
+				"softether-vpnsrv",
+				"stop",
+			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 

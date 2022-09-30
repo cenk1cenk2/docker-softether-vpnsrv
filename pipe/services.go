@@ -20,7 +20,9 @@ func RunDnsServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).
 		Set(func(t *Task[Pipe]) error {
-			t.CreateCommand("dnsmasq").
+			t.CreateCommand(
+				"dnsmasq",
+			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
@@ -44,7 +46,10 @@ func RunDnsServer(tl *TaskList[Pipe]) *Task[Pipe] {
 func RunSoftEtherVpnServer(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("softether").
 		Set(func(t *Task[Pipe]) error {
-			t.CreateCommand("softether-vpnsrv", "start").
+			t.CreateCommand(
+				"softether-vpnsrv",
+				"start",
+			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
 				AddSelfToTheTask()
 
