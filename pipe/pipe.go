@@ -57,7 +57,6 @@ func New(p *Plumber) *TaskList[Pipe] {
 		Set(
 			func(tl *TaskList[Pipe]) Job {
 				return tl.JobSequence(
-					Terminate(tl).Job(),
 					Tasks(tl).Job(),
 					Services(tl).Job(),
 					HealthCheck(tl).Job(),

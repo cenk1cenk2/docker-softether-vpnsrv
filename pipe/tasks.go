@@ -321,6 +321,10 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 			)
 
 			return nil
+		}).
+		EnableTerminator().
+		SetOnTerminator(func(t *Task[Pipe]) error {
+			return TerminateTapInterface(tl).Run()
 		})
 }
 
@@ -423,6 +427,10 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 			)
 
 			return nil
+		}).
+		EnableTerminator().
+		SetOnTerminator(func(t *Task[Pipe]) error {
+			return TerminateDhcpServer(tl).Run()
 		})
 }
 

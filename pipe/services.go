@@ -34,6 +34,10 @@ func RunDnsServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			t.Log.Infoln("Started DNSMASQ DHCP server.")
 
 			return nil
+		}).
+		EnableTerminator().
+		SetOnTerminator(func(t *Task[Pipe]) error {
+			return TerminateDhcpServer(tl).Run()
 		})
 }
 
@@ -54,5 +58,9 @@ func RunSoftEtherVpnServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			t.Log.Infoln("Started SoftEtherVPN server.")
 
 			return nil
+		}).
+		EnableTerminator().
+		SetOnTerminator(func(t *Task[Pipe]) error {
+			return TerminateSoftEther(tl).Run()
 		})
 }
