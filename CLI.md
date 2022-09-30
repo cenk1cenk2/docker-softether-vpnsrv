@@ -2,9 +2,15 @@
 
 Initiates the SoftEtherVPN server that will run in this container.
 
-`docker-softether-vpnsrv [GLOBAL FLAGS] command [COMMAND FLAGS] [ARGUMENTS...]`
+`docker-softether-vpnsrv [FLAGS]`
 
-## Global Flags
+## Flags
+
+### CLI
+
+| Flag / Environment |  Description   |  Type    | Required | Default |
+|---------------- | --------------- | --------------- |  --------------- |  --------------- |
+| `$LOG_LEVEL` | Define the log level for the application.  | `String`<br/>enum(&#34;PANIC&#34;, &#34;FATAL&#34;, &#34;WARNING&#34;, &#34;INFO&#34;, &#34;DEBUG&#34;, &#34;TRACE&#34;) | `false` | &#34;info&#34; |
 
 ### Dhcp-Server
 
@@ -15,11 +21,6 @@ Initiates the SoftEtherVPN server that will run in this container.
 | `$DHCP_SERVER_SEND_GATEWAY` | Whether to send the default gateway to the client. Sometimes you do not want to proxy traffic through the network, rather just establish a connection to the VPN network. | `Bool` | `false` | true |
 | `$DHCP_SERVER_GATEWAY` | Set the gateway option for the underlying DNS server.  | `String`<br/>dynamic(&#34;cidr address start&#34;) | `false` |  |
 | `$DHCP_SERVER_FORWARDING_ZONE` | Set forwarding-zone DNS addresses for the DHCP server. | `StringSlice` | `false` | [8.8.8.8 8.8.4.4] |
-
-| Flag / Environment |  Description   |  Type    | Required | Default |
-|---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$DEBUG` | Enable debugging for the application. | `Bool` | `false` | false |
-| `$LOG_LEVEL` | Define the log level for the application.  | `String`<br/>enum(&#34;PANIC&#34;, &#34;FATAL&#34;, &#34;WARNING&#34;, &#34;INFO&#34;, &#34;DEBUG&#34;, &#34;TRACE&#34;) | `false` | &#34;info&#34; |
 
 ### Health
 
@@ -51,9 +52,3 @@ Initiates the SoftEtherVPN server that will run in this container.
 | `$SOFTETHER_TEMPLATE` | Template location for the SoftEtherVPN server. | `String` | `false` | &#34;/etc/template/vpn_server.config.tmpl&#34; |
 | `$SOFTETHER_TAP_INTERFACE` | Interface name for SoftEther and the server to bind to as a tap device. | `String` | `false` | &#34;soft&#34; |
 | `$SOFTETHER_DEFAULT_HUB` | Default hub name for SoftEtherVPN server. | `String` | `false` | &#34;DEFAULT&#34; |
-
-## Commands
-
-### `help` , `h`
-
-`Shows a list of commands or help for one command`

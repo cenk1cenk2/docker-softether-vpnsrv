@@ -4,13 +4,14 @@ import (
 	"github.com/urfave/cli/v2"
 
 	pipe "github.com/cenk1cenk2/docker-softether-vpnsrv/pipe"
-	. "gitlab.kilic.dev/libraries/plumber/v3"
+	. "gitlab.kilic.dev/libraries/plumber/v4"
 )
 
 func main() {
 	p := Plumber{
-		DocsFile:         "CLI.md",
-		DocsExcludeFlags: true,
+		DocsFile:               "CLI.md",
+		DocsExcludeFlags:       true,
+		DocsExcludeHelpCommand: true,
 	}
 
 	p.New(

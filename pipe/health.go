@@ -6,11 +6,11 @@ import (
 
 	"github.com/go-ping/ping"
 	"github.com/mitchellh/go-ps"
-	. "gitlab.kilic.dev/libraries/plumber/v3"
+	. "gitlab.kilic.dev/libraries/plumber/v4"
 )
 
 func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("health:parent").
+	return tl.CreateTask("health", "parent").
 		SetJobWrapper(func(job Job) Job {
 			return TL.JobSequence(
 				job,
@@ -44,7 +44,7 @@ func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("health:ping").
+	return tl.CreateTask("health", "ping").
 		SetJobWrapper(func(job Job) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Ctx.Health.Duration))
 		}).
@@ -85,7 +85,7 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("health:softether").
+	return tl.CreateTask("health", "softether").
 		SetJobWrapper(func(job Job) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Ctx.Health.Duration))
 		}).
@@ -112,7 +112,7 @@ func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("health:dnsmasq").
+	return tl.CreateTask("health", "dnsmasq").
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).

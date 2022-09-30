@@ -11,8 +11,28 @@ import (
 	"time"
 
 	"github.com/apparentlymart/go-cidr/cidr"
-	. "gitlab.kilic.dev/libraries/plumber/v3"
+	. "gitlab.kilic.dev/libraries/plumber/v4"
 )
+
+func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("tasks", "parent").
+		SetJobWrapper(func(job Job) Job {
+			return tl.JobSequence(
+				Setup(&TL).Job(),
+
+				TL.JobParallel(
+					CreatePostroutingRules(&TL).Job(),
+					GenerateDhcpServerConfiguration(&TL).Job(),
+					GenerateSoftEtherServerConfiguration(&TL).Job(),
+				),
+
+				TL.JobSequence(
+					CreateTapDevice(&TL).Job(),
+					BridgeSetupParent(&TL).Job(),
+				),
+			)
+		})
+}
 
 func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("init").

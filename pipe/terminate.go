@@ -1,31 +1,16 @@
 package pipe
 
 import (
-	. "gitlab.kilic.dev/libraries/plumber/v3"
+	"fmt"
+
+	. "gitlab.kilic.dev/libraries/plumber/v4"
 )
 
-func TerminatePredicate(tl *TaskList[Pipe]) JobPredicate {
-	return tl.Predicate(func(tl *TaskList[Pipe]) bool {
-		tl.Log.Debugln("Registered terminate listener.")
-
-		<-tl.Plumber.Terminator.ShouldTerminate
-
-		return true
-	})
-}
+// TODO: idk why but this can not be adapted to plumber v4, maybe try again later
 
 func Terminate(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("terminate").
-		SetJobWrapper(func(job Job) Job {
-			return tl.JobBackground(
-				tl.JobIf(
-					TerminatePredicate(tl), tl.GuardAlways(job),
-				),
-			)
-		}).
 		Set(func(t *Task[Pipe]) error {
-			tl.Log.Warnln("Running termination tasks...")
-
 			t.SetSubtask(
 				tl.JobParallel(
 					TerminateSoftEther(tl).Job(),
@@ -37,21 +22,27 @@ func Terminate(tl *TaskList[Pipe]) *Task[Pipe] {
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task[Pipe]) error {
+		EnableTerminator().
+		SetOnTerminator(func(t *Task[Pipe]) error {
+			tl.Log.Warnln("Running termination tasks...")
+
 			if err := t.RunSubtasks(); err != nil {
 				return err
 			}
 
-			t.Log.Infoln("Graceful termination finished.")
+			t.Control.Cancel(fmt.Errorf("Trying to terminate..."))
 
-			t.Plumber.SendTerminated()
+			t.Log.Infoln("Graceful termination finished.")
 
 			return nil
 		})
 }
 
 func TerminateSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("terminate:softether").
+	return tl.CreateTask("terminate", "softether").
+		SetJobWrapper(func(job Job) Job {
+			return tl.GuardAlways(job)
+		}).
 		Set(func(t *Task[Pipe]) error {
 			t.CreateCommand("softether-vpnsrv", "stop").
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
@@ -65,7 +56,10 @@ func TerminateSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func TerminateDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("terminate:dnsmasq").
+	return tl.CreateTask("terminate", "dnsmasq").
+		SetJobWrapper(func(job Job) Job {
+			return tl.GuardAlways(job)
+		}).
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).
@@ -85,7 +79,10 @@ func TerminateDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("terminate:interface:tap").
+	return tl.CreateTask("terminate", "interface", "tap").
+		SetJobWrapper(func(job Job) Job {
+			return tl.GuardAlways(job)
+		}).
 		Set(func(t *Task[Pipe]) error {
 			t.CreateCommand(
 				"ifconfig",
@@ -124,7 +121,10 @@ func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 }
 
 func TerminateBridgeInterface(tl *TaskList[Pipe]) *Task[Pipe] {
-	return tl.CreateTask("terminate:interface:bridge").
+	return tl.CreateTask("terminate", "interface", "bridge").
+		SetJobWrapper(func(job Job) Job {
+			return tl.GuardAlways(job)
+		}).
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE
 		}).

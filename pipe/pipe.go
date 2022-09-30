@@ -2,7 +2,7 @@ package pipe
 
 import (
 	"github.com/urfave/cli/v2"
-	. "gitlab.kilic.dev/libraries/plumber/v3"
+	. "gitlab.kilic.dev/libraries/plumber/v4"
 )
 
 type (
@@ -54,31 +54,14 @@ var TL = TaskList[Pipe]{
 
 func New(p *Plumber) *TaskList[Pipe] {
 	return TL.New(p).
-		SetTasks(
-			TL.JobSequence(
-				// terminate handler
-				Terminate(&TL).Job(),
-				Setup(&TL).Job(),
-
-				TL.JobParallel(
-					CreatePostroutingRules(&TL).Job(),
-					GenerateDhcpServerConfiguration(&TL).Job(),
-					GenerateSoftEtherServerConfiguration(&TL).Job(),
-				),
-
-				TL.JobSequence(
-					CreateTapDevice(&TL).Job(),
-					BridgeSetupParent(&TL).Job(),
-				),
-
-				TL.JobParallel(
-					RunDnsServer(&TL).Job(),
-					RunSoftEtherVpnServer(&TL).Job(),
-				),
-
-				HealthCheck(&TL).Job(),
-
-				TL.JobWaitForTerminator(),
-			),
-		)
+		Set(
+			func(tl *TaskList[Pipe]) Job {
+				return tl.JobSequence(
+					Terminate(tl).Job(),
+					Tasks(tl).Job(),
+					Services(tl).Job(),
+					HealthCheck(tl).Job(),
+					tl.JobWaitForTerminator(),
+				)
+			})
 }
