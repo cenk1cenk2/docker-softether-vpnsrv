@@ -7,9 +7,9 @@ import (
 
 type Ctx struct {
 	Health struct {
-		Duration     time.Duration
-		SoftEtherPID int
-		DnsMasqPID   int
+		Duration      time.Duration
+		SoftEtherPIDs []int
+		DnsMasqPIDs   []int
 	}
 
 	Server struct {

@@ -28,6 +28,7 @@ Initiates the SoftEtherVPN server that will run in this container.
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
 | `$HEALTH_CHECK_INTERVAL` | Health check interval to the upstream server in duration. | `String` | `false` | &#34;1h&#34; |
 | `$HEALTH_DHCP_SERVER_ADDRESS` | Upstream DHCP server address for doing health checks.  | `String`<br/>dynamic(&#34;cidr address start&#34;) | `false` |  |
+| `$HEALTH_ENABLE_PING` | Whether to enable the ping check or not. | `Bool` | `false` | true |
 
 ### Linux-Bridge
 

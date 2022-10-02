@@ -9,6 +9,7 @@ type (
 	Health struct {
 		CheckInterval     string
 		DhcpServerAddress string
+		EnablePing        bool
 	}
 
 	DhcpServer struct {

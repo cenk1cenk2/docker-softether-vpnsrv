@@ -31,13 +31,14 @@ func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 			for _, process := range processes {
 				switch process.Executable() {
 				case "vpnserver":
-					t.Pipe.Ctx.Health.SoftEtherPID = process.Pid()
-					t.Log.Debugf("SoftEtherVPN server PID set: %d", t.Pipe.Ctx.Health.SoftEtherPID)
+					t.Pipe.Ctx.Health.SoftEtherPIDs = append(t.Pipe.Ctx.Health.SoftEtherPIDs, process.Pid())
 				case "dnsmasq":
-					t.Pipe.Ctx.Health.DnsMasqPID = process.Pid()
-					t.Log.Debugf("DNSMASQ server PID set: %d", t.Pipe.Ctx.Health.DnsMasqPID)
+					t.Pipe.Ctx.Health.DnsMasqPIDs = append(t.Pipe.Ctx.Health.DnsMasqPIDs, process.Pid())
 				}
 			}
+
+			t.Log.Debugf("SoftEtherVPN server PIDs set: %s", t.Pipe.Ctx.Health.SoftEtherPIDs)
+			t.Log.Debugf("DNSMASQ server PIDs set: %s", t.Pipe.Ctx.Health.DnsMasqPIDs)
 
 			return nil
 		})
@@ -45,35 +46,33 @@ func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 
 func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health", "ping").
+		ShouldDisable(func(t *Task[Pipe]) bool {
+			return !t.Pipe.Health.EnablePing
+		}).
 		SetJobWrapper(func(job Job) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Ctx.Health.Duration))
 		}).
+		SetMarks(MARK_ROUTINE).
 		Set(func(t *Task[Pipe]) error {
 			pinger, err := ping.NewPinger(t.Pipe.Health.DhcpServerAddress)
 			pinger.Count = 3
 			pinger.Timeout = time.Second * 10
 
 			if err != nil {
-				t.SendFatal(err)
-
-				return nil
+				return err
 			}
 
 			if err := pinger.Run(); err != nil {
-				t.SendFatal(err)
-
-				return nil
+				return err
 			}
 
 			stats := pinger.Statistics()
 
 			if stats.PacketLoss == 100 {
-				t.SendFatal(fmt.Errorf(
+				return fmt.Errorf(
 					"Can not ping the upstream DHCP server: %s",
 					t.Pipe.Health.DhcpServerAddress,
-				))
-
-				return nil
+				)
 			}
 
 			t.Log.Debugf("Ping health check to %s in avg %s.", stats.IPAddr.String(), stats.AvgRtt)
@@ -89,17 +88,18 @@ func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 		SetJobWrapper(func(job Job) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Ctx.Health.Duration))
 		}).
+		SetMarks(MARK_ROUTINE).
 		Set(func(t *Task[Pipe]) error {
-			process, err := ps.FindProcess(t.Pipe.Ctx.Health.SoftEtherPID)
+			for _, pid := range t.Pipe.Ctx.Health.SoftEtherPIDs {
+				process, err := ps.FindProcess(pid)
 
-			if err != nil {
-				t.Log.Debugln(err)
-			}
+				if err != nil {
+					t.Log.Debugln(err)
+				}
 
-			if process == nil {
-				t.SendFatal(fmt.Errorf("SoftEther process is not alive."))
-
-				return nil
+				if process == nil {
+					return fmt.Errorf("SoftEther process is not alive: PID: %d", pid)
+				}
 			}
 
 			t.Log.Debugf(
@@ -119,17 +119,18 @@ func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 		SetJobWrapper(func(job Job) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Ctx.Health.Duration))
 		}).
+		SetMarks(MARK_ROUTINE).
 		Set(func(t *Task[Pipe]) error {
-			process, err := ps.FindProcess(t.Pipe.Ctx.Health.DnsMasqPID)
+			for _, pid := range t.Pipe.Ctx.Health.DnsMasqPIDs {
+				process, err := ps.FindProcess(pid)
 
-			if err != nil {
-				t.Log.Debugln(err)
-			}
+				if err != nil {
+					t.Log.Debugln(err)
+				}
 
-			if process == nil {
-				t.SendFatal(fmt.Errorf("DNSMASQ process is not alive."))
-
-				return nil
+				if process == nil {
+					return fmt.Errorf("DNSMASQ process is not alive.")
+				}
 			}
 
 			t.Log.Debugf(

@@ -37,6 +37,16 @@ var Flags = []cli.Flag{
 		Destination: &TL.Pipe.Health.DhcpServerAddress,
 	},
 
+	&cli.BoolFlag{
+		Name:        "health.enable-ping",
+		Usage:       "Whether to enable the ping check or not.",
+		Category:    category_health,
+		Required:    false,
+		EnvVars:     []string{"HEALTH_ENABLE_PING"},
+		Value:       true,
+		Destination: &TL.Pipe.Health.EnablePing,
+	},
+
 	// dhcp server
 
 	&cli.StringFlag{
