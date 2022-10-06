@@ -34,8 +34,8 @@ gh-release-tracker:
 build-docker-image:
   parallel:
     matrix:
-      - DOCKERFILE_NAME: Dockerfile-stable
-        TAGS_FILE: '.tags'
+      #- DOCKERFILE_NAME: Dockerfile-stable
+      #  TAGS_FILE: '.tags'
       - DOCKERFILE_NAME: Dockerfile
         IMAGE_TAGS: latest
   only:
