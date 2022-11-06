@@ -6,8 +6,8 @@ require (
 	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/go-ping/ping v1.1.0
 	github.com/mitchellh/go-ps v1.0.0
-	github.com/urfave/cli/v2 v2.23.2
-	gitlab.kilic.dev/libraries/plumber/v4 v4.11.8
+	github.com/urfave/cli/v2 v2.23.4
+	gitlab.kilic.dev/libraries/plumber/v4 v4.12.0
 )
 
 require (
@@ -26,7 +26,7 @@ require (
 	gitlab.kilic.dev/libraries/go-broadcaster v1.1.1 // indirect
 	gitlab.kilic.dev/libraries/go-utils v1.3.8 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
-	golang.org/x/exp v0.0.0-20221028150844-83b7d23a625f // indirect
+	golang.org/x/exp v0.0.0-20221106115401-f9659909a136 // indirect
 	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0 // indirect
 	golang.org/x/sys v0.1.0 // indirect
