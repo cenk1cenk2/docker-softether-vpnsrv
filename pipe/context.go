@@ -2,12 +2,10 @@ package pipe
 
 import (
 	"net"
-	"time"
 )
 
 type Ctx struct {
 	Health struct {
-		Duration      time.Duration
 		SoftEtherPIDs []int
 		DnsMasqPIDs   []int
 	}

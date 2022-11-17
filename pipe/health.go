@@ -37,8 +37,8 @@ func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 				}
 			}
 
-			t.Log.Debugf("SoftEtherVPN server PIDs set: %s", t.Pipe.Ctx.Health.SoftEtherPIDs)
-			t.Log.Debugf("DNSMASQ server PIDs set: %s", t.Pipe.Ctx.Health.DnsMasqPIDs)
+			t.Log.Debugf("SoftEtherVPN server PIDs set: %d", t.Pipe.Ctx.Health.SoftEtherPIDs)
+			t.Log.Debugf("DNSMASQ server PIDs set: %d", t.Pipe.Ctx.Health.DnsMasqPIDs)
 
 			return nil
 		})
@@ -50,7 +50,7 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 			return !t.Pipe.Health.EnablePing
 		}).
 		SetJobWrapper(func(job Job) Job {
-			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Ctx.Health.Duration))
+			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
 		SetMarks(MARK_ROUTINE).
 		Set(func(t *Task[Pipe]) error {
@@ -77,7 +77,7 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 
 			t.Log.Debugf("Ping health check to %s in avg %s.", stats.IPAddr.String(), stats.AvgRtt)
 
-			t.Log.Debugf("Next ping health check in: %s", t.Pipe.Ctx.Health.Duration.String())
+			t.Log.Debugf("Next ping health check in: %s", tl.Pipe.Health.CheckInterval.String())
 
 			return nil
 		})
@@ -86,7 +86,7 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health", "softether").
 		SetJobWrapper(func(job Job) Job {
-			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Ctx.Health.Duration))
+			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
 		SetMarks(MARK_ROUTINE).
 		Set(func(t *Task[Pipe]) error {
@@ -104,7 +104,7 @@ func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 
 			t.Log.Debugf(
 				"Next SoftEther process health check in: %s",
-				t.Pipe.Ctx.Health.Duration.String(),
+				tl.Pipe.Health.CheckInterval.String(),
 			)
 
 			return nil
@@ -117,7 +117,7 @@ func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).
 		SetJobWrapper(func(job Job) Job {
-			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Ctx.Health.Duration))
+			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
 		SetMarks(MARK_ROUTINE).
 		Set(func(t *Task[Pipe]) error {
@@ -135,7 +135,7 @@ func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 
 			t.Log.Debugf(
 				"Next DNSMASQ process health check in: %s",
-				t.Pipe.Ctx.Health.Duration.String(),
+				tl.Pipe.Health.CheckInterval.String(),
 			)
 
 			return nil

@@ -1,13 +1,14 @@
 package pipe
 
 import (
-	"github.com/urfave/cli/v2"
+	"time"
+
 	. "gitlab.kilic.dev/libraries/plumber/v4"
 )
 
 type (
 	Health struct {
-		CheckInterval     string
+		CheckInterval     time.Duration
 		DhcpServerAddress string
 		EnablePing        bool
 	}
@@ -17,7 +18,7 @@ type (
 		Lease          string
 		Gateway        string `validate:"omitempty,ip"`
 		SendGateway    bool
-		ForwardingZone cli.StringSlice `validate:"omitempty,ip"`
+		ForwardingZone []string `validate:"omitempty,ip"`
 	}
 
 	LinuxBridge struct {
@@ -55,6 +56,9 @@ var TL = TaskList[Pipe]{
 
 func New(p *Plumber) *TaskList[Pipe] {
 	return TL.New(p).
+		ShouldRunBefore(func(tl *TaskList[Pipe]) error {
+			return ProcessFlags(tl)
+		}).
 		Set(
 			func(tl *TaskList[Pipe]) Job {
 				return tl.JobSequence(

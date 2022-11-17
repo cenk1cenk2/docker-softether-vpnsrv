@@ -8,7 +8,6 @@ import (
 	"path"
 	"strings"
 	"text/template"
-	"time"
 
 	"github.com/apparentlymart/go-cidr/cidr"
 	. "gitlab.kilic.dev/libraries/plumber/v4"
@@ -61,10 +60,6 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Pipe.Ctx.Server.RangeStart.String(),
 				t.Pipe.Ctx.Server.RangeEnd.String(),
 			)
-
-			if t.Pipe.Ctx.Health.Duration, err = time.ParseDuration(t.Pipe.Health.CheckInterval); err != nil {
-				return err
-			}
 
 			// set default health address
 			if t.Pipe.Health.DhcpServerAddress == "" {
@@ -153,7 +148,7 @@ func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 					Gateway:           t.Pipe.DhcpServer.Gateway,
 					RangeNetmask:      net.IP(t.Pipe.Ctx.Server.Network.Mask).String(),
 					LeaseTime:         t.Pipe.DhcpServer.Lease,
-					ForwardingZone:    t.Pipe.DhcpServer.ForwardingZone.Value(),
+					ForwardingZone:    t.Pipe.DhcpServer.ForwardingZone,
 				}); err != nil {
 					return err
 				}

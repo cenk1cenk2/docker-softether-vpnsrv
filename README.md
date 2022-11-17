@@ -14,7 +14,7 @@ Since my use case now also requires creating bridge networks to access a local n
 
 SoftEther VPN is a free open-source, cross-platform, multi-protocol VPN client and VPN server software developed as part of Daiyuu Nobori's master's thesis research at the University of Tsukuba. VPN protocols such as Wireguard, SSL VPN, L2TP/IPsec, OpenVPN, and Microsoft Secure Socket Tunneling Protocol are provided in a single VPN server.
 
-This container runs a SoftEther VPN Server bundled together with a configuration manager that enables to use of either a DNSMASQ DHCP server to distribute the IPs or bridging to an existing network interface as upstream. It utilizes a Linux virtual ethernet TAP device to distribute the network traffic.
+This container runs a SoftEther VPN Server bundled together with a configuration manager that enables to use of either a DNSMASQ DHCP server to distribute the IPs or bridging to an existing network interface upstream. It utilizes a Linux virtual ethernet TAP device to distribute the network traffic.
 
 [Read more](https://www.softether.org/) about SoftEther in the official documentation.
 
@@ -63,7 +63,7 @@ Build on top of Alpine Linux as a base, ~30MB image size, ~15-20MB RAM Usage whi
 
 ### Up-to-Date
 
-This repository is always up to date tracking the [default](https://github.com/SoftEtherVPN/SoftEtherVPN) branch of SoftEtherVPN repository on GitHub. It checks the main repository monthly since there are no frequent updates anymore, and if a new release has been matched it will trigger the build process.
+This repository is always up to date tracking the [default](https://github.com/SoftEtherVPN/SoftEtherVPN) branch of the SoftEtherVPN repository on GitHub. It checks the main repository monthly since there are no frequent updates anymore, and if a new release has been matched it will trigger the build process.
 
 It always builds the application from the source, and while doing that the dependencies will also be updated.
 
@@ -71,7 +71,7 @@ It always builds the application from the source, and while doing that the depen
 
 The Docker images are tagged with matching versions to the original repository.
 
-`latest` tag is reserved for the current snapshot of the default branch on the upstream SoftEtherVPN repository.
+The `latest` tag is reserved for the current snapshot of the default branch on the upstream SoftEtherVPN repository.
 
 ### Health Check
 
@@ -89,58 +89,56 @@ This image is built for `linux-amd64` and `linux-arm64` architectures.
 
 ## Environment Variables
 
-### General
+Options for DHCP server or Linux bridge interfaces get activated when that server mode is activated through `$SERVER_MODE`.
 
-| Flag / Environment | Description                               | Type                                                                                                                     | Required | Default        |
-| ------------------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------- | -------------- |
-| `$DEBUG`           | Enable debugging for the application.     | `Bool`                                                                                                                   | `false`  | false          |
-| `$LOG_LEVEL`       | Define the log level for the application. | `String`<br/>enum(&#34;PANIC&#34;, &#34;FATAL&#34;, &#34;WARNING&#34;, &#34;INFO&#34;, &#34;DEBUG&#34;, &#34;TRACE&#34;) | `false`  | &#34;info&#34; |
+### CLI
 
-### Server
+| Flag / Environment | Description                               | Type                                                                       | Required | Default |
+| ------------------ | ----------------------------------------- | -------------------------------------------------------------------------- | -------- | ------- |
+| `$LOG_LEVEL`       | Define the log level for the application. | `String`<br/>`enum("PANIC", "FATAL", "WARNING", "INFO", "DEBUG", "TRACE")` | `false`  | info    |
+| `$ENV_FILE`        | Environment files to inject.              | `StringSlice`                                                              | `false`  |         |
 
-| Flag / Environment     | Description                                        | Type                                                | Required | Default               |
-| ---------------------- | -------------------------------------------------- | --------------------------------------------------- | -------- | --------------------- |
-| `$SERVER_MODE`         | Server mode changes the behavior of the container. | `String`<br/>enum(&#34;dhcp&#34;, &#34;bridge&#34;) | `true`   |                       |
-| `$SERVER_CIDR_ADDRESS` | CIDR address of the server.                        | `String`                                            | `false`  | &#34;10.0.0.0/24&#34; |
+### DHCP Server
 
-### SoftEther
-
-| Flag / Environment         | Description                                                             | Type     | Required | Default                                        |
-| -------------------------- | ----------------------------------------------------------------------- | -------- | -------- | ---------------------------------------------- |
-| `$SOFTETHER_TEMPLATE`      | Template location for the SoftEtherVPN server.                          | `String` | `false`  | &#34;/etc/template/vpn_server.config.tmpl&#34; |
-| `$SOFTETHER_TAP_INTERFACE` | Interface name for SoftEther and the server to bind to as a tap device. | `String` | `false`  | &#34;soft&#34;                                 |
-| `$SOFTETHER_DEFAULT_HUB`   | Default hub name for SoftEtherVPN server.                               | `String` | `false`  | &#34;DEFAULT&#34;                              |
+| Flag / Environment             | Description                                                                                                                                                               | Type          | Required | Default                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | -------- | ------------------------------- |
+| `$DHCP_SERVER_TEMPLATE`        | Template location for the DHCP server.                                                                                                                                    | `String`      | `false`  | /etc/template/dnsmasq.conf.tmpl |
+| `$DHCP_SERVER_LEASE`           | DHCP server lease time for clients.                                                                                                                                       | `String`      | `false`  | 12h                             |
+| `$DHCP_SERVER_SEND_GATEWAY`    | Whether to send the default gateway to the client. Sometimes you do not want to proxy traffic through the network, rather just establish a connection to the VPN network. | `Bool`        | `false`  | false                           |
+| `$DHCP_SERVER_GATEWAY`         | Set the gateway option for the underlying DNS server.                                                                                                                     | `String`      | `false`  | CIDR address range start        |
+| `$DHCP_SERVER_FORWARDING_ZONE` | Set forwarding-zone DNS addresses for the DHCP server.                                                                                                                    | `StringSlice` | `false`  | "8.8.8.8", "8.8.4.4"            |
 
 ### Health
 
-| Flag / Environment            | Description                                               | Type                                               | Required | Default      |
-| ----------------------------- | --------------------------------------------------------- | -------------------------------------------------- | -------- | ------------ |
-| `$HEALTH_CHECK_INTERVAL`      | Health check interval to the upstream server in duration. | `String`                                           | `false`  | &#34;1h&#34; |
-| `$HEALTH_DHCP_SERVER_ADDRESS` | Upstream DHCP server address for doing health checks.     | `String`<br/>dynamic(&#34;cidr address start&#34;) | `false`  |              |
-| `$HEALTH_ENABLE_PING`         | Whether to enable the ping check or not.                  | `Bool`                                             | `false`  | true         |
+| Flag / Environment            | Description                                               | Type       | Required | Default                  |
+| ----------------------------- | --------------------------------------------------------- | ---------- | -------- | ------------------------ |
+| `$HEALTH_CHECK_INTERVAL`      | Health check interval to the upstream server in duration. | `Duration` | `false`  | 0s                       |
+| `$HEALTH_DHCP_SERVER_ADDRESS` | Upstream DHCP server address for doing health checks.     | `String`   | `false`  | CIDR address range start |
+| `$HEALTH_ENABLE_PING`         | Whether to enable the ping check or not.                  | `Bool`     | `false`  | false                    |
 
-### DHCP-Server
+### Linux Bridge
 
-The following options are only valid whenever `SERVER_MODE` is `dhcp`.
+| Flag / Environment                 | Description                                                                                                                               | Type     | Required | Default |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------- | ------- |
+| `$LINUX_BRIDGE_INTERFACE_NAME`     | Interface name for the resulting communication bridge interface.                                                                          | `String` | `false`  | br100   |
+| `$LINUX_BRIDGE_UPSTREAM_INTERFACE` | Interface name for the upstream parent network interface to bridge to, this interface should provide a DHCP server to handle the clients. | `String` | `false`  | eth0    |
+| `$LINUX_BRIDGE_USE_DHCP`           | Use the upstream DHCP server to get ip for the bridge interface.                                                                          | `Bool`   | `false`  | false   |
+| `$LINUX_BRIDGE_STATIC_IP`          | Use a static IP for the bridge interface.                                                                                                 | `String` | `false`  |         |
 
-| Flag / Environment             | Description                                                                                                                                                               | Type                                               | Required | Default                                   |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | -------- | ----------------------------------------- |
-| `$DHCP_SERVER_TEMPLATE`        | Template location for the DHCP server.                                                                                                                                    | `String`                                           | `false`  | &#34;/etc/template/dnsmasq.conf.tmpl&#34; |
-| `$DHCP_SERVER_LEASE`           | DHCP server lease time for clients.                                                                                                                                       | `String`                                           | `false`  | &#34;12h&#34;                             |
-| `$DHCP_SERVER_SEND_GATEWAY`    | Whether to send the default gateway to the client. Sometimes you do not want to proxy traffic through the network, rather just establish a connection to the VPN network. | `Bool`                                             | `false`  | true                                      |
-| `$DHCP_SERVER_GATEWAY`         | Set the gateway option for the underlying DNS server.                                                                                                                     | `String`<br/>dynamic(&#34;cidr address start&#34;) | `false`  |                                           |
-| `$DHCP_SERVER_FORWARDING_ZONE` | Set forwarding-zone DNS addresses for the DHCP server.                                                                                                                    | `StringSlice`                                      | `false`  | [8.8.8.8 8.8.4.4]                         |
+### Server
 
-### Linux-Bridge
+| Flag / Environment     | Description                                        | Type                                  | Required | Default     |
+| ---------------------- | -------------------------------------------------- | ------------------------------------- | -------- | ----------- |
+| `$SERVER_MODE`         | Server mode changes the behavior of the container. | `String`<br/>`enum("dhcp", "bridge")` | `true`   |             |
+| `$SERVER_CIDR_ADDRESS` | CIDR address of the server.                        | `String`                              | `false`  | 10.0.0.0/24 |
 
-The following options are only valid whenever `SERVER_MODE` is `bridge`.
+### SoftEther
 
-| Flag / Environment                 | Description                                                                                                                               | Type     | Required | Default         |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------- | --------------- |
-| `$LINUX_BRIDGE_INTERFACE_NAME`     | Interface name for the resulting communication bridge interface.                                                                          | `String` | `false`  | &#34;br100&#34; |
-| `$LINUX_BRIDGE_UPSTREAM_INTERFACE` | Interface name for the upstream parent network interface to bridge to, this interface should provide a DHCP server to handle the clients. | `String` | `false`  | &#34;eth0&#34;  |
-| `$LINUX_BRIDGE_USE_DHCP`           | Use the upstream DHCP server to get ip for the bridge interface.                                                                          | `Bool`   | `false`  | true            |
-| `$LINUX_BRIDGE_STATIC_IP`          | Use a static IP for the bridge interface.                                                                                                 | `String` | `false`  |                 |
+| Flag / Environment         | Description                                                             | Type     | Required | Default                              |
+| -------------------------- | ----------------------------------------------------------------------- | -------- | -------- | ------------------------------------ |
+| `$SOFTETHER_TEMPLATE`      | Template location for the SoftEtherVPN server.                          | `String` | `false`  | /etc/template/vpn_server.config.tmpl |
+| `$SOFTETHER_TAP_INTERFACE` | Interface name for SoftEther and the server to bind to as a tap device. | `String` | `false`  | soft                                 |
+| `$SOFTETHER_DEFAULT_HUB`   | Default hub name for SoftEtherVPN server.                               | `String` | `false`  | DEFAULT                              |
 
 ## Setup
 
@@ -165,7 +163,7 @@ The configuration has defaults as follows.
 - The default bridge device is set through the generation of the configuration file.
 - Please check out the normal process for [SoftEther Setup](https://www.softether.org/4-docs/2-howto/9.L2TPIPsec_Setup_Guide_for_SoftEther_VPN_Server/1.Setup_L2TP%2F%2F%2F%2FIPsec_VPN_Server_on_SoftEther_VPN_Server). SoftEtherVPN server can be configured by using the GUI or the CLI.
 
-**Please remember that at the initial startup there is no admin password for managing the server, it is very crucial to set it as soon as possible.**
+**Please remember that at the initial startup there is no admin password for managing the server, it is very crucial to set it up as soon as possible.**
 
 If you are using a persistent configuration file that is not auto-generated through this container, you should be sure that your HUB configuration is bridged properly with the TAP adapter.
 
@@ -178,7 +176,7 @@ The configuration has defaults as follows.
 
 #### Logs
 
-The log files can be found on `/etc/softether/server_log`, `/etc/softether/security_log`, `/etc/softether/packet_log` inside the container. So you can mount a folder there to obtain the logs from SoftEtherVPN server.
+The log files can be found on `/etc/softether/server_log`, `/etc/softether/security_log`, `/etc/softether/packet_log` inside the container. So you can mount a folder there to obtain the logs from the SoftEtherVPN server.
 
 **The auto-generated configuration file will SoftEtherVPN server will have the logging disabled by default.** You can re-enable it through the options of the server.
 
@@ -186,7 +184,7 @@ If you do not need any kind of logs you can always mount them to `/dev/null`.
 
 ### Ports
 
-Default ports that SoftEtherVPN server functions on is as follows.
+The default ports that the SoftEtherVPN server functions on are as follows.
 
 ```yaml
 - 1443:1443/tcp # softether
@@ -206,9 +204,9 @@ You can select one of to server modes which are `dhcp` or `bridge`.
 
 #### DHCP
 
-- `dhcp` mode will start a DNSMASQ DHCP server in the background to handle the incoming DHCP requests. This yields much better performance compared to using the `SecureNAT` provided by the SoftEther.
+- `dhcp` mode will start a DNSMASQ DHCP server in the background to handle the incoming DHCP requests. This yields much better performance compared to using the `SecureNAT` provided by SoftEther.
 - The configuration file for DNSMASQ will be generated if it is not persistent, with environment variables from the DHCP Server section.
-- It will be attached to the given `SOFTETHER_TAP_INTERFACE`. So whenever you do attach a persistent configuration file manually, please be sure that it points to the correct tap interface. The configuration utility will also assign a static IP address to the given interface making it compatible with how DNSMASQ actually starts up.
+- It will be attached to the given `SOFTETHER_TAP_INTERFACE`. So whenever you do attach a persistent configuration file manually, please be sure that it points to the correct tap interface. The configuration utility will also assign a static IP address to the given interface making it compatible with how DNSMASQ starts up.
 
 #### Bridge
 
@@ -221,7 +219,7 @@ You can select one of to server modes which are `dhcp` or `bridge`.
 
 **This container needs extra Linux capabilities as provided by [thjderjktyrjkt](https://github.com/thjderjktyrjkt), you can find this in the related issue [#20](https://github.com/cenk1cenk2/docker-softether-vpnsrv/issues/20).**
 
-Basically, it needs the following capabilities to function properly, while it creates a virtual network adapter for the communication.
+Basically, it needs the following capabilities to function properly, while it creates a virtual network adapter for communication.
 
 ```yaml
 cap_add:

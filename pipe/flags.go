@@ -1,15 +1,18 @@
 package pipe
 
 import (
+	"time"
+
 	"github.com/urfave/cli/v2"
+	. "gitlab.kilic.dev/libraries/plumber/v4"
 )
 
 //revive:disable:line-length-limit
 
 const (
 	category_health       = "Health"
-	category_dhcp_server  = "Dhcp-Server"
-	category_linux_bridge = "Linux-Bridge"
+	category_dhcp_server  = "DHCP Server"
+	category_linux_bridge = "Linux Bridge"
 	category_server       = "Server"
 	category_softether    = "SoftEther"
 )
@@ -17,22 +20,23 @@ const (
 var Flags = []cli.Flag{
 	// runtime
 
-	&cli.StringFlag{
+	&cli.DurationFlag{
 		Name:        "health.check-interval",
 		Usage:       "Health check interval to the upstream server in duration.",
 		Category:    category_health,
 		Required:    false,
 		EnvVars:     []string{"HEALTH_CHECK_INTERVAL"},
-		Value:       "1h",
+		Value:       time.Minute * 10,
 		Destination: &TL.Pipe.Health.CheckInterval,
 	},
 
 	&cli.StringFlag{
 		Name:        "health.dhcp-server-address",
-		Usage:       `Upstream DHCP server address for doing health checks. dynamic("cidr address start")`,
+		Usage:       "Upstream DHCP server address for doing health checks.",
 		Category:    category_health,
 		Required:    false,
 		EnvVars:     []string{"HEALTH_DHCP_SERVER_ADDRESS"},
+		DefaultText: "CIDR address range start",
 		Value:       "",
 		Destination: &TL.Pipe.Health.DhcpServerAddress,
 	},
@@ -81,22 +85,22 @@ var Flags = []cli.Flag{
 
 	&cli.StringFlag{
 		Name:        "dhcp-server.gateway",
-		Usage:       `Set the gateway option for the underlying DNS server. dynamic("cidr address start")`,
+		Usage:       "Set the gateway option for the underlying DNS server.",
 		Category:    category_dhcp_server,
 		Required:    false,
 		EnvVars:     []string{"DHCP_SERVER_GATEWAY"},
+		DefaultText: "CIDR address range start",
 		Value:       "",
 		Destination: &TL.Pipe.DhcpServer.Gateway,
 	},
 
 	&cli.StringSliceFlag{
-		Name:        "dhcp-server.forwarding-zone",
-		Usage:       "Set forwarding-zone DNS addresses for the DHCP server.",
-		Category:    category_dhcp_server,
-		Required:    false,
-		EnvVars:     []string{"DHCP_SERVER_FORWARDING_ZONE"},
-		Value:       cli.NewStringSlice("8.8.8.8", "8.8.4.4"),
-		Destination: &TL.Pipe.DhcpServer.ForwardingZone,
+		Name:     "dhcp-server.forwarding-zone",
+		Usage:    "Set forwarding-zone DNS addresses for the DHCP server.",
+		Category: category_dhcp_server,
+		Required: false,
+		EnvVars:  []string{"DHCP_SERVER_FORWARDING_ZONE"},
+		Value:    cli.NewStringSlice("8.8.8.8", "8.8.4.4"),
 	},
 
 	// linux bridge
@@ -193,4 +197,10 @@ var Flags = []cli.Flag{
 		EnvVars:     []string{"SERVER_CIDR_ADDRESS"},
 		Destination: &TL.Pipe.Server.CidrAddress,
 	},
+}
+
+func ProcessFlags(tl *TaskList[Pipe]) error {
+	tl.Pipe.DhcpServer.ForwardingZone = tl.CliContext.StringSlice("dhcp-server.forwarding-zone")
+
+	return nil
 }

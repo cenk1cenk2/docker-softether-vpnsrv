@@ -13,6 +13,10 @@
       "cmd": "make tidy"
     },
     {
+      "name": "docs",
+      "cmd": "make docs"
+    },
+    {
       "name": "lint",
       "cmd": "make lint"
     },
