@@ -21,6 +21,7 @@ This container runs a SoftEther VPN Server bundled together with a configuration
 ---
 
 - [CLI Documentation](./CLI.md)
+
 <!-- toc -->
 
 - [Features](#features)
@@ -29,13 +30,14 @@ This container runs a SoftEther VPN Server bundled together with a configuration
   - [Versioning](#versioning)
   - [Health Check](#health-check)
   - [Graceful Shutdown](#graceful-shutdown)
+  - [Architecture](#architecture)
 - [Environment Variables](#environment-variables)
-  - [General](#general)
+  - [CLI](#cli)
+  - [DHCP Server](#dhcp-server)
+  - [Health](#health)
+  - [Linux Bridge](#linux-bridge)
   - [Server](#server)
   - [SoftEther](#softether)
-  - [Health](#health)
-  - [DHCP-Server](#dhcp-server)
-  - [Linux-Bridge](#linux-bridge)
 - [Setup](#setup)
   - [Volumes](#volumes)
     - [SoftEther Configuration](#softether-configuration)
@@ -112,7 +114,7 @@ Options for DHCP server or Linux bridge interfaces get activated when that serve
 
 | Flag / Environment            | Description                                               | Type       | Required | Default                  |
 | ----------------------------- | --------------------------------------------------------- | ---------- | -------- | ------------------------ |
-| `$HEALTH_CHECK_INTERVAL`      | Health check interval to the upstream server in duration. | `Duration` | `false`  | 0s                       |
+| `$HEALTH_CHECK_INTERVAL`      | Health check interval to the upstream server in duration. | `Duration` | `false`  | 10m                      |
 | `$HEALTH_DHCP_SERVER_ADDRESS` | Upstream DHCP server address for doing health checks.     | `String`   | `false`  | CIDR address range start |
 | `$HEALTH_ENABLE_PING`         | Whether to enable the ping check or not.                  | `Bool`     | `false`  | false                    |
 

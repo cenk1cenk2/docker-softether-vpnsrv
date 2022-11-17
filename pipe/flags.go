@@ -26,6 +26,7 @@ var Flags = []cli.Flag{
 		Category:    category_health,
 		Required:    false,
 		EnvVars:     []string{"HEALTH_CHECK_INTERVAL"},
+		DefaultText: "10m",
 		Value:       time.Minute * 10,
 		Destination: &TL.Pipe.Health.CheckInterval,
 	},
