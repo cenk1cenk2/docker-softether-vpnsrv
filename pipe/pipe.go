@@ -18,7 +18,7 @@ type (
 		Lease          string
 		Gateway        string `validate:"omitempty,ip"`
 		SendGateway    bool
-		ForwardingZone []string `validate:"omitempty,ip"`
+		ForwardingZone []string
 	}
 
 	LinuxBridge struct {
