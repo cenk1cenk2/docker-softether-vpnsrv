@@ -52,7 +52,6 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 		SetJobWrapper(func(job Job) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
-		SetMarks(MARK_ROUTINE).
 		Set(func(t *Task[Pipe]) error {
 			pinger, err := ping.NewPinger(t.Pipe.Health.DhcpServerAddress)
 			pinger.Count = 3
@@ -88,7 +87,6 @@ func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 		SetJobWrapper(func(job Job) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
-		SetMarks(MARK_ROUTINE).
 		Set(func(t *Task[Pipe]) error {
 			for _, pid := range t.Pipe.Ctx.Health.SoftEtherPIDs {
 				process, err := ps.FindProcess(pid)
@@ -119,7 +117,6 @@ func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 		SetJobWrapper(func(job Job) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
-		SetMarks(MARK_ROUTINE).
 		Set(func(t *Task[Pipe]) error {
 			for _, pid := range t.Pipe.Ctx.Health.DnsMasqPIDs {
 				process, err := ps.FindProcess(pid)

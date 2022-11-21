@@ -1,0 +1,123 @@
+---
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  GO_VERSION: 1.19
+  GO_LD_FLAGS: -w -s
+  BINARY_DIR: dist
+  BINARY_NAME: pipe
+  BINARY_APPEND_OS: true
+  BINARY_APPEND_ARCH: true
+
+env:
+  CGO_ENABLED: 0
+
+tasks:
+  install:
+    desc: Installs the required dependencies on pull.
+    cmds:
+      - go mod vendor
+    sources:
+      - go.sum
+    generates:
+      - "vendor/**"
+
+  format:
+    desc: Formats the current code base.
+    cmds:
+      - goimports -w .
+      - golangci-lint run --fix
+
+  lint:
+    desc: Lints the codebase with predefined rules.
+    cmds:
+      - golangci-lint run
+    sources:
+      - "**/*.go"
+
+  update:
+    desc: Updates all the dependencies to their latest minor version.
+    cmds:
+      - go get -u all
+      - task: tidy
+
+  tidy:
+    desc: Tidies the go.mod file.
+    cmds:
+      - go mod tidy -compat={{ .GO_VERSION }}
+      - task: install
+    sources:
+      - "go.{mod,sum}"
+
+  clean:
+    desc: Cleans the output binary folder and build cache.
+    cmds:
+      - go clean
+      - rm -f {{ .BINARY_DIR }}
+
+  test:
+    desc: Tests the given application.
+    cmds:
+      - go test -v -p 1 ./...
+
+  build:
+    desc: Builds the application.
+    deps:
+      - task: build.platform
+        vars:
+          os: linux
+          arch: amd64
+      - task: build.platform
+        vars:
+          os: linux
+          arch: arm64
+
+  build.platform:
+    internal: true
+    vars:
+      binary_output: '{{ .BINARY_DIR }}/{{ .BINARY_NAME }}{{ if eq .BINARY_APPEND_OS "true" }}-{{ .os }}{{ end }}{{ if eq .BINARY_APPEND_ARCH "true" }}-{{ .arch }}{{ end }}'
+    cmds:
+      - GOOS={{ .os }} GOARCH={{ .arch }} go build -mod=readonly {{- if .GO_LD_FLAGS }} -ldflags="{{ .GO_LD_FLAGS }}"{{- end }} -o {{ .binary_output }}
+    sources:
+      - "**/*.go"
+      - "go.{mod,sum}"
+    generates:
+      - "{{ .binary_output }}"
+
+  start:
+    desc: Starts the given application.
+    interactive: true
+    env:
+      LOG_LEVEL: debug
+    cmds:
+      - go run . {{ .CLI_ARGS }}
+
+  docs:
+    desc: Generates the documentation for the application.
+    interactive: true
+    env:
+      LOG_LEVEL: trace
+    cmds:
+      - go run . MARKDOWN_DOC
+
+  help:
+    desc: Generates help for the application.
+    cmds:
+      - go run . --help
+
+  docker.build:
+    desc: Builds the docker container for the application for testing.
+    cmds:
+      - docker-compose build
+    sources:
+      - "dist/**"
+
+  docker.up:
+    desc: Runs the docker-compose application.
+    interactive: true
+    cmds:
+      - task: build
+      - task: docker.build
+      - docker-compose up
