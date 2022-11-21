@@ -10,7 +10,7 @@ Initiates the SoftEtherVPN server that will run in this container.
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$LOG_LEVEL` | Define the log level for the application.  | `String`<br/>`enum("PANIC", "FATAL", "WARNING", "INFO", "DEBUG", "TRACE")` | `false` | info |
+| `$LOG_LEVEL` | Define the log level for the application. | `String`<br/>`enum("PANIC", "FATAL", "WARNING", "INFO", "DEBUG", "TRACE")` | `false` | info |
 | `$ENV_FILE` | Environment files to inject. | `StringSlice` | `false` |  |
 
 ### DHCP Server
@@ -44,7 +44,7 @@ Initiates the SoftEtherVPN server that will run in this container.
 
 | Flag / Environment |  Description   |  Type    | Required | Default |
 |---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$SERVER_MODE` | Server mode changes the behavior of the container.  | `String`<br/>`enum("dhcp", "bridge")` | `true` |  |
+| `$SERVER_MODE` | Server mode changes the behavior of the container. | `String`<br/>`enum("dhcp", "bridge")` | `true` |  |
 | `$SERVER_CIDR_ADDRESS` | CIDR address of the server. | `String` | `false` | 10.0.0.0/24 |
 
 ### SoftEther
