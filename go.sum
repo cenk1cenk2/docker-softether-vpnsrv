@@ -66,8 +66,8 @@ gitlab.kilic.dev/libraries/go-broadcaster v1.1.1 h1:3KSjoM1OS2HPKXnCoD1pJ7kIHNqe
 gitlab.kilic.dev/libraries/go-broadcaster v1.1.1/go.mod h1:3u3hNGMPYdT90k0sxrNmtprObjyD22BFsfn34AqG7sE=
 gitlab.kilic.dev/libraries/go-utils v1.3.10 h1:qYNft9tUSwfSMbbXOWyHK4YgNiXlHWLNfEg/OsY8p1Y=
 gitlab.kilic.dev/libraries/go-utils v1.3.10/go.mod h1:iWIX2+OCPGmKUlxULm2r0LF00Ewru3dmyzN7X4HOXJ0=
-gitlab.kilic.dev/libraries/plumber/v4 v4.25.1 h1:ItWaNYWYlAc81tYxJbTBnpvxHQp7FZvG8kbWg81/MoQ=
-gitlab.kilic.dev/libraries/plumber/v4 v4.25.1/go.mod h1:NZUyNxgfsX/9NeYQxo2Gx5cueJNLFXr7ril5vXCEcmw=
+gitlab.kilic.dev/libraries/plumber/v4 v4.26.1 h1:NU1Nq3Jl2Vnko3fBFlcUxaSYRl83R3DpPQFnmKKgnYI=
+gitlab.kilic.dev/libraries/plumber/v4 v4.26.1/go.mod h1:NZUyNxgfsX/9NeYQxo2Gx5cueJNLFXr7ril5vXCEcmw=
 golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/crypto v0.3.0 h1:a06MkbcxBrEFc0w0QIZWXrH/9cCX6KJyWbBOIwAn+7A=
 golang.org/x/crypto v0.3.0/go.mod h1:hebNnKkNXi2UzZN1eVRvBB7co0a+JxK6XbPiWVs/3J4=
