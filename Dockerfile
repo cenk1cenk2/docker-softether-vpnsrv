@@ -19,7 +19,7 @@ RUN \
   # Init submodules
   git submodule init && git submodule update && \
   # Build
-  if [ "${TARGETARCH}" == "arm64" ]; then echo "Forcing to use neon on arm64 platform manually."; sed -ir 's|set(BLAKE2_SRC_PATH $<IF:$<BOOL:${HAS_SSE2}>,${TOP_DIRECTORY}/3rdparty/BLAKE2/sse,${TOP_DIRECTORY}/3rdparty/BLAKE2/ref>)|set(BLAKE2_SRC_PATH ${TOP_DIRECTORY}/3rdparty/BLAKE2/neon)|' ./src/Cedar/CMakeLists.txt; sed -ir 's|set(BLAKE2_SRC $<IF:$<BOOL:${HAS_SSE2}>,${BLAKE2_SRC_PATH}/blake2s.c,${BLAKE2_SRC_PATH}/blake2s-ref.c>)|set(BLAKE2_SRC ${BLAKE2_SRC_PATH}/blake2s-neon.c)|' ./src/Cedar/CMakeLists.txt ; fi && \
+  if [ "${TARGETARCH}" == "arm64" ]; then echo "Forcing to use neon on arm64 platform manually."; sed -ir 's|set(BLAKE2_SRC_PATH $<IF:$<BOOL:${HAS_SSE2}>,${TOP_DIRECTORY}/3rdparty/BLAKE2/sse,${TOP_DIRECTORY}/3rdparty/BLAKE2/ref>)|set(BLAKE2_SRC_PATH ${TOP_DIRECTORY}/3rdparty/BLAKE2/neon)|' ./src/Cedar/CMakeLists.txt; sed -ir 's|set(BLAKE2_SRC $<IF:$<BOOL:${HAS_SSE2}>,${BLAKE2_SRC_PATH}/blake2s.c,${BLAKE2_SRC_PATH}/blake2s-ref.c>)|set(BLAKE2_SRC ${BLAKE2_SRC_PATH}/blake2s-neon.c)|' ./src/Cedar/CMakeLists.txt; fi && \
   export USE_MUSL=YES && ./configure && make --silent -C build && make --silent -C build install
 
 FROM alpine:latest
