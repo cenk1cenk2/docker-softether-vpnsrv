@@ -42,7 +42,7 @@ build-docker-image:
         DOCKER_IMAGE_TAGS: latest
         DOCKER_IMAGE_TAGS_TEMPLATE: |
           [
-            { "match": ".*", "template": "{{ index $0 }}-ubuntu"}
+            { "match": ".*", "template": "{{ index $ 0 }}-ubuntu"}
           ]
   only:
     refs:
