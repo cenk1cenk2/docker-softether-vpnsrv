@@ -1,3 +1,4 @@
+# need to be renewed, obsolute for now
 FROM alpine:latest
 
 ARG TARGETOS

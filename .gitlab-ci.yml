@@ -37,7 +37,13 @@ build-docker-image:
       #- DOCKERFILE_NAME: Dockerfile-stable
       #  TAGS_FILE: '.tags'
       - DOCKERFILE_NAME: Dockerfile
-        IMAGE_TAGS: latest
+        DOCKER_IMAGE_TAGS: latest
+      - DOCKERFILE_NAME: Dockerfile-ubuntu
+        DOCKER_IMAGE_TAGS: latest
+        DOCKER_IMAGE_TAGS_TEMPLATE: |
+          [
+            { "match": ".*", "template": "{{ index $0 }}-ubuntu"}
+          ]
   only:
     refs:
       - schedules

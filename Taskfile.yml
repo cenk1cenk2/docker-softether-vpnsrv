@@ -114,6 +114,7 @@ tasks:
       - docker-compose build
     sources:
       - "dist/**"
+      - "Dockerfile*"
 
   docker.up:
     desc: Runs the docker-compose application.
