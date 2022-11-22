@@ -101,6 +101,7 @@ tasks:
       LOG_LEVEL: trace
     cmds:
       - go run . MARKDOWN_DOC
+      - go run . MARKDOWN_EMBED
 
   help:
     desc: Generates help for the application.

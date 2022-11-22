@@ -8,13 +8,7 @@ import (
 )
 
 func main() {
-	p := Plumber{
-		DocsFile:               "CLI.md",
-		DocsExcludeFlags:       true,
-		DocsExcludeHelpCommand: true,
-	}
-
-	p.New(
+	NewPlumber(
 		func(p *Plumber) *cli.App {
 			return &cli.App{
 				Name:        CLI_NAME,
@@ -33,6 +27,12 @@ func main() {
 					)
 				},
 			}
+		}).
+		SetDocumentationOptions(DocumentationOptions{
+			MarkdownOutputFile: "CLI.md",
+			MarkdownBehead:     0,
+			ExcludeFlags:       true,
+			ExcludeHelpCommand: true,
 		}).
 		Run()
 }
