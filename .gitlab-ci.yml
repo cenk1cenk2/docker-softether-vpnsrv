@@ -13,7 +13,7 @@ variables:
     SoftEther VPN server in a container with pre-configured setup for networking.
 
 .publish-docker:
-  stage: publish
+  stage: docker
   trigger:
     include:
       - project: devops/pipes
