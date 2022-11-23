@@ -34,50 +34,25 @@ gh-release-tracker:
   variables:
     TAGS_FILE: .tags
 
-build-docker-image-amd64:
+build-docker-image:
   extends: .publish-docker
   parallel:
     matrix:
       #- DOCKERFILE_NAME: Dockerfile-stable
       #  TAGS_FILE: '.tags'
       - DOCKERFILE_NAME: Dockerfile
-        DOCKER_IMAGE_TAGS: latest
+        DOCKER_IMAGE_TAGS: latest-${GITLAB_CI_ARCH}
+        DOCKER_MANIFEST_TARGETS: ${DOCKER_IMAGE_NAME}:latest
+        GITLAB_CI_ARCH:
+          - amd64
+          - arm64
       - DOCKERFILE_NAME: Dockerfile-ubuntu
-        DOCKER_IMAGE_TAGS: latest
-        DOCKER_IMAGE_TAGS_TEMPLATE: |
-          [
-            { "match": ".*", "template": "{{ index $ 0 }}-ubuntu"}
-          ]
+        DOCKER_MANIFEST_TARGETS: ${DOCKER_IMAGE_NAME}:latest-ubuntu
+        DOCKER_IMAGE_TAGS: latest-ubuntu-${GITLAB_CI_ARCH}
+        GITLAB_CI_ARCH:
+          - amd64
+          - arm64
   only:
     refs:
       - schedules
       - master
-
-build-docker-image-arm64:
-  extends: .publish-docker
-  parallel:
-    matrix:
-      #- DOCKERFILE_NAME: Dockerfile-stable
-      #  TAGS_FILE: '.tags'
-      #  DOCKER_IMAGE_TAGS_TEMPLATE: |
-      #    [
-      #      { "match": ".*", "template": "{{ index $ 0 }}-arm64"}
-      #    ]
-      - DOCKERFILE_NAME: Dockerfile
-        DOCKER_IMAGE_TAGS: latest
-        DOCKER_IMAGE_TAGS_TEMPLATE: |
-          [
-            { "match": ".*", "template": "{{ index $ 0 }}-arm64"}
-          ]
-      - DOCKERFILE_NAME: Dockerfile-ubuntu
-        DOCKER_IMAGE_TAGS: latest
-        DOCKER_IMAGE_TAGS_TEMPLATE: |
-          [
-            { "match": ".*", "template": "{{ index $ 0 }}-ubuntu-arm64"}
-          ]
-  only:
-    refs:
-      - schedules
-      - master
-  tags:
-    - arm64
