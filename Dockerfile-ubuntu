@@ -16,9 +16,6 @@ RUN \
   apt-get install git g++ make libssl-dev cmake pkg-config \
   libsodium-dev libncurses5-dev zlib1g-dev libreadline-dev \
   ca-certificates -y --no-install-recommends && \
-  # Grab and build Softether from GitHub
-  git clone ${REPOSITORY} /tmp/softether && \
-  cd /tmp/softether && \
   # Init submodules
   git submodule update --init --recursive && \
   # Build
