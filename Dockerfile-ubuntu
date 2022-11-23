@@ -12,8 +12,8 @@ ADD --keep-git-dir=true ${REPOSITORY} /tmp/softether
 
 RUN \
   # Install build tools
-  apt update -y && \
-  apt install git g++ make libssl-dev cmake pkg-config \
+  apt-get update -y && \
+  apt-get install git g++ make libssl-dev cmake pkg-config \
   libsodium-dev libncurses5-dev zlib1g-dev libreadline-dev \
   ca-certificates -y --no-install-recommends && \
   # Grab and build Softether from GitHub
@@ -40,11 +40,11 @@ COPY --from=builder /usr/local/libexec/softether/vpnserver/ /usr/local/libexec/s
 
 RUN \
   # Installing libs and packages
-  apt update -y && \
-  apt install tini libsodium-dev libreadline-dev \
+  apt-get update -y && \
+  apt-get install tini libsodium-dev libreadline-dev \
   iptables iproute2 net-tools dnsmasq -y --no-install-recommends && \
   # Cleaning apt cache
-  apt clean -y && \
+  apt-get clean -y && \
   rm -rf /var/lib/apt/lists/*  && \
   mkdir -p /conf && \
   ln -s /usr/local/bin/vpnserver /usr/bin/softether-vpnsrv && \
