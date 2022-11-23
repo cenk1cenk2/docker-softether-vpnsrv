@@ -8,11 +8,17 @@ stages:
 
 variables:
   DOCKER_IMAGE_NAME: cenk1cenk2/softether-vpnsrv
-  DOCKER_USE_BUILDX: "true"
-  DOCKER_BUILDX_PLATFORMS: linux/amd64,linux/arm64
   GH_REPOSITORY: SoftEtherVPN/SoftEtherVPN
   README_DESCRIPTION: |
     SoftEther VPN server in a container with pre-configured setup for networking.
+
+.publish-docker:
+  stage: publish
+  trigger:
+    include:
+      - project: devops/pipes
+        file: /templates/docker-build-with-artifacts-dockerhub.gitlab-ci.yml
+    strategy: depend
 
 include:
   - project: devops/pipes
@@ -22,16 +28,14 @@ include:
     file: /templates/gh-release-tracker.gitlab-ci.yml
 
   - project: devops/pipes
-    file: /templates/docker-build-dockerhub.gitlab-ci.yml
-
-  - project: devops/pipes
     file: /templates/update-docker-hub-readme.gitlab-ci.yml
 
 gh-release-tracker:
   variables:
     TAGS_FILE: .tags
 
-build-docker-image:
+build-docker-image-amd64:
+  extends: .publish-docker
   parallel:
     matrix:
       #- DOCKERFILE_NAME: Dockerfile-stable
@@ -48,3 +52,32 @@ build-docker-image:
     refs:
       - schedules
       - master
+
+build-docker-image-arm64:
+  extends: .publish-docker
+  parallel:
+    matrix:
+      #- DOCKERFILE_NAME: Dockerfile-stable
+      #  TAGS_FILE: '.tags'
+      #  DOCKER_IMAGE_TAGS_TEMPLATE: |
+      #    [
+      #      { "match": ".*", "template": "{{ index $ 0 }}-arm64"}
+      #    ]
+      - DOCKERFILE_NAME: Dockerfile
+        DOCKER_IMAGE_TAGS: latest
+        DOCKER_IMAGE_TAGS_TEMPLATE: |
+          [
+            { "match": ".*", "template": "{{ index $ 0 }}-arm64"}
+          ]
+      - DOCKERFILE_NAME: Dockerfile-ubuntu
+        DOCKER_IMAGE_TAGS: latest
+        DOCKER_IMAGE_TAGS_TEMPLATE: |
+          [
+            { "match": ".*", "template": "{{ index $ 0 }}-ubuntu-arm64"}
+          ]
+  only:
+    refs:
+      - schedules
+      - master
+  tags:
+    - arm64
