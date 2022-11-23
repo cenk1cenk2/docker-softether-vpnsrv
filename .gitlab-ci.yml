@@ -30,6 +30,9 @@ include:
   - project: devops/pipes
     file: /templates/update-docker-hub-readme.gitlab-ci.yml
 
+  - project: devops/pipes
+    file: /templates/docker-manifest-dockerhub.gitlab-ci.yml
+
 gh-release-tracker:
   variables:
     TAGS_FILE: .tags
@@ -42,12 +45,10 @@ build-docker-image:
       #  TAGS_FILE: '.tags'
       - DOCKERFILE_NAME: Dockerfile
         DOCKER_IMAGE_TAGS: latest-${GITLAB_CI_ARCH}
-        DOCKER_MANIFEST_TARGETS: ${DOCKER_IMAGE_NAME}:latest
         GITLAB_CI_ARCH:
           - amd64
           - arm64
       - DOCKERFILE_NAME: Dockerfile-ubuntu
-        DOCKER_MANIFEST_TARGETS: ${DOCKER_IMAGE_NAME}:latest-ubuntu
         DOCKER_IMAGE_TAGS: latest-ubuntu-${GITLAB_CI_ARCH}
         GITLAB_CI_ARCH:
           - amd64
@@ -56,3 +57,11 @@ build-docker-image:
     refs:
       - schedules
       - master
+
+docker-manifest:
+  parallel:
+    matrix:
+      - DOCKER_MANIFEST_TARGETS: ${DOCKER_IMAGE_NAME}:latest
+        DOCKER_MANIFEST_IMAGES: ${DOCKER_IMAGE_NAME}:latest-amd64,${DOCKER_IMAGE_NAME}:latest-arm64
+      - DOCKER_MANIFEST_TARGETS: ${DOCKER_IMAGE_NAME}:latest-ubuntu
+        DOCKER_MANIFEST_IMAGES: ${DOCKER_IMAGE_NAME}:latest-ubuntu-amd64,${DOCKER_IMAGE_NAME}:latest-ubuntu-arm64
