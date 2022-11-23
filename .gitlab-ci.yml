@@ -58,7 +58,7 @@ build-docker-image:
       - schedules
       - master
 
-docker-manifest:
+manifest-docker-image:
   parallel:
     matrix:
       - DOCKER_MANIFEST_TARGETS: ${DOCKER_IMAGE_NAME}:latest
