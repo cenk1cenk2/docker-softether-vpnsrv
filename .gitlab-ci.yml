@@ -2,7 +2,6 @@
 stages:
   - install
   - build
-  - track
   - docker
   - post
 
@@ -12,33 +11,29 @@ variables:
   README_DESCRIPTION: |
     SoftEther VPN server in a container with pre-configured setup for networking.
 
-.publish-docker:
-  stage: docker
-  trigger:
-    include:
-      - project: devops/pipes
-        file: /templates/docker-build-with-artifacts-dockerhub.gitlab-ci.yml
-    strategy: depend
-
 include:
   - project: devops/pipes
     file: /templates/go.gitlab-ci.yml
 
-  - project: devops/pipes
-    file: /templates/gh-release-tracker.gitlab-ci.yml
+  # - project: devops/pipes
+  #   file: /templates/gh-release-tracker.gitlab-ci.yml
 
   - project: devops/pipes
-    file: /templates/update-docker-hub-readme.gitlab-ci.yml
+    file: /templates/v2/docker-build-dockerhub.gitlab-ci.yml
 
   - project: devops/pipes
     file: /templates/docker-manifest-dockerhub.gitlab-ci.yml
+
+  - project: devops/pipes
+    file: /templates/update-docker-hub-readme.gitlab-ci.yml
 
 gh-release-tracker:
   variables:
     TAGS_FILE: .tags
 
-build-docker-image:
-  extends: .publish-docker
+docker-build:
+  stage: docker
+  extends: .docker-build-dockerhub
   parallel:
     matrix:
       #- DOCKERFILE_NAME: Dockerfile-stable
@@ -57,11 +52,3 @@ build-docker-image:
     refs:
       - schedules
       - master
-
-manifest-docker-image:
-  parallel:
-    matrix:
-      - DOCKER_MANIFEST_TARGETS: ${DOCKER_IMAGE_NAME}:latest
-        DOCKER_MANIFEST_IMAGES: ${DOCKER_IMAGE_NAME}:latest-amd64,${DOCKER_IMAGE_NAME}:latest-arm64
-      - DOCKER_MANIFEST_TARGETS: ${DOCKER_IMAGE_NAME}:latest-ubuntu
-        DOCKER_MANIFEST_IMAGES: ${DOCKER_IMAGE_NAME}:latest-ubuntu-amd64,${DOCKER_IMAGE_NAME}:latest-ubuntu-arm64
