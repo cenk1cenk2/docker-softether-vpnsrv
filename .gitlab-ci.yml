@@ -6,6 +6,9 @@ stages:
   - docker
   - post
 
+variables:
+  DOCKER_IMAGE_NAME: cenk1cenk2/softether-vpnsrv
+
 include:
   - project: devops/pipes
     file: /templates/go.gitlab-ci.yml
@@ -36,8 +39,6 @@ gh-release-tracker:
 docker-build:
   stage: docker
   extends: .docker-build-dockerhub
-  variables:
-    DOCKER_IMAGE_NAME: cenk1cenk2/softether-vpnsrv
   parallel:
     matrix:
       #- DOCKERFILE_NAME: Dockerfile-stable
@@ -71,7 +72,6 @@ update-docker-hub-readme:
   stage: post
   extends: .update-docker-hub-readme
   variables:
-    DOCKER_IMAGE_NAME: cenk1cenk2/softether-vpnsrv
     README_DESCRIPTION: |
       SoftEther VPN server in a container with pre-configured setup for networking.
   only:
