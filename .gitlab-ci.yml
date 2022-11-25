@@ -29,6 +29,7 @@ include:
     file: /templates/update-docker-hub-readme.gitlab-ci.yml
 
 gh-release-tracker:
+  stage: track
   extends: .gh-release-tracker
   variables:
     TAGS_FILE: .tags
