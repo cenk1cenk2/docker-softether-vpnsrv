@@ -2,6 +2,7 @@
 stages:
   - install
   - build
+  - track
   - docker
   - post
 
@@ -15,8 +16,8 @@ include:
   - project: devops/pipes
     file: /templates/go.gitlab-ci.yml
 
-  # - project: devops/pipes
-  #   file: /templates/gh-release-tracker.gitlab-ci.yml
+  - project: devops/pipes
+    file: /templates/gh-release-tracker.gitlab-ci.yml
 
   - project: devops/pipes
     file: /templates/v2/docker-build-dockerhub.gitlab-ci.yml
@@ -40,11 +41,13 @@ docker-build:
       #  TAGS_FILE: '.tags'
       - DOCKERFILE_NAME: Dockerfile
         DOCKER_IMAGE_TAGS: latest-${GITLAB_CI_ARCH}
+        DOCKER_MANIFEST_TARGET: latest
         GITLAB_CI_ARCH:
           - amd64
           - arm64
       - DOCKERFILE_NAME: Dockerfile-ubuntu
         DOCKER_IMAGE_TAGS: latest-ubuntu-${GITLAB_CI_ARCH}
+        DOCKER_MANIFEST_TARGET: latest-ubuntu
         GITLAB_CI_ARCH:
           - amd64
           - arm64
