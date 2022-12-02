@@ -30,17 +30,16 @@ ARG TARGETVARIANT
 
 COPY --from=builder /tmp/softether/build/libcedar.so /usr/lib
 COPY --from=builder /tmp/softether/build/libmayaqua.so /usr/lib
-COPY --from=builder /usr/local/bin/vpnserver /usr/local/bin/vpnserver
-COPY --from=builder /usr/local/bin/vpncmd /usr/local/bin/vpncmd
 COPY --from=builder /usr/local/libexec/softether/vpnserver/ /usr/local/libexec/softether/vpnserver/
+COPY --from=builder /usr/local/libexec/softether/vpncmd/ /usr/local/libexec/softether/vpncmd/
+COPY --from=builder /usr/local/bin/vpnserver /usr/bin/softether-vpnsrv
+COPY --from=builder /usr/local/bin/vpncmd /usr/bin/softether-vpncmd
 
 RUN \
   # Reintroduce necessary runtime libraries
   apk add --no-cache --virtual .run-deps \
   libcap libcrypto1.1 libssl1.1 ncurses-libs readline su-exec zlib-dev dhclient libsodium-dev dnsmasq iptables tini && \
   # Link Libraries to Binary
-  ln -s /usr/local/bin/vpnserver /usr/bin/softether-vpnsrv && \
-  ln -s /usr/local/bin/vpncmd /usr/bin/softether-vpncmd && \
   ln -s /usr/local/libexec/softether/vpnserver/ /etc/softether && \
   mkdir -p /conf && \
   echo "tun" >> /etc/modules && \
