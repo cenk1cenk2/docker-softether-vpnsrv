@@ -7,7 +7,7 @@ require (
 	github.com/go-ping/ping v1.1.0
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/urfave/cli/v2 v2.23.5
-	gitlab.kilic.dev/libraries/plumber/v4 v4.28.3
+	gitlab.kilic.dev/libraries/plumber/v4 v4.28.4
 )
 
 require (
@@ -20,7 +20,7 @@ require (
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/go-task/slim-sprig v2.20.0+incompatible // indirect
 	github.com/google/uuid v1.3.0 // indirect
-	github.com/huandu/xstrings v1.3.3 // indirect
+	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
