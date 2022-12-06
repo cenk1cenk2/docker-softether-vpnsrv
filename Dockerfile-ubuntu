@@ -40,7 +40,7 @@ RUN \
   # Installing libs and packages
   apt-get update -y && \
   apt-get install tini libsodium-dev libreadline-dev \
-  iptables iproute2 net-tools dnsmasq bridge-utils -y --no-install-recommends && \
+  iptables iproute2 net-tools dnsmasq bridge-utils isc-dhcp-client -y --no-install-recommends && \
   # Cleaning apt cache
   apt-get clean -y && \
   rm -rf /var/lib/apt/lists/*  && \
