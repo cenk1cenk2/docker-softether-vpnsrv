@@ -29,8 +29,8 @@ github.com/huandu/xstrings v1.4.0 h1:D17IlohoQq4UcpqD7fDk80P7l+lwAmlFaBHgOipl2FU
 github.com/huandu/xstrings v1.4.0/go.mod h1:y5/lhBue+AyNmUVz9RLU9xbLR0o4KIIExikq4ovT0aE=
 github.com/imdario/mergo v0.3.13 h1:lFzP57bqS/wsqKssCGmtLAb8A0wKjLGrve2q3PPVcBk=
 github.com/imdario/mergo v0.3.13/go.mod h1:4lJ1jqUDcsbIECGy0RUJAXNIhg+6ocWgb1ALK2O4oXg=
-github.com/joho/godotenv v1.4.0 h1:3l4+N6zfMWnkbPEXKng2o2/MR5mSwTrBih4ZEkkz1lg=
-github.com/joho/godotenv v1.4.0/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
+github.com/joho/godotenv v1.5.0 h1:C/Vohk/9L1RCoS/UW2gfyi2N0EElSW3yb9zwi3PjosE=
+github.com/joho/godotenv v1.5.0/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
 github.com/leodido/go-urn v1.2.1 h1:BqpAaACuzVSgi/VLzGZIobT2z4v53pjosyNd9Yv6n/w=
 github.com/leodido/go-urn v1.2.1/go.mod h1:zt4jvISO2HfUBqxjfIshjdMTYS56ZS/qv49ictyFfxY=
 github.com/mitchellh/go-ps v1.0.0 h1:i6ampVEEF4wQFF+bkYfwYgY+F/uYJDktmvLPf7qIgjc=
@@ -55,8 +55,8 @@ gitlab.kilic.dev/libraries/go-broadcaster v1.1.1 h1:3KSjoM1OS2HPKXnCoD1pJ7kIHNqe
 gitlab.kilic.dev/libraries/go-broadcaster v1.1.1/go.mod h1:3u3hNGMPYdT90k0sxrNmtprObjyD22BFsfn34AqG7sE=
 gitlab.kilic.dev/libraries/go-utils/v2 v2.0.0 h1:vNA20iKmNGGvUimjwIFdrmomPL/nYZUsJXT0qfHK+Is=
 gitlab.kilic.dev/libraries/go-utils/v2 v2.0.0/go.mod h1:VJsiSYoMn2OWblxQzcmq57e4WIDOhv3YAV/rBAKh1BI=
-gitlab.kilic.dev/libraries/plumber/v4 v4.31.8 h1:cdExNqi3R1xqhww2neVa+96VyrSASQzXrykn8hwbffI=
-gitlab.kilic.dev/libraries/plumber/v4 v4.31.8/go.mod h1:SBHm4BnH6omTM7PI7q/nmjDxrZqdqm683P2dpf6mKRc=
+gitlab.kilic.dev/libraries/plumber/v4 v4.31.9 h1:hAnUU4UeYJ4/J5ZXms7zQTi0gwHXlHKwprGWm26rO38=
+gitlab.kilic.dev/libraries/plumber/v4 v4.31.9/go.mod h1:8hE98xFwGcUIZ+gtsCGNIJQwVISS/Fw6oYDvTLk6+4E=
 golang.org/x/crypto v0.5.0 h1:U/0M97KRkSFvyD/3FSmdP5W5swImpNgle/EHFhOsQPE=
 golang.org/x/crypto v0.5.0/go.mod h1:NK/OQwhpMQP3MwtdjgLlYHnH9ebylxKWv3e0fK+mkQU=
 golang.org/x/exp v0.0.0-20230129154200-a960b3787bd2 h1:5sPMf9HJXrvBWIamTw+rTST0bZ3Mho2n1p58M0+W99c=

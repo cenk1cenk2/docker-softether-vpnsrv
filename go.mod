@@ -7,7 +7,7 @@ require (
 	github.com/go-ping/ping v1.1.0
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/urfave/cli/v2 v2.24.3
-	gitlab.kilic.dev/libraries/plumber/v4 v4.31.8
+	gitlab.kilic.dev/libraries/plumber/v4 v4.31.9
 )
 
 require (
@@ -22,7 +22,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
-	github.com/joho/godotenv v1.4.0 // indirect
+	github.com/joho/godotenv v1.5.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
