@@ -6,7 +6,7 @@ require (
 	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/go-ping/ping v1.1.0
 	github.com/mitchellh/go-ps v1.0.0
-	github.com/urfave/cli/v2 v2.24.3
+	github.com/urfave/cli/v2 v2.24.4
 	gitlab.kilic.dev/libraries/plumber/v4 v4.31.11
 )
 
