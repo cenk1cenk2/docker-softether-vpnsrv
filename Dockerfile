@@ -45,7 +45,8 @@ RUN \
   echo "tun" >> /etc/modules && \
   echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf && \
   mkdir -p /dev/net && \
-  mknod /dev/net/tun c 10 200
+  mknod /dev/net/tun c 10 200 && \
+  mkdir -p /docker.init.d
 
 # Advise to open necassary ports
 EXPOSE 1443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp 1701/udp

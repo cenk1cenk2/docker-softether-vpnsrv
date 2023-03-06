@@ -48,6 +48,7 @@ RUN \
   echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf && \
   mkdir -p /dev/net && \
   mknod /dev/net/tun c 10 200 && \
+  mkdir -p /docker.init.d && \
   rm -rf /tmp/*
 
 # Advise to open necassary ports

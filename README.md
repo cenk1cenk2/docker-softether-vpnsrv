@@ -33,9 +33,10 @@ This container runs a SoftEther VPN Server bundled together with a configuration
   - [SoftEther](#softether)
 - [Setup](#setup)
   - [Volumes](#volumes)
-    - [SoftEther Configuration](#softether-configuration)
-    - [DNSMASQ Configuration](#dnsmasq-configuration)
-    - [Logs](#logs)
+  - [Hooks](#hooks)
+  - [SoftEther Configuration](#softether-configuration)
+  - [DNSMASQ Configuration](#dnsmasq-configuration)
+  - [Logs](#logs)
   - [Ports](#ports)
   - [Server Mode](#server-mode)
     - [DHCP](#dhcp)
@@ -74,7 +75,7 @@ Periodical health check for monitoring the processes as well as pinging the DHCP
 
 ### Graceful Shutdown
 
-At shutdown or crashes, the container cleans up all the created virtual ethernet interfaces, TAP devices, and undoes all the system changes.
+At shutdown or crashes, the container cleans up all the created virtual ethernet interfaces, and TAP devices, and undoes all the system changes.
 
 This is a best-effort process and it can not guarantee to finish this process successfully.
 
@@ -163,7 +164,17 @@ If the configuration for the component is missing, it will auto-generate a new c
 
 **It will not manipulate the configuration files if the persistent versions of them are found inside the expected folders already. So if you have a persistent configuration file, it is, unfortunately, your responsibility to get it working.**
 
-#### SoftEther Configuration
+### Hooks
+
+There are lifetime hooks that can be used as executable scripts to further extend the configuration to your needs at given times while starting the container. These hooks should be executable files that are mounted in a certain location.
+
+| Hook         | Location                    | Description                                                                                                                                  |
+| ------------ | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `post-tasks` | `/docker.init.d/post-tasks` | Will run after configuration of the services has finished, dhcp/bridge setup has been done and just before starting the services themselves. |
+
+> Remember to use the appropriate shell depending on the base image if you are using shell scripts and take into consideration what applications might be available in the container.
+
+### SoftEther Configuration
 
 The configuration has defaults as follows.
 
@@ -171,18 +182,18 @@ The configuration has defaults as follows.
 - The default bridge device is set through the generation of the configuration file.
 - Please check out the normal process for [SoftEther Setup](https://www.softether.org/4-docs/2-howto/9.L2TPIPsec_Setup_Guide_for_SoftEther_VPN_Server/1.Setup_L2TP%2F%2F%2F%2FIPsec_VPN_Server_on_SoftEther_VPN_Server). SoftEtherVPN server can be configured by using the GUI or the CLI.
 
-**Please remember that at the initial startup there is no admin password for managing the server, it is very crucial to set it up as soon as possible.**
+**Please remember that at the initial startup, there is no admin password for managing the server, it is very crucial to set it up as soon as possible.**
 
 If you are using a persistent configuration file that is not auto-generated through this container, you should be sure that your HUB configuration is bridged properly with the TAP adapter.
 
-#### DNSMASQ Configuration
+### DNSMASQ Configuration
 
 The configuration has defaults as follows.
 
 - It will auto-generate a `dnsmasq.conf` depending on the environment variables you have provided.
 - If you want to additionally want to add configuration you can always mount a folder to `/etc/dnsmasq.d/` and add your custom configuration.
 
-#### Logs
+### Logs
 
 The log files can be found on `/etc/softether/server_log`, `/etc/softether/security_log`, `/etc/softether/packet_log` inside the container. So you can mount a folder there to obtain the logs from the SoftEtherVPN server.
 

@@ -13,4 +13,7 @@ const (
 
 	CONF_SOFTETHER_NAME = "vpn_server.config"
 	CONF_SOFTETHER_DIR  = "/etc/softether"
+
+	HOOKS_DIR            = "/docker.init.d"
+	HOOK_POST_TASKS_FILE = "post-tasks"
 )

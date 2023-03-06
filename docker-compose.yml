@@ -23,6 +23,7 @@ services:
     volumes:
       # Configuration Files
       - ./volumes/softether-vpnsrv:/conf
+      - ./volumes/hooks:/docker.init.d:ro
       # Log files
       - ./logs/server_log:/etc/softether/server_log
       - ./logs/security_log:/etc/softether/security_log

@@ -12,9 +12,9 @@ import (
 func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health", "parent").
 		SetJobWrapper(func(job Job) Job {
-			return TL.JobSequence(
+			return tl.JobSequence(
 				job,
-				TL.JobParallel(
+				tl.JobParallel(
 					HealthCheckPing(tl).Job(),
 					HealthCheckSoftEther(tl).Job(),
 					HealthCheckDhcpServer(tl).Job(),

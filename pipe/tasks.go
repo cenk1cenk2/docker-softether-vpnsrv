@@ -17,18 +17,20 @@ func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("tasks", "parent").
 		SetJobWrapper(func(job Job) Job {
 			return tl.JobSequence(
-				Setup(&TL).Job(),
+				Setup(tl).Job(),
 
-				TL.JobParallel(
-					CreatePostroutingRules(&TL).Job(),
-					GenerateDhcpServerConfiguration(&TL).Job(),
-					GenerateSoftEtherServerConfiguration(&TL).Job(),
+				tl.JobParallel(
+					CreatePostroutingRules(tl).Job(),
+					GenerateDhcpServerConfiguration(tl).Job(),
+					GenerateSoftEtherServerConfiguration(tl).Job(),
 				),
 
-				TL.JobSequence(
-					CreateTapDevice(&TL).Job(),
-					BridgeSetupParent(&TL).Job(),
+				tl.JobSequence(
+					CreateTapDevice(tl).Job(),
+					BridgeSetupParent(tl).Job(),
 				),
+
+				RunPostTasksHook(tl).Job(),
 			)
 		})
 }
@@ -484,6 +486,38 @@ func UseStaticIpForBridge(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Pipe.LinuxBridge.StaticIp,
 			).
 				SetLogLevel(LOG_LEVEL_DEBUG, LOG_LEVEL_DEFAULT, LOG_LEVEL_DEBUG).
+				AddSelfToTheTask()
+
+			return nil
+		}).
+		ShouldRunAfter(func(t *Task[Pipe]) error {
+			return t.RunCommandJobAsJobSequence()
+		})
+}
+
+func RunPostTasksHook(tl *TaskList[Pipe]) *Task[Pipe] {
+	hook := path.Join(HOOKS_DIR, HOOK_POST_TASKS_FILE)
+
+	return tl.CreateTask("hook", "post-tasks").
+		ShouldDisable(func(t *Task[Pipe]) bool {
+			stats, err := os.Stat(hook)
+
+			if err != nil {
+				t.Log.Debugf("Post tasks hook file not found at the expected location: %s", hook)
+
+				return true
+			}
+
+			if stats.Mode()&0111 == 0 {
+				t.Log.Warnf("Post tasks hook file found at the expected location but it is not executable: %s", hook)
+
+				return true
+			}
+
+			return false
+		}).
+		Set(func(t *Task[Pipe]) error {
+			t.CreateCommand(hook).
 				AddSelfToTheTask()
 
 			return nil
