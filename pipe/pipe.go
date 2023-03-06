@@ -67,5 +67,6 @@ func New(p *Plumber) *TaskList[Pipe] {
 					HealthCheck(tl).Job(),
 					tl.JobWaitForTerminator(),
 				)
-			})
+			}).
+		SetRuntimeDepth(2)
 }
