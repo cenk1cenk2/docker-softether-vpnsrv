@@ -7,7 +7,7 @@ require (
 	github.com/go-ping/ping v1.1.0
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/urfave/cli/v2 v2.25.5
-	gitlab.kilic.dev/libraries/plumber/v4 v4.32.20
+	gitlab.kilic.dev/libraries/plumber/v4 v4.32.21
 )
 
 require (
@@ -30,7 +30,7 @@ require (
 	github.com/workanator/go-floc/v3 v3.0.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	gitlab.kilic.dev/libraries/go-broadcaster v1.1.1 // indirect
-	gitlab.kilic.dev/libraries/go-utils/v2 v2.0.2 // indirect
+	gitlab.kilic.dev/libraries/go-utils/v2 v2.0.3 // indirect
 	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
 	golang.org/x/net v0.8.0 // indirect
