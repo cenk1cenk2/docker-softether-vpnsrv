@@ -1,6 +1,6 @@
 module github.com/cenk1cenk2/docker-softether-vpnsrv
 
-go 1.21
+go 1.21.3
 
 require (
 	github.com/apparentlymart/go-cidr v1.1.0
