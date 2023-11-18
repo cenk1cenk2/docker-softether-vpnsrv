@@ -7,7 +7,7 @@ require (
 	github.com/go-ping/ping v1.1.0
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/urfave/cli/v2 v2.25.7
-	gitlab.kilic.dev/libraries/plumber/v4 v4.34.2
+	gitlab.kilic.dev/libraries/plumber/v4 v4.35.0
 )
 
 require (
