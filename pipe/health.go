@@ -6,12 +6,12 @@ import (
 
 	"github.com/go-ping/ping"
 	"github.com/mitchellh/go-ps"
-	. "gitlab.kilic.dev/libraries/plumber/v4"
+	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
 func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health", "parent").
-		SetJobWrapper(func(job Job) Job {
+		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
 			return tl.JobSequence(
 				job,
 				tl.JobParallel(
@@ -49,8 +49,8 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return !t.Pipe.Health.EnablePing
 		}).
-		SetJobWrapper(func(job Job) Job {
-			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
+		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, t.Pipe.Health.CheckInterval))
 		}).
 		Set(func(t *Task[Pipe]) error {
 			pinger, err := ping.NewPinger(t.Pipe.Health.DhcpServerAddress)
@@ -84,7 +84,7 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 
 func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health", "softether").
-		SetJobWrapper(func(job Job) Job {
+		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
 		Set(func(t *Task[Pipe]) error {
@@ -114,7 +114,7 @@ func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).
-		SetJobWrapper(func(job Job) Job {
+		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
 		Set(func(t *Task[Pipe]) error {

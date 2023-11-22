@@ -1,12 +1,12 @@
 package pipe
 
 import (
-	. "gitlab.kilic.dev/libraries/plumber/v4"
+	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
 func Services(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("services", "parent").
-		SetJobWrapper(func(job Job) Job {
+		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
 			return tl.JobParallel(
 				RunDnsServer(tl).Job(),
 				RunSoftEtherVpnServer(tl).Job(),

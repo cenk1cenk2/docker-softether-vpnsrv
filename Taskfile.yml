@@ -4,7 +4,6 @@
 version: "3"
 
 vars:
-  GO_VERSION: 1.21
   GO_LD_FLAGS: -w -s
   BINARY_DIR: dist
   BINARY_NAME: pipe

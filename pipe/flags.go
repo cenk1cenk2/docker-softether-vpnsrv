@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/urfave/cli/v2"
-	. "gitlab.kilic.dev/libraries/plumber/v4"
+	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
 //revive:disable:line-length-limit

@@ -1,7 +1,7 @@
 package pipe
 
 import (
-	. "gitlab.kilic.dev/libraries/plumber/v4"
+	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
 func TerminateSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
@@ -17,8 +17,8 @@ func TerminateSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			return t.RunCommandJobAsJobSequenceWithExtension(func(job Job) Job {
-				return tl.GuardAlways(job)
+			return t.RunCommandJob(func(t *Task[Pipe]) Job {
+				return tl.GuardAlways(t.GetCommandJobAsJobSequence())
 			})
 		})
 }
@@ -39,8 +39,8 @@ func TerminateDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			return t.RunCommandJobAsJobSequenceWithExtension(func(job Job) Job {
-				return tl.GuardAlways(job)
+			return t.RunCommandJob(func(t *Task[Pipe]) Job {
+				return tl.GuardAlways(t.GetCommandJobAsJobSequence())
 			})
 		})
 }
@@ -80,8 +80,8 @@ func TerminateTapInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			return t.RunCommandJobAsJobSequenceWithExtension(func(job Job) Job {
-				return tl.GuardAlways(job)
+			return t.RunCommandJob(func(t *Task[Pipe]) Job {
+				return tl.GuardAlways(t.GetCommandJobAsJobSequence())
 			})
 		})
 }
@@ -111,8 +111,8 @@ func TerminateBridgeInterface(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		ShouldRunAfter(func(t *Task[Pipe]) error {
-			return t.RunCommandJobAsJobSequenceWithExtension(func(job Job) Job {
-				return tl.GuardAlways(job)
+			return t.RunCommandJob(func(t *Task[Pipe]) Job {
+				return tl.GuardAlways(t.GetCommandJobAsJobSequence())
 			})
 		})
 }

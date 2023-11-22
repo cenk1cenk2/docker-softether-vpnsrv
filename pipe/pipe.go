@@ -3,7 +3,7 @@ package pipe
 import (
 	"time"
 
-	. "gitlab.kilic.dev/libraries/plumber/v4"
+	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
 type (
@@ -59,14 +59,13 @@ func New(p *Plumber) *TaskList[Pipe] {
 		ShouldRunBefore(func(tl *TaskList[Pipe]) error {
 			return ProcessFlags(tl)
 		}).
-		Set(
-			func(tl *TaskList[Pipe]) Job {
-				return tl.JobSequence(
-					Tasks(tl).Job(),
-					Services(tl).Job(),
-					HealthCheck(tl).Job(),
-					tl.JobWaitForTerminator(),
-				)
-			}).
+		Set(func(tl *TaskList[Pipe]) Job {
+			return tl.JobSequence(
+				Tasks(tl).Job(),
+				Services(tl).Job(),
+				HealthCheck(tl).Job(),
+				tl.JobWaitForTerminator(),
+			)
+		}).
 		SetRuntimeDepth(2)
 }

@@ -4,7 +4,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	pipe "github.com/cenk1cenk2/docker-softether-vpnsrv/pipe"
-	. "gitlab.kilic.dev/libraries/plumber/v4"
+	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
 func main() {

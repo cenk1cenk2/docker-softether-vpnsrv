@@ -10,12 +10,12 @@ import (
 	"text/template"
 
 	"github.com/apparentlymart/go-cidr/cidr"
-	. "gitlab.kilic.dev/libraries/plumber/v4"
+	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
 func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("tasks", "parent").
-		SetJobWrapper(func(job Job) Job {
+		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
 			return tl.JobSequence(
 				Setup(tl).Job(),
 
@@ -330,7 +330,7 @@ func BridgeSetupParent(tl *TaskList[Pipe]) *Task[Pipe] {
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE
 		}).
-		SetJobWrapper(func(job Job) Job {
+		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
 			return tl.JobSequence(
 				CreateBridgeDevice(tl).Job(),
 				UseDhcpForBridge(tl).Job(),
