@@ -31,7 +31,7 @@ linters-settings:
     # Checks the number of lines in a function.
     # If lower than 0, disable the check.
     # Default: 60
-    lines: 100
+    lines: -1
     # Checks the number of statements in a function.
     # If lower than 0, disable the check.
     # Default: 40
@@ -145,8 +145,8 @@ linters-settings:
       - name: errorf
         severity: error
       - name: error-return
-      # - name: if-return
-      #   severity: error
+      - name: if-return
+        severity: error
       - name: increment-decrement
       - name: range
       - name: indent-error-flow
@@ -189,16 +189,16 @@ linters:
   disable-all: true
   enable:
     ## enabled by default
-    - deadcode # Finds unused code
+    # - deadcode # Finds unused code
     - errcheck # Errcheck is a program for checking for unchecked errors in go programs. These unchecked errors can be critical bugs in some cases
     - gosimple # Linter for Go source code that specializes in simplifying a code
     - govet # Vet examines Go source code and reports suspicious constructs, such as Printf calls whose arguments do not align with the format string
     - ineffassign # Detects when assignments to existing variables are not used
     - staticcheck # Staticcheck is a go vet on steroids, applying a ton of static analysis checks
-    - structcheck # Finds unused struct fields
+    # - structcheck # Finds unused struct fields
     - typecheck # Like the front-end of a Go compiler, parses and type-checks Go code
     - unused # Checks Go code for unused constants, variables, functions and types
-    - varcheck # Finds unused global variables and constants
+    # - varcheck # Finds unused global variables and constants
     ## disabled by default
     - asasalint # Check for pass []any as any in variadic func(...any)
     - asciicheck # Simple linter to check that your code does not contain non-ASCII identifiers
@@ -231,7 +231,7 @@ linters:
     # - lll # Reports long lines
     - makezero # Finds slice declarations with non-zero initial length
     - nakedret # Finds naked returns in functions greater than a specified function length
-    # - nestif # Reports deeply nested if statements
+    - nestif # Reports deeply nested if statements
     - nilerr # Finds the code that returns nil even if it checks that the error is not nil.
     - nilnil # Checks that there is no simultaneous return of nil error and an invalid value.
     # - noctx # noctx finds sending http request without context.Context

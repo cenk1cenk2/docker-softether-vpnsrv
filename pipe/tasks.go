@@ -133,6 +133,7 @@ func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 			linkFrom := path.Join(CONF_DIR, CONF_DNSMASQ_NAME)
 			linkTo := path.Join(CONF_DNSMASQ_DIR, CONF_DNSMASQ_NAME)
 
+			//nolint: nestif
 			if _, err := os.Stat(linkFrom); os.IsNotExist(err) {
 				// generate dnsmasq configuration
 				tmpl, err := template.ParseFiles(t.Pipe.DhcpServer.Template)
@@ -176,11 +177,7 @@ func GenerateDhcpServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Log.Debugf(err.Error())
 			}
 
-			if err := os.Symlink(linkFrom, linkTo); err != nil {
-				return err
-			}
-
-			return nil
+			return os.Symlink(linkFrom, linkTo)
 		})
 }
 
@@ -190,6 +187,7 @@ func GenerateSoftEtherServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 			linkFrom := path.Join(CONF_DIR, CONF_SOFTETHER_NAME)
 			linkTo := path.Join(CONF_SOFTETHER_DIR, CONF_SOFTETHER_NAME)
 
+			//nolint: nestif
 			if _, err := os.Stat(linkFrom); os.IsNotExist(err) {
 				// generate softether configuration
 				tmpl, err := template.ParseFiles(t.Pipe.SoftEther.Template)
@@ -228,11 +226,7 @@ func GenerateSoftEtherServerConfiguration(tl *TaskList[Pipe]) *Task[Pipe] {
 				t.Log.Debugf(err.Error())
 			}
 
-			if err := os.Symlink(linkFrom, linkTo); err != nil {
-				return err
-			}
-
-			return nil
+			return os.Symlink(linkFrom, linkTo)
 		})
 }
 
