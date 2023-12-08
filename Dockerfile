@@ -38,7 +38,7 @@ COPY --from=builder /usr/local/bin/vpncmd /usr/bin/softether-vpncmd
 RUN \
   # Reintroduce necessary runtime libraries
   apk add --no-cache --virtual .run-deps \
-  libcap libcrypto1.1 libssl1.1 ncurses-libs readline su-exec zlib-dev dhclient libsodium-dev dnsmasq iptables tini && \
+  libcap libcrypto3 libssl3 ncurses-libs readline su-exec zlib-dev dhclient libsodium-dev dnsmasq iptables tini && \
   # Link Libraries to Binary
   ln -s /usr/local/libexec/softether/vpnserver/ /etc/softether && \
   mkdir -p /conf && \
