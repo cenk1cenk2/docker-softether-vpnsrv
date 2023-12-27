@@ -7,7 +7,7 @@ require (
 	github.com/go-ping/ping v1.1.0
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/urfave/cli/v2 v2.27.0
-	gitlab.kilic.dev/libraries/plumber/v5 v5.4.2
+	gitlab.kilic.dev/libraries/plumber/v5 v5.4.3
 )
 
 require (
@@ -28,7 +28,7 @@ require (
 	gitlab.kilic.dev/libraries/go-broadcaster v1.1.2 // indirect
 	gitlab.kilic.dev/libraries/go-utils/v2 v2.1.2 // indirect
 	golang.org/x/crypto v0.16.0 // indirect
-	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848 // indirect
+	golang.org/x/exp v0.0.0-20231226003508-02704c960a9b // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
