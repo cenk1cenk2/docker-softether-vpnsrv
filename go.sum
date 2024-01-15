@@ -17,8 +17,8 @@ github.com/go-playground/locales v0.14.1 h1:EWaQ/wswjilfKLTECiXz7Rh+3BjFhfDFKv/o
 github.com/go-playground/locales v0.14.1/go.mod h1:hxrqLVvrK65+Rwrd5Fc6F2O76J/NuW9t0sjnWqG1slY=
 github.com/go-playground/universal-translator v0.18.1 h1:Bcnm0ZwsGyWbCzImXv+pAJnYK9S473LQFuzCbDbfSFY=
 github.com/go-playground/universal-translator v0.18.1/go.mod h1:xekY+UJKNuX9WP91TpwSH2VMlDf28Uj24BCp08ZFTUY=
-github.com/go-playground/validator/v10 v10.16.0 h1:x+plE831WK4vaKHO/jpgUGsvLKIqRRkz6M78GuJAfGE=
-github.com/go-playground/validator/v10 v10.16.0/go.mod h1:9iXMNT7sEkjXb0I+enO7QXmzG6QCsPWY4zveKFVRSyU=
+github.com/go-playground/validator/v10 v10.17.0 h1:SmVVlfAOtlZncTxRuinDPomC2DkXJ4E5T9gDA0AIH74=
+github.com/go-playground/validator/v10 v10.17.0/go.mod h1:9iXMNT7sEkjXb0I+enO7QXmzG6QCsPWY4zveKFVRSyU=
 github.com/go-task/slim-sprig/v3 v3.0.0 h1:sUs3vkvUymDpBKi3qH1YSqBQk9+9D/8M2mN1vB6EwHI=
 github.com/go-task/slim-sprig/v3 v3.0.0/go.mod h1:W848ghGpv3Qj3dhTPRyJypKRiqCdHZiAzKg9hl15HA8=
 github.com/google/uuid v1.2.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
@@ -55,8 +55,8 @@ gitlab.kilic.dev/libraries/go-broadcaster v1.1.2 h1:EM+jW58nJl2iwcq6P6dZ92+weplM
 gitlab.kilic.dev/libraries/go-broadcaster v1.1.2/go.mod h1:N/4pCzia+h7D4sGKT5qdcVp2wGMTcN8P05vO5Bu4rDM=
 gitlab.kilic.dev/libraries/go-utils/v2 v2.1.2 h1:BdbF28oKpmOnPabfC1dCNZF+CMbnGMqyW0rCG4L1p4E=
 gitlab.kilic.dev/libraries/go-utils/v2 v2.1.2/go.mod h1:D0sPCYWH/G+YQ2C13lOg8lJBAW6dn6VdYpjdzAQ5+I0=
-gitlab.kilic.dev/libraries/plumber/v5 v5.4.7 h1:FpKyY5n9wT7NpGl3xj2e9L/Xz8woI6oOQd5rWPA4QoI=
-gitlab.kilic.dev/libraries/plumber/v5 v5.4.7/go.mod h1:ST3pKO3pO/BmmvgOZpEEyiNwztDzMggKpRowDWYnDfc=
+gitlab.kilic.dev/libraries/plumber/v5 v5.4.8 h1:iJUL1sO84NGYq9tTNxI1HQ0nTTuMLc5pqef+qv7D2gU=
+gitlab.kilic.dev/libraries/plumber/v5 v5.4.8/go.mod h1:en3ok6GN0LIJzSP0n4eBSsrVedtThYzXcD4Nn8pW990=
 golang.org/x/crypto v0.16.0 h1:mMMrFzRSCF0GvB7Ne27XVtVAaXLrPmgPC7/v0tkwHaY=
 golang.org/x/crypto v0.16.0/go.mod h1:gCAAfMLgwOJRpTjQ2zCCt2OcSfYMTeZVSRtQlPC7Nq4=
 golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3 h1:hNQpMuAJe5CtcUqCXaWga3FHu+kQvCqcsoVaQgSV60o=
