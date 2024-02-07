@@ -7,7 +7,7 @@ stages:
   - post
 
 variables:
-  GO_VERSION: 1.21-alpine
+  GO_VERSION: 1.22-alpine
   DOCKER_IMAGE_NAME: cenk1cenk2/softether-vpnsrv
 
 include:
