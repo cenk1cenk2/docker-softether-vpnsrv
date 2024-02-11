@@ -15,7 +15,7 @@ import (
 
 func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("tasks", "parent").
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(_ Job, _ *Task[Pipe]) Job {
 			return tl.JobSequence(
 				Setup(tl).Job(),
 
@@ -314,7 +314,7 @@ func CreateTapDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		EnableTerminator().
-		SetOnTerminator(func(t *Task[Pipe]) error {
+		SetOnTerminator(func(_ *Task[Pipe]) error {
 			return TerminateTapInterface(tl).Run()
 		})
 }
@@ -324,7 +324,7 @@ func BridgeSetupParent(tl *TaskList[Pipe]) *Task[Pipe] {
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_BRIDGE
 		}).
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(_ Job, _ *Task[Pipe]) Job {
 			return tl.JobSequence(
 				CreateBridgeDevice(tl).Job(),
 				UseDhcpForBridge(tl).Job(),
@@ -420,7 +420,7 @@ func CreateBridgeDevice(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		EnableTerminator().
-		SetOnTerminator(func(t *Task[Pipe]) error {
+		SetOnTerminator(func(_ *Task[Pipe]) error {
 			return TerminateDhcpServer(tl).Run()
 		})
 }

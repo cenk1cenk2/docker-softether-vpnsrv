@@ -11,7 +11,7 @@ import (
 
 func HealthCheck(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health", "parent").
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(job Job, _ *Task[Pipe]) Job {
 			return tl.JobSequence(
 				job,
 				tl.JobParallel(
@@ -84,7 +84,7 @@ func HealthCheckPing(tl *TaskList[Pipe]) *Task[Pipe] {
 
 func HealthCheckSoftEther(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("health", "softether").
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(job Job, _ *Task[Pipe]) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
 		Set(func(t *Task[Pipe]) error {
@@ -114,7 +114,7 @@ func HealthCheckDhcpServer(tl *TaskList[Pipe]) *Task[Pipe] {
 		ShouldDisable(func(t *Task[Pipe]) bool {
 			return t.Pipe.Server.Mode != SERVER_MODE_DHCP
 		}).
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(job Job, _ *Task[Pipe]) Job {
 			return tl.JobBackground(tl.JobLoopWithWaitAfter(job, tl.Pipe.Health.CheckInterval))
 		}).
 		Set(func(t *Task[Pipe]) error {

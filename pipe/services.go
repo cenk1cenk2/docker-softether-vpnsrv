@@ -6,7 +6,7 @@ import (
 
 func Services(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("services", "parent").
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(_ Job, _ *Task[Pipe]) Job {
 			return tl.JobParallel(
 				RunDnsServer(tl).Job(),
 				RunSoftEtherVpnServer(tl).Job(),
@@ -38,7 +38,7 @@ func RunDnsServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		EnableTerminator().
-		SetOnTerminator(func(t *Task[Pipe]) error {
+		SetOnTerminator(func(_ *Task[Pipe]) error {
 			return TerminateDhcpServer(tl).Run()
 		})
 }
@@ -65,7 +65,7 @@ func RunSoftEtherVpnServer(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		EnableTerminator().
-		SetOnTerminator(func(t *Task[Pipe]) error {
+		SetOnTerminator(func(_ *Task[Pipe]) error {
 			return TerminateSoftEther(tl).Run()
 		})
 }
