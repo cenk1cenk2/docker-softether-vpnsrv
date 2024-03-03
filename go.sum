@@ -17,8 +17,8 @@ github.com/go-playground/locales v0.14.1 h1:EWaQ/wswjilfKLTECiXz7Rh+3BjFhfDFKv/o
 github.com/go-playground/locales v0.14.1/go.mod h1:hxrqLVvrK65+Rwrd5Fc6F2O76J/NuW9t0sjnWqG1slY=
 github.com/go-playground/universal-translator v0.18.1 h1:Bcnm0ZwsGyWbCzImXv+pAJnYK9S473LQFuzCbDbfSFY=
 github.com/go-playground/universal-translator v0.18.1/go.mod h1:xekY+UJKNuX9WP91TpwSH2VMlDf28Uj24BCp08ZFTUY=
-github.com/go-playground/validator/v10 v10.18.0 h1:BvolUXjp4zuvkZ5YN5t7ebzbhlUtPsPm2S9NAZ5nl9U=
-github.com/go-playground/validator/v10 v10.18.0/go.mod h1:dbuPbCMFw/DrkbEynArYaCwl3amGuJotoKCe95atGMM=
+github.com/go-playground/validator/v10 v10.19.0 h1:ol+5Fu+cSq9JD7SoSqe04GMI92cbn0+wvQ3bZ8b/AU4=
+github.com/go-playground/validator/v10 v10.19.0/go.mod h1:dbuPbCMFw/DrkbEynArYaCwl3amGuJotoKCe95atGMM=
 github.com/go-task/slim-sprig/v3 v3.0.0 h1:sUs3vkvUymDpBKi3qH1YSqBQk9+9D/8M2mN1vB6EwHI=
 github.com/go-task/slim-sprig/v3 v3.0.0/go.mod h1:W848ghGpv3Qj3dhTPRyJypKRiqCdHZiAzKg9hl15HA8=
 github.com/google/uuid v1.2.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
@@ -50,8 +50,8 @@ gitlab.kilic.dev/libraries/go-broadcaster v1.1.3 h1:00AVDkv9KqqYc5jIvNEbblpPnvQU
 gitlab.kilic.dev/libraries/go-broadcaster v1.1.3/go.mod h1:Oynv1O2bhJG95Jbpam8do1iKBFzYS10EOM/6TU8erMw=
 gitlab.kilic.dev/libraries/go-utils/v2 v2.1.3 h1:B+x8LW2l2/lqPq1xPKgbhN/f/oDc/5kunRrZOSOm6x8=
 gitlab.kilic.dev/libraries/go-utils/v2 v2.1.3/go.mod h1:U5nX121jvdsznNumKXF4QjNwA+ZYAQFXNwevd9bZwqA=
-gitlab.kilic.dev/libraries/plumber/v5 v5.4.14 h1:osTSyu6fUh467bGyZNj0tK7HL2cnsv8yzrWcVkd5QZ4=
-gitlab.kilic.dev/libraries/plumber/v5 v5.4.14/go.mod h1:uRkdncT6+FLh0qX84nQB83aL8MdQ2VkuevZMBWkaboc=
+gitlab.kilic.dev/libraries/plumber/v5 v5.4.15 h1:67uYaIB1cedX/HXj35dyHokQbfz9R+ldBH9qD2tIBkA=
+gitlab.kilic.dev/libraries/plumber/v5 v5.4.15/go.mod h1:5w+YJCOmIn479E7bXPEcvwrl7eeQf/HyK5OaJNBOowo=
 golang.org/x/crypto v0.19.0 h1:ENy+Az/9Y1vSrlrvBSyna3PITt4tiZLf7sgCjZBX7Wo=
 golang.org/x/crypto v0.19.0/go.mod h1:Iy9bg/ha4yyC70EfRS8jz+B6ybOBKMaSxLj6P6oBDfU=
 golang.org/x/exp v0.0.0-20240213143201-ec583247a57a h1:HinSgX1tJRX3KsL//Gxynpw5CTOAIPhgL4W8PNiIpVE=
