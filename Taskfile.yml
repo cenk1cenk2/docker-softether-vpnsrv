@@ -76,7 +76,7 @@ tasks:
   build.platform:
     internal: true
     vars:
-      binary_output: '{{ .BINARY_DIR }}/{{ .BINARY_NAME }}{{ if eq .BINARY_APPEND_OS "true" }}-{{ .os }}{{ end }}{{ if eq .BINARY_APPEND_ARCH "true" }}-{{ .arch }}{{ end }}'
+      binary_output: '{{ .BINARY_DIR }}/{{ .BINARY_NAME }}{{ if .BINARY_APPEND_OS }}-{{ .os }}{{ end }}{{ if .BINARY_APPEND_ARCH }}-{{ .arch }}{{ end }}'
     cmds:
       - GOOS={{ .os }} GOARCH={{ .arch }} go build -mod=vendor {{- if .GO_LD_FLAGS }} -ldflags="{{ .GO_LD_FLAGS }}"{{- end }} -o {{ .binary_output }}
     sources:
