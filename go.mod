@@ -1,22 +1,22 @@
 module github.com/cenk1cenk2/docker-softether-vpnsrv
 
-go 1.23.0
+go 1.23.2
 
 require (
 	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/go-ping/ping v1.1.0
 	github.com/mitchellh/go-ps v1.0.0
-	github.com/urfave/cli/v2 v2.27.4
-	gitlab.kilic.dev/libraries/plumber/v5 v5.4.20
+	github.com/urfave/cli/v2 v2.27.5
+	gitlab.kilic.dev/libraries/plumber/v5 v5.6.4
 )
 
 require (
-	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
-	github.com/creasty/defaults v1.7.0 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
+	github.com/creasty/defaults v1.8.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.22.0 // indirect
+	github.com/go-playground/validator/v10 v10.22.1 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
