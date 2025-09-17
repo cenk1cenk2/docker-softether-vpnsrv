@@ -3,7 +3,7 @@ package pipe
 import (
 	"time"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 

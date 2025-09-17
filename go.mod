@@ -6,7 +6,7 @@ require (
 	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/go-ping/ping v1.2.0
 	github.com/mitchellh/go-ps v1.0.0
-	github.com/urfave/cli/v2 v2.27.7
+	github.com/urfave/cli/v3 v3.4.1
 	gitlab.kilic.dev/libraries/plumber/v5 v5.6.6
 )
 
@@ -23,6 +23,7 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/urfave/cli/v2 v2.27.6 // indirect
 	github.com/workanator/go-floc/v3 v3.0.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	gitlab.kilic.dev/libraries/go-broadcaster v1.1.3 // indirect
